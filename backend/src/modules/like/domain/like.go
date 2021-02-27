@@ -1,7 +1,7 @@
 package domain
 
-type Photo struct {
+type Like struct {
 	id     int
 	idPost Posting
-	url    string
+	// idUser User
 }
