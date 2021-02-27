@@ -1,7 +1,8 @@
 twistagram
 
 Project twistagram untuk tugas akhir RPLL kampus ITHB menggunakan framework golang dan vue js
-project team:
+
+Project team:
 1. Felix
 2. Kevin 
 3. Kenji
