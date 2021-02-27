@@ -3,8 +3,8 @@
 ## Project twistagram untuk tugas akhir RPLL kampus ITHB menggunakan framework golang dan vue js
 
 Project team:
-1. Felix
-2. Kevin 
-3. Kenji
-4. Markus
-5. Miguel
+1118001 - Felix Kurniawan Dharma
+1118005 - Markus Clarent C
+1118022 - Miguel Thomas R
+1118037 - Kenji Edrich L
+1118038 - Kevin Hartono
