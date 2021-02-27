@@ -12,7 +12,7 @@ var (
 	port     = 5432
 	user     = "postgres"
 	password = "password"
-	dbName   = "tutorial"
+	dbName   = "twistagram"
 )
 
 func init() {
