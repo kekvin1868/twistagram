@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"twistagram/src/app"
+)
 
 func main() {
-	fmt.Println("hello")
+	app.StartApplication()
 }
