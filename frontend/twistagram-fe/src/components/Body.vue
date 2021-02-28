@@ -78,7 +78,7 @@
 
       <v-card-title>
         <v-avatar size="70">
-          <v-img src="../assets/twistagram.png"></v-img>
+          <v-img src="../assets/twistagram-logo.png"></v-img>
         </v-avatar>
 
         <p class="ml-5">Kenji Edrich Lyn</p>

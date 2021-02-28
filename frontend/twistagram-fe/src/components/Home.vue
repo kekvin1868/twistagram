@@ -10,7 +10,7 @@
           alt="Vuetify Logo"
           class="shrink mr-2"
           contain
-          src="../assets/twistagram.png"
+          src="../assets/twistagram-logo.png"
           transition="scale-transition"
           width="200"
         />
@@ -33,7 +33,7 @@ export default {
     },
 
     data: () => ({
-
+      
     })
 };
 </script>
