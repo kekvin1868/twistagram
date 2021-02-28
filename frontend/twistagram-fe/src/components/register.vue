@@ -80,7 +80,7 @@
                         </v-row>
                     </v-container>
                 </v-form>
-                <p class="ml-16 pl-7 mt-5 white--text">Already have an account? <a href="#" @click="navLogin"><strong>Log In</strong></a></p>
+                <p class="ml-16 pl-7 mt-5 white--text">Already have an account? <a @click="navLogin"><strong>Log In</strong></a></p>
             </v-main>
         </div>
     </v-app>  
@@ -117,7 +117,7 @@ export default {
 
         },
         navLogin() {
-            
+            this.$router.push({path: "/"})
         }
     }
 }

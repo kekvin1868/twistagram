@@ -45,7 +45,7 @@
                         </v-row>
                     </v-container>
                 </v-form>
-                <p class="ml-16 pl-7 mt-5 white--text">Don't have an account? <a href="#" @click="navRegister"><strong>Sign up</strong></a></p>
+                <p class="ml-16 pl-7 mt-5 white--text">Don't have an account? <a @click="navRegister"><strong>Sign up</strong></a></p>
             </v-main>
         </div>
     </v-app>  
@@ -74,7 +74,7 @@ export default {
                 const response = await axios.post(`http://localhost:8081/login`,loginObj);
                 console.log(response.data);
 
-
+                
             } catch (error) {
                 console.error(error)
             }
