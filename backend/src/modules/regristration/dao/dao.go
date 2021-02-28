@@ -8,14 +8,15 @@ import (
 
 func isEmailExist(email string) bool {
 	var user domain.User
+	var exist bool
 
-	res := orm.Engine.Where("email = ?", email, &user)
-	fmt.Print(user.Bio)
-	if res.Error != nil {
-		return false
+	if err := orm.Engine.Where("email = ?", email).First(&user).Error; err != nil {
+		exist = false
+	} else {
+		exist = true
 	}
 
-	return true
+	return exist
 }
 
 func Register(user *domain.User) (*domain.User, error) {
@@ -24,7 +25,7 @@ func Register(user *domain.User) (*domain.User, error) {
 	newUser = *user
 
 	emailExist := isEmailExist(newUser.Email)
-	fmt.Print(emailExist, newUser.Email)
+	fmt.Print(emailExist)
 	if emailExist == true {
 		return nil, nil
 	}
