@@ -21,7 +21,7 @@ type User struct {
 	Password  string    `json:"password" gorm:"type:varchar(255);not Null"`
 	Gender    string    `json:"gender" gorm:"type:varchar(255);not Null"`
 	Phone     string    `json:"phone" gorm:"type:varchar(255);not Null"`
-	Bio       string    `json:"bio" gorm:"type:varchar(255);not Null"`
+	Bio       string    `json:"bio" gorm:"type:varchar(255);"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time `json:"updated _at" gorm:"autoUpdateTime:milli"`
 }

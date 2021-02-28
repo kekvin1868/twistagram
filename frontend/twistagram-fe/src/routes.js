@@ -17,9 +17,14 @@ export default new VueRouter({
             component: () => import('./components/register')
         },
         {
-            path: '/:userId',
+            path: '/home/:userId',
             name: 'userHome',
             component: () => import('./components/Home')
+        },
+        {
+            path: '/profile',
+            name: 'profile',
+            component: () => import('./components/profile')
         }
         
     ]

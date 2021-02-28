@@ -88,6 +88,7 @@
 
 
 <script>
+import axios from 'axios'
 export default {
     name: 'Register',
 
@@ -112,7 +113,15 @@ export default {
             }
 
             var userObj = {"email":email, "username":username, "password":password, "phone":phone, "gender":gender};
-            console.log(userObj)
+            axios.post(`http://localhost:8081/register`,userObj)
+                    .then(response=>{
+                            console.log(response);
+                            this.navLogin();
+                    })
+                    .catch(function (error) { 
+                        window.alert("Email or Password is inkorek");
+                        console.log(error);
+                    })
 
 
         },

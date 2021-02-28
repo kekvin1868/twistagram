@@ -59,30 +59,33 @@ export default {
 
     data() {
         return {
-            found: null
-        }
+            userId: ""
+        };
     },
     methods: {
         async login() {
 
-            try {
                 var email = document.getElementById('user-email').value;
                 var password = document.getElementById('user-password').value;
 
                 var loginObj = {"email":email, "password":password};
-                console.log(loginObj);
-                const response = await axios.post(`http://localhost:8081/login`,loginObj);
-                console.log(response.data);
-
                 
-            } catch (error) {
-                console.error(error)
-            }
-            
+                axios.post(`http://localhost:8081/login`,loginObj)
+                    .then(response=>{
+                            this.userId = response.data.data.id;
+                            this.goToHome();
+                    })
+                    .catch(function (error) { 
+                        window.alert("Email or Password is inkorek");
+                        console.log(error);
+                    })
 
         },
         navRegister() {
             this.$router.push({path: "register"})
+        },
+        goToHome(){
+            this.$router.push({path:"/home/"+this.userId})
         }
     }
 }
