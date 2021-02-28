@@ -53,7 +53,7 @@
 
 
 <script>
-
+import axios from 'axios'
 export default {
     name: 'Login',
 
@@ -63,12 +63,23 @@ export default {
         }
     },
     methods: {
-        login() {
-            var email = document.getElementById('user-email').value;
-            var password = document.getElementById('user-password').value;
+        async login() {
 
-            var loginObj = {"email":email, "password":password};
-            console.log(loginObj)
+            try {
+                var email = document.getElementById('user-email').value;
+                var password = document.getElementById('user-password').value;
+
+                var loginObj = {"email":email, "password":password};
+                console.log(loginObj);
+                const response = await axios.post(`http://localhost:8081/login`,loginObj);
+                console.log(response.data);
+
+
+            } catch (error) {
+                console.error(error)
+            }
+            
+
         },
         navRegister() {
             this.$router.push({path: "register"})
