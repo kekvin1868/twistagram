@@ -27,7 +27,7 @@
                         <v-list-item-content class="ml-10 my-auto">
                             <v-row>
                                 <v-col cols="auto">
-                                    <p class="mt-1 display-1 text--primary">username</p>
+                                    <p class="mt-1 display-1 text--primary">{{this.userFullName}}</p>
                                 </v-col>
                                 <v-col cols="auto">
                                     <v-btn
@@ -98,16 +98,34 @@
 
 
 <script>
+import axios from 'axios'
 export default {
     name: 'Profile',
-
+    mounted(){
+        this.getId();
+        this.getUserData();
+    },
     data() {
         return {
-            found: null
+            userId: "",
+            userFullName: "",
+            userPassword: "",
+            userGender: "",
+            userPhone:"",
+            userBio: ""
         }
     },
     methods: {
-        
+        getId(){
+            this.userId = this.$route.params.userId;
+        },
+        getUserData(){
+            axios.get(`http://localhost:8081/getUserData/`+this.userId)
+                .then(response=>{
+                    this.userId = response.data.data.id;
+                    this.userFullName = response.data.data.fullname;
+                });
+        }
     }
 }
 </script>
