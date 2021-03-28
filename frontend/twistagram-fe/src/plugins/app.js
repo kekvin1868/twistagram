@@ -8,7 +8,7 @@ import register from './components/register.vue';
 const router = new VueRouter({
     routes: [
         {path : '/', component: login},
-        {path : '/register', component: register}
+        {path : '/registerPage', component: register}
     ]
 });
 
