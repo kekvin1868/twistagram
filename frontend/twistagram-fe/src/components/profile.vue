@@ -127,16 +127,6 @@ export default {
                     this.userFullName = response.data.data.fullname;
                 });
         }
-export default {
-    name: 'Profile',
-
-    data() {
-        return {
-            found: null
-        }
-    },
-    methods: {
-        
     }
 }
 </script>
