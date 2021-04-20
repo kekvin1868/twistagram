@@ -3,6 +3,8 @@ package domain
 import (
 	"fmt"
 	"time"
+	post "twistagram/src/modules/post/domain"
+	user "twistagram/src/modules/user/domain"
 	"twistagram/src/orm"
 )
 
@@ -21,6 +23,6 @@ type Bookmark struct {
 	UserID    uint      `json:"user_Id"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time `json:"updated _at" gorm:"autoUpdateTime:milli"`
-	// Post      domain.Post `gorm:"foreignKey:PostID"`
-	User User `gorm:"foreignKey:UserID"`
+	Post      post.Post `gorm:"foreignKey:PostID"`
+	User      user.User `gorm:"foreignKey:UserID"`
 }

@@ -13,3 +13,7 @@ func GetLikes(PostID uint64) (*[]api.LikeApi, error) {
 func PostLike(like *domain.Like) (*domain.Like, error) {
 	return dao.PostLike(like)
 }
+
+func DeleteLike(ID uint64) error {
+	return dao.DeleteLike(ID)
+}

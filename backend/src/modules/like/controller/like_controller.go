@@ -45,10 +45,32 @@ func PostLike(c *gin.Context) {
 		return
 	}
 
+	if newLike == nil {
+		failed := utils.Response{
+			Status:  http.StatusConflict,
+			Message: "already liked",
+			Data:    nil,
+		}
+		c.JSON(http.StatusConflict, failed)
+		return
+	}
+
 	res := utils.Response{
 		Status: http.StatusOK,
 		Data:   *newLike,
 	}
 
 	c.JSON(http.StatusOK, res)
+}
+
+func DeleteLike(c *gin.Context) {
+	ID, _ := parser.ParseID(c.Param("ID"))
+	err := service.DeleteLike(ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
 }

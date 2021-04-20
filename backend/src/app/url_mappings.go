@@ -1,7 +1,9 @@
 package app
 
 import (
+	bookmarkRouter "twistagram/src/modules/bookmark/routing"
 	commentRouter "twistagram/src/modules/comment/routing"
+	followRouter "twistagram/src/modules/follow/routing"
 	likeRouter "twistagram/src/modules/like/routing"
 	postRouter "twistagram/src/modules/post/routing"
 	regristrationRouter "twistagram/src/modules/regristration/routing"
@@ -14,4 +16,6 @@ func MapURLs() {
 	postRouter.MapURLs(router)
 	commentRouter.MapURLs(router)
 	likeRouter.MapURLs(router)
+	bookmarkRouter.MapURLs(router)
+	followRouter.MapURLs(router)
 }
