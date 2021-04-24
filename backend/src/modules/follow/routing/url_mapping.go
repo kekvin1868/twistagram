@@ -8,6 +8,7 @@ import (
 
 func MapURLs(router *gin.Engine) {
 	router.POST("/postFollow", controller.PostFollow)
-	router.GET("/getFollow/:ID", controller.GetFollowers)
+	router.GET("/getFollowers/:ID", controller.GetFollowers)
 	router.DELETE("/deleteFollow/:ID", controller.DeleteBookmark)
+	router.GET("/getFollowing/:ID", controller.GetFollowing)
 }

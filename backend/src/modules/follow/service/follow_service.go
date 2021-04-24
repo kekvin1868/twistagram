@@ -10,10 +10,14 @@ func PostFollow(follow *domain.Follow) (*domain.Follow, error) {
 	return dao.PostFollow(follow)
 }
 
-func GetFollowers(UserID uint64) (*[]api.FollowAPI, error) {
+func GetFollowers(UserID uint64) (*api.FollowersRes, error) {
 	return dao.GetFollowers(UserID)
 }
 
 func DeleteFollow(ID uint64) error {
 	return dao.DeleteFollow(ID)
+}
+
+func GetFollowing(UserID uint64) (*api.FollowingRes, error) {
+	return dao.GetFollowing(UserID)
 }
