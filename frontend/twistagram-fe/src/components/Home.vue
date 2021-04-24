@@ -115,7 +115,7 @@
 
                 <!-- posting card -->
                 <div v-if="this.postData != null">
-                  <div  v-for="(data, i) in postData" :key="i">
+                  <div v-for="(data, i) in postData" :key="i">
                     <v-card
                       class="mx-auto my-10 rounded-xl"
                       max-width="800"
@@ -176,17 +176,20 @@
                               background-color="grey"
                               color="black"
                               label="Insert your comment here..."
-                              v-model="caption"/>  
-                            <v-btn @click="comment()" color="primary">Send it bitches</v-btn>
+                              v-model="caption"
+                            />
+                            <v-btn @click="comment(data.id)" color="primary"
+                              >Send it bitches</v-btn
+                            >
                           </v-col>
                         </v-row>
                       </v-card-text>
                     </v-card>
-                  </div>
-                  <div v-if="this.postData.comment != null">
-                    <div v-for="(comment, i) in postData.comment" :key="i">
-                      {{ comment.FullName }}
-                      {{ comment.Content }}
+                    <div v-if="data.comment != null">
+                      <div v-for="(comment, i) in data.comment" :key="i">
+                        {{ comment.FullName }}
+                        {{ comment.Content }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -242,6 +245,7 @@ export default {
         },
       ],
       model: 1,
+      postDataTemp: [],
       postData: [],
     };
   },
@@ -257,10 +261,20 @@ export default {
           this.userData = response.data.data;
         });
     },
-    getPostData() {
-      axios.get("http://localhost:8081/getAllUserPost/1").then((response) => {
-        this.postData = response.data.data;
-      });
+    async getPostData() {
+      await axios
+        .get("http://localhost:8081/getAllUserPost/1")
+        .then((response) => {
+          this.postDataTemp = response.data.data;
+        });
+
+      for (let index = 0; index < this.postDataTemp.length; index++) {
+        axios
+          .get("http://localhost:8081/getPost/" + this.postDataTemp[index].ID)
+          .then((response) => {
+            this.postData.push(response.data.data);
+          });
+      }
     },
     comment(id) {
       let param = {

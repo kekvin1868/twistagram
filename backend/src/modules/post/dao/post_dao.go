@@ -9,17 +9,17 @@ import (
 )
 
 func GetPost(ID uint64) (*api.PostAPI, error) {
-	var post api.PostAPI
+    var post api.PostAPI
 
-	res := orm.Engine.Table("posts").Select("posts.caption, posts.id, users.id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Scan(&post)
-	if res.Error != nil {
-		return nil, res.Error
-	}
-	like, _ := likeDAO.GetLikes(ID)
-	comment, _ := commentDAO.GetComment(ID)
-	post.Like = *like
-	post.Comment = *comment
-	return &post, nil
+    res := orm.Engine.Table("posts").Select("posts.caption, posts.id, users.id,users.full_name").Joins("JOIN users on posts.userid = users.id").Scan(&post)
+    if res.Error != nil {
+        return nil, res.Error
+    }
+    like,  := likeDAO.GetLikes(ID)
+    comment, _ := commentDAO.GetComment(ID)
+    post.Like = *like
+    post.Comment = *comment
+    return &post, nil
 
 }
 
