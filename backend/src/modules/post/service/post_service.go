@@ -14,6 +14,10 @@ func Post(post *domain.Post) (*domain.Post, error) {
 	return dao.Post(post)
 }
 
-func GetAllUserPost(UserID uint64) (*[]api.PostRes, error) {
+func GetAllUserPost(UserID uint64) (*[]api.PostAPI, error) {
 	return dao.GetAllUserPost(UserID)
+}
+
+func LoadFollowingPost(UserID uint64) (*[]api.PostID, error) {
+	return dao.LoadFollowingPost(UserID)
 }

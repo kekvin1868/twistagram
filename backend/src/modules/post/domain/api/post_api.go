@@ -18,3 +18,7 @@ type PostRes struct {
 	ID       uint
 	FullName string `json:"fullname"`
 }
+
+type PostID struct {
+	ID uint
+}
