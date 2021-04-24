@@ -72,93 +72,36 @@
                 </v-card>
             </div>
 
-            <div class="feeds">
-                <v-card  
-                    class="mx-auto mt-5 py-5"
+            <div class="bookmark">
+                <v-card 
+                    class="mx-auto mt-8"
                     max-width="900"
                     elevate="0">
-                    <v-row class="mx-16">
-                        <p class="py-4 mr-10">Name</p>
-                        <v-text-field
-                            id="user-name"
-                            label="Name"
-                            placeholder="User Name"
-                            background-color="white"
-                            v-model="this.userFullName"
-                            required
-                            single-line
-                            outlined 
-                            clearable
-                            disabled/>
-                    </v-row>    
-                    <v-row class="mx-16">
-                        <p class="py-4 mr-15">Bio</p>
-                        <v-textarea
-                            id="user-bio"
-                            label="Bio"
-                            placeholder="User Bio"
-                            background-color="white"
-                            v-model="this.userBio"
-                            required
-                            single-line
-                            outlined 
-                            clearable/>
-                    </v-row>
-                    <v-row class="mx-16">
-                        <p class="py-4 mr-11">Email</p>
-                        <v-text-field
-                            id="user-email"
-                            label="Email"
-                            placeholder="User Email"
-                            background-color="white"
-                            v-model="this.userEmail"
-                            required
-                            single-line
-                            outlined 
-                            clearable
-                            disabled/>
-                    </v-row>    
-                    <v-row class="mx-16">
-                        <p class="py-4 mr-9">Phone</p>
-                        <v-text-field
-                            id="user-phone"
-                            label="Phone"
-                            placeholder="User Phone"
-                            background-color="white"
-                            v-model="this.userPhone"
-                            required
-                            single-line
-                            outlined 
-                            clearable/>
-                    </v-row>    
-                    <v-row class="mx-16">
-                        <p class="py-4 mr-8">Gender</p>
-                        <v-text-field
-                            id="user-gender"
-                            label="Gender"
-                            placeholder="User Gender"
-                            background-color="white"
-                            v-model="this.userGender"
-                            required
-                            single-line
-                            outlined 
-                            clearable
-                            disabled/>
-                    </v-row>  
-                    <v-row class="mx-auto">
-                        <div class="form-button">
-                            <v-btn
-                                class="mr-3"
-                                depressed
-                                color="primary"
-                                width="120px"
-                                @click.prevent="updateProfile">Save</v-btn>
-                            <v-btn
-                                depressed
-                                color="error"
-                                width="120px"
-                                @click="goToPosts">Cancel</v-btn>
-                        </div>
+                    <v-row class="px-5">
+                        <v-col
+                            v-for="n in 11"
+                            :key="n"
+                            class="d-flex child-flex"
+                            cols="4">
+                            <a :href="`https://picsum.photos/500/300?image=${n * 5 + 10}`">
+                                <v-img
+                                    :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
+                                    :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
+                                    aspect-ratio="1"
+                                    class="grey lighten-2">
+                                    <template v-slot:placeholder>
+                                        <v-row
+                                            class="fill-height ma-0"
+                                            align="center"
+                                            justify="center">
+                                                <v-progress-circular
+                                                indeterminate
+                                                color="grey lighten-5"/>
+                                        </v-row>
+                                    </template>
+                                </v-img>
+                            </a>
+                        </v-col>
                     </v-row>
                 </v-card>
             </div>
@@ -174,16 +117,17 @@ export default {
     mounted(){
         this.getId();
         this.getUserData();
+        this.getBookmarks();
     },
     data() {
         return {
             userId: "",
             userFullName: "",
-            userEmail: "",
             userPassword: "",
             userGender: "",
             userPhone:"",
-            userBio: ""
+            userBio: "",
+            userBookmark: [],
         }
     },
     methods: {
@@ -195,40 +139,16 @@ export default {
                 .then(response=>{
                     this.userId = response.data.data.id;
                     this.userFullName = response.data.data.fullname;
-                    this.userGender = response.data.data.gender;
-                    this.userPhone = response.data.data.phone;
                     this.userBio = response.data.data.bio;
-                    this.userEmail = response.data.data.email;
-                    this.userPassword = response.data.data.password;
                 });
         },
-        updateProfile(){
-            var id = this.userId;
-            var email = this.userEmail;
-            var username = this.userFullName;
-            var password = this.userPassword;
-            var phone = document.getElementById("user-phone").value;
-            var gender = this.userGender;
-            var bio = document.getElementById("user-bio").value;
-
-            var userObj = {
-                id: id,
-                email: email,
-                username: username,
-                password: password,
-                phone: phone,
-                gender: gender,
-                bio: bio
-            };
-
-            axios
-                .patch(`http://localhost:8081/updateUserData`, userObj)
-                .then((response) => {
-                    console.log(response);
-                    this.goToPosts();
-                })
-                .catch(function (error) {
-                    window.alert("Update Data Failed");
+        getBookmarks(){
+            axios.get(`http://localhost:8081/getBookmark/`+this.userId)
+                .then(response=>{
+                    this.userBookmark = response.data.data;
+                    console.log(response.data.data)
+                }).catch(function (error) {
+                    window.alert("Bookmark Data Failed");
                     console.log(error);
                 });
         },
@@ -254,9 +174,5 @@ export default {
 <style>
     #app {
         background-color: var(--v-background2-base);
-    }
-
-    div.form-button {
-        justify-content: center;
     }
 </style>

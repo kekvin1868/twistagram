@@ -1,17 +1,20 @@
 <template>
     <v-app id="app">
         <v-app-bar app color = "#393E46" dark>
-            <v-img
-                class="ml-3 my-auto"
-                max-height="100"
-                max-width="130"
-                src="../assets/twistagram-logo.png"/>
+            <a href="">
+                <v-img
+                    class="ml-3 my-auto"
+                    max-height="100"
+                    max-width="130"
+                    src="../assets/twistagram-logo.png"
+                    @click.prevent="goHome"/>
+            </a>
         </v-app-bar>
 
         <v-main>
             <div class="userProfile">
                 <v-card 
-                    class="mx-auto mt-n8 py-5"
+                    class="mx-auto mt-8 py-5"
                     max-width="900"
                     elevate="0">
                     <v-list-item>
@@ -28,14 +31,23 @@
                             <v-row>
                                 <v-col cols="auto">
                                     <p class="mt-1 display-1 text--primary">{{this.userFullName}}</p>
-                                    <p class="mt-1 display-1 text--primary">username</p>
                                 </v-col>
                                 <v-col cols="auto">
                                     <v-btn
                                         class="mt-4 font-weight-black"
                                         color="#FFD369"
                                         elevation="2"
-                                        x-small>Edit Profile</v-btn>
+                                        x-small
+                                        @click="editProfile">Edit Profile</v-btn>
+                                </v-col>
+                                <v-col cols="auto">
+                                    <v-btn
+                                        class="ml-n3 mt-4 font-weight-black"
+                                        color="#4CAF50"
+                                        elevation="2"
+                                        x-small
+                                        width="95px"
+                                        @click="goToBookmark">Bookmarked</v-btn>
                                 </v-col>
                                 <v-col cols="auto">
                                     <v-btn
@@ -43,16 +55,16 @@
                                         color="#F85151"
                                         elevation="2"
                                         x-small
-                                        width="95px">Logout</v-btn>
+                                        width="95px"
+                                        @click="logout">Logout</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
-                                    <a href=# class="text-decoration-none">10 Posts</a>
-                                    <a href=# class="ml-5 text-decoration-none">10 Following</a>
-                                    <a href=# class="ml-5 text-decoration-none">10 Follower</a>
+                                    <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
+                                    <a href="" class="ml-5 text-decoration-none">10 Following</a>
+                                    <a href="" class="ml-5 text-decoration-none">10 Follower</a>
                                 </v-col>
                                 <v-col class="mt-n2">
-                                    <p class="text--secondary mt-3">relating to or dependent on charity; charitable.
-                                        "an eleemosynary educational institution."</p>
+                                    <p class="text--secondary mt-3">{{this.userBio}}</p>
                                 </v-col>
                             </v-row>    
                         </v-list-item-content>
@@ -105,6 +117,7 @@ export default {
     mounted(){
         this.getId();
         this.getUserData();
+        this.getAllPosts();
     },
     data() {
         return {
@@ -113,7 +126,8 @@ export default {
             userPassword: "",
             userGender: "",
             userPhone:"",
-            userBio: ""
+            userBio: "",
+            userPosts: [],
         }
     },
     methods: {
@@ -125,7 +139,29 @@ export default {
                 .then(response=>{
                     this.userId = response.data.data.id;
                     this.userFullName = response.data.data.fullname;
+                    this.userBio = response.data.data.bio;
                 });
+        },
+        getAllPosts(){
+            axios.get(`http://localhost:8081/getAllUserPost/`+this.userId)
+                .then(response=>{
+                    this.userPosts = response.data.data;
+                });
+        },
+        goToPosts(){
+            this.$router.push({path:"/"+this.userId+"/profile"})
+        },
+        goToBookmark(){
+            this.$router.push({path:"/"+this.userId+"/bookmark"})
+        },
+        editProfile(){
+            this.$router.push({path:"/"+this.userId+"/editProfile"})
+        },
+        logout(){
+            this.$router.push({path:"/"})
+        },
+        goHome(){
+            this.$router.push({path: "/home/"+this.userId})
         }
     }
 }

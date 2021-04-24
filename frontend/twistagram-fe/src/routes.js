@@ -25,6 +25,21 @@ export default new VueRouter({
             path: '/:userId/profile',
             name: 'profile',
             component: () => import('./components/profile')
+        },
+        {
+            path: '/:userId/bookmark',
+            name: 'bookmark',
+            component: () => import('./components/bookmark')
+        },
+        {
+            path: '/:userId/editProfile',
+            name: 'editProfile',
+            component: () => import('./components/editProfile')
+        },
+        {
+            path: '/post/:postId',
+            name: 'showPost',
+            component: () => import('./components/ShowPost')
         }
         
     ]
