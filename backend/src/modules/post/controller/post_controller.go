@@ -72,3 +72,21 @@ func Post(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 
 }
+
+func LoadFollowingPost(c *gin.Context) {
+	UserID, _ := parser.ParseID(c.Param("uid"))
+	posts, err := service.LoadFollowingPost(UserID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	res := utils.Response{
+		Status: http.StatusOK,
+		Data:   *posts,
+	}
+
+	c.JSON(http.StatusOK, res)
+
+}
