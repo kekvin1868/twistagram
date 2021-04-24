@@ -7,6 +7,7 @@ import (
 	"twistagram/src/orm"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 func init() {
@@ -22,7 +23,7 @@ func init() {
 type Photo struct {
 	gorm.Model
 	Index     int           `json:"index" gorm:"'type:int(2);not Null'"`
-	Url       string        `json:"url" gorm:"'type:varchar(255);not Null'"`
+	Content   pq.ByteaArray `json:"url" gorm:"'type:[][]byte;not Null'"`
 	CreatedAt time.Time     `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time     `json:"updated _at" gorm:"autoUpdateTime:milli"`
 	PostID    uint          `json:"post_id"`

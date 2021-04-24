@@ -37,7 +37,7 @@ func Post(c *gin.Context) {
 
 func Test(c *gin.Context) {
 	ID, _ := parser.ParseID(c.Param("post_id"))
-	comment, err := service.Test(ID)
+	comment, err := service.GetComment(ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

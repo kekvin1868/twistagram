@@ -13,3 +13,8 @@ type PostAPI struct {
 	Like     []like.LikeApi       `json:"like"`
 	Comment  []comment.CommentAPI `json:"comment"`
 }
+
+type PostRes struct {
+	ID       uint
+	FullName string `json:"fullname"`
+}
