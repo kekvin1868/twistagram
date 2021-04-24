@@ -19,7 +19,7 @@
           <v-img src="../assets/kenji.jpg"></v-img>
         </v-avatar>
         <v-col md="9">
-          <p>felix</p>
+          <p>{{ userData.fullname }}</p>
         </v-col>
       </v-row>
     </v-app-bar>
@@ -42,8 +42,7 @@
                   <v-card-text>
                     <v-layout align-center justify-center>
                       <h3>
-                        <!-- get nama dari db-->
-                        Kenji
+                        {{ userData.fullname }}
                       </h3>
                     </v-layout>
                     <v-divider class="mt-3" color="white"> </v-divider>
@@ -114,68 +113,87 @@
                   </v-card-text>
                 </v-card>
 
-                <v-card class="mx-auto my-10 rounded-xl" max-width="800">
-                  <v-card-title>
-                    <v-avatar size="70">
-                      <v-img src="../assets/kenji.jpg"></v-img>
-                    </v-avatar>
+                <!-- posting card -->
+                <div v-if="this.postData != null">
+                  <v-card
+                    class="mx-auto my-10 rounded-xl"
+                    max-width="800"
+                    v-if="withPhoto"
+                  >
+                    <v-card-title>
+                      <v-avatar size="70">
+                        <v-img src="../assets/kenji.jpg"></v-img>
+                      </v-avatar>
 
-                    <p class="ml-5">Kenji Edrich Lyn</p>
-                    <v-spacer></v-spacer>
+                      <p class="ml-5">{{ postData.fullname }}</p>
+                      <v-spacer></v-spacer>
 
-                    <v-card-actions>
-                      <v-btn icon>
-                        <v-icon color="black" x-large> mdi-bookmark </v-icon>
-                      </v-btn>
-                      <v-btn icon>
-                        <v-icon x-large color="black">
-                          mdi-dots-vertical
-                        </v-icon>
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card-title>
-                  <v-img src="../assets/kenji.jpg" height="750px"></v-img>
-                  <v-card-text>
-                    <v-row no-gutters>
-                      <v-col sm="5">
-                        <h2 class="ml-5">Kenji Edrich Lyn</h2>
-                      </v-col>
-                    </v-row>
-
-                    <v-row>
-                      <v-col>
-                        <h2 class="ml-5">
-                          test test test test test test test test test
-                        </h2>
-                      </v-col>
-                    </v-row>
-                    <br />
-
-                    <v-divider color="black"></v-divider>
-                    <v-row no-gutters>
-                      <v-col sm="2">
-                        <v-btn class="ml-2" icon x-large color="pink">
-                          <v-icon>mdi-heart</v-icon>
+                      <v-card-actions>
+                        <v-btn icon>
+                          <v-icon color="black" x-large> mdi-bookmark </v-icon>
                         </v-btn>
-                      </v-col>
+                        <v-btn icon>
+                          <v-icon x-large color="black">
+                            mdi-dots-vertical
+                          </v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card-title>
+                    <v-img src="../assets/kenji.jpg" height="750px"></v-img>
+                    <v-card-text>
+                      <v-row no-gutters>
+                        <v-col sm="5">
+                          <h2 class="ml-5">{{ postData.fullname }}</h2>
+                        </v-col>
+                      </v-row>
 
-                      <v-col cols="1" sm="1" md="9">
-                        <v-text-field
-                          single-line
-                          display="flex"
-                          class="shrink ml-n5"
-                          rounded
-                          background-color="grey"
-                          color="black"
-                          label="Insert your comment here..."
-                          :append-icon="marker ? 'mdi-send' : 'mdi-send'"
-                          @click:append-outer="sendMessage"
-                        >
-                        </v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card>
+                      <v-row>
+                        <v-col>
+                          <h2 class="ml-5">
+                            {{ postData.caption }}
+                          </h2>
+                        </v-col>
+                      </v-row>
+                      <br />
+
+                      <v-divider color="black"></v-divider>
+                      <v-row no-gutters>
+                        <v-col sm="2">
+                          <v-btn class="ml-2" icon x-large color="pink">
+                            <v-icon>mdi-heart</v-icon>
+                          </v-btn>
+                        </v-col>
+
+                        <v-col cols="1" sm="1" md="9">
+                          <v-text-field
+                            single-line
+                            display="flex"
+                            class="shrink ml-n5"
+                            rounded
+                            background-color="grey"
+                            color="black"
+                            label="Insert your comment here..."
+                            v-model="caption"
+                          >
+                          </v-text-field>
+                          <v-btn @click="comment" color="primary"
+                            >Send it bitches</v-btn
+                          >
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card>
+                  <div v-if="this.postData.comment != null">
+                    <div v-for="(comment,i) in postData.comment" :key="i">
+                      {{comment.FullName}}
+                      {{comment.Content}}
+                    </div>
+                  </div>
+                </div>
+                <div v-if="this.postData == null">
+                  <!-- tampilin sesuatu jika ga ada post -->
+                </div>
+
                 <br /><br />
               </v-col>
 
@@ -200,51 +218,65 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
-  name: "Home",
-
-  data: () => ({
-    userId: "",
-    password: "Password",
-    show: false,
-    message: "Hey!",
-    marker: true,
-    profile: {
-      Following: "Following" + " " + 115,
-      Followers: "Followers" + " " + 120,
-      ViewProfile: "View Profile",
-    },
-    suggestions: [
-      {
-        image: "/images/kenji.jpg",
-        text: "Budi",
+  data() {
+    return {
+      withPhoto: true,
+      caption: "",
+      userId: "",
+      userData: [],
+      profile: {
+        Following: "Following" + " " + 115,
+        Followers: "Followers" + " " + 120,
+        ViewProfile: "View Profile",
       },
-      {
-        image: "../assets/logo.png",
-        text: "lol",
-      },
-    ],
-    model: 1,
-  }),
+      suggestions: [
+        {
+          image: "/images/kenji.jpg",
+          text: "Budi",
+        },
+        {
+          image: "../assets/logo.png",
+          text: "lol",
+        },
+      ],
+      model: 1,
+      postData: [],
+    };
+  },
 
   methods: {
     getUserId() {
       this.userId = this.$route.params.userId;
     },
-    resetIcon() {
-      this.iconIndex = 0;
+    getUserData() {
+      axios
+        .get(`http://localhost:8081/getUserData/` + this.userId)
+        .then((response) => {
+          this.userData = response.data.data;
+        });
     },
-    toggleMarker() {
-      this.marker = !this.marker;
+    getPostData() {
+      axios.get("http://localhost:8081/getPost/1").then((response) => {
+        this.postData = response.data.data;
+      });
     },
-    sendMessage() {
-      this.resetIcon();
-      this.clearMessage();
+    comment() {
+      let param = {
+        user_id: parseInt(this.userId),
+        post_id: 1,
+        content: this.caption,
+      }
+
+      axios.post("http://localhost:8081/postComment", param);
     },
   },
 
   mounted() {
     this.getUserId();
+    this.getUserData();
+    this.getPostData();
   },
 };
 </script>
