@@ -33,8 +33,19 @@ export default {
     },
 
     data: () => ({
-      
-    })
+      userId: ""
+    }),
+
+    methods: {
+      getUserId(){
+        this.userId = this.$route.params.userId;
+      }
+    },
+
+    mounted(){
+      this.getUserId();
+    },
+
 };
 </script>
 

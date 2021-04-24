@@ -22,7 +22,7 @@ export default new VueRouter({
             component: () => import('./components/Home')
         },
         {
-            path: '/profile',
+            path: '/:userId/profile',
             name: 'profile',
             component: () => import('./components/profile')
         }

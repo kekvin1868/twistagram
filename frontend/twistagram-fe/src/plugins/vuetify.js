@@ -9,7 +9,7 @@ export default new Vuetify({
             light: {
                 secondary : "#FFD369",
                 background : '#222831',
-                background2 : '#FFFFFF',
+                background2 : '#F4F9F9',
             }
         },
         options: {
