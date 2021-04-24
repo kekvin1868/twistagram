@@ -23,10 +23,10 @@ func GetPost(ID uint64) (*api.PostAPI, error) {
 
 }
 
-func GetAllUserPost(UserID uint64) (*[]domain.Post, error) {
-	var post []domain.Post
+func GetAllUserPost(UserID uint64) (*[]api.PostRes, error) {
+	var post []api.PostRes
 
-	res := orm.Engine.Where("user_id = ?", UserID).Find(&post)
+	res := orm.Engine.Table("posts").Select("posts.id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Where("user_id = ?", UserID).Find(&post)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -36,10 +36,28 @@ func GetAllUserPost(UserID uint64) (*[]domain.Post, error) {
 
 }
 
-// func LoadFollowingPost(UserID uint)(*[]domain.Post,error){
-// 	var post []domain.Post
+func LoadFollowingPost(UserID uint) (*[]api.PostRes, error) {
+	type FollowingID struct {
+		FollowID uint
+	}
 
-// }
+	var postRes []api.PostRes
+	var follow []FollowingID
+	res := orm.Engine.Table("follows").Select("follows.follow_id").Where("user_id = ?", UserID).Scan(&follow)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	res = orm.Engine.Table("posts").Select("posts.id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Find(&postRes, follow)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &postRes, nil
+
+}
 
 func Post(post *domain.Post) (*domain.Post, error) {
 	var newPost domain.Post
