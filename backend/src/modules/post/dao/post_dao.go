@@ -36,6 +36,11 @@ func GetAllUserPost(UserID uint64) (*[]domain.Post, error) {
 
 }
 
+// func LoadFollowingPost(UserID uint)(*[]domain.Post,error){
+// 	var post []domain.Post
+
+// }
+
 func Post(post *domain.Post) (*domain.Post, error) {
 	var newPost domain.Post
 

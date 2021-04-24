@@ -8,7 +8,7 @@ import (
 type PostAPI struct {
 	ID       uint                 `json:"id"`
 	Caption  string               `json:"caption"`
-	Fullname string               `json:"fullname"`
+	FullName string               `json:"fullname"`
 	UserID   uint                 `json:"user_id"`
 	Like     []like.LikeApi       `json:"like"`
 	Comment  []comment.CommentAPI `json:"comment"`
