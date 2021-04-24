@@ -9,7 +9,7 @@ func GetUserData(ID uint64) (*domain.User, error) {
 	var user domain.User
 
 	res := orm.Engine.First(&user, ID)
-
+	// SELECT * FROM users WHERE id = 'id' LIMIT 1;
 	if res.Error != nil {
 		return nil, res.Error
 	}

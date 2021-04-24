@@ -23,7 +23,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		failed := utils.Response{
 			Status:  http.StatusBadRequest,
-			Message: "username or password inkorek",
+			Message: "username or password incorrect",
 			Data:    nil,
 		}
 		c.JSON(http.StatusBadRequest, failed)
