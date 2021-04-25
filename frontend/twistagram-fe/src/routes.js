@@ -22,7 +22,7 @@ export default new VueRouter({
             component: () => import('./components/Home')
         },
         {
-            path: '/:userId/profile',
+            path: '/:userId/profile/:vistId',
             name: 'profile',
             component: () => import('./components/profile')
         },
@@ -37,9 +37,14 @@ export default new VueRouter({
             component: () => import('./components/editProfile')
         },
         {
-            path: '/post/:postId',
+            path: '/post/:postId/:userId',
             name: 'showPost',
             component: () => import('./components/ShowPost')
+        },
+        {
+            path: '/updatePost/:postId',
+            name: 'editPost',
+            component: () => import('./components/UpdatePost')
         }
         
     ]

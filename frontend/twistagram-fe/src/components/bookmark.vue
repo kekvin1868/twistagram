@@ -60,8 +60,8 @@
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
                                     <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Following</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Follower</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
                                 <v-col class="mt-n2">
                                     <p class="text--secondary mt-3">{{this.userBio}}</p>
@@ -118,6 +118,8 @@ export default {
         this.getId();
         this.getUserData();
         this.getBookmarks();
+        this.getFollowers();
+        this.getFollowing();
     },
     data() {
         return {
@@ -128,6 +130,8 @@ export default {
             userPhone:"",
             userBio: "",
             userBookmark: [],
+            followersCount: "",
+            followingCount: "",
         }
     },
     methods: {
@@ -152,8 +156,20 @@ export default {
                     console.log(error);
                 });
         },
+        getFollowers(){
+            axios.get(`http://localhost:8081/getFollowers/`+this.userId)
+                .then(response=>{
+                    this.followersCount = response.data.data.Count;
+                });
+        },
+        getFollowing(){
+            axios.get(`http://localhost:8081/getFollowing/`+this.userId)
+                .then(response=>{
+                    this.followingCount = response.data.data.Count;
+                });
+        },
         goToPosts(){
-            this.$router.push({path:"/"+this.userId+"/profile"})
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.userId})
         },
         goToBookmark(){
             this.$router.push({path:"/"+this.userId+"/bookmark"})

@@ -32,7 +32,7 @@
                                 <v-col cols="auto">
                                     <p class="mt-1 display-1 text--primary">{{this.userFullName}}</p>
                                 </v-col>
-                                <v-col cols="auto">
+                                <v-col cols="auto" v-if="this.visitorId == this.userId">
                                     <v-btn
                                         class="mt-4 font-weight-black"
                                         color="#FFD369"
@@ -40,7 +40,7 @@
                                         x-small
                                         @click="editProfile">Edit Profile</v-btn>
                                 </v-col>
-                                <v-col cols="auto">
+                                <v-col cols="auto" v-if="this.visitorId == this.userId">
                                     <v-btn
                                         class="ml-n3 mt-4 font-weight-black"
                                         color="#4CAF50"
@@ -49,7 +49,7 @@
                                         width="95px"
                                         @click="goToBookmark">Bookmarked</v-btn>
                                 </v-col>
-                                <v-col cols="auto">
+                                <v-col cols="auto" v-if="this.visitorId == this.userId">
                                     <v-btn
                                         class="ml-n3 mt-4 font-weight-black"
                                         color="#F85151"
@@ -58,10 +58,28 @@
                                         width="95px"
                                         @click="logout">Logout</v-btn>
                                 </v-col>
+                                <v-col cols="auto" v-if="this.visitorId != this.userId && this.isFollowed == 'False'">
+                                    <v-btn
+                                        class="mt-4 font-weight-black"
+                                        color="#FFD369"
+                                        elevation="2"
+                                        x-small
+                                        width="120px"
+                                        @click="follow">Follow</v-btn>
+                                </v-col>
+                                <v-col cols="auto" v-if="this.visitorId != this.userId && this.isFollowed == 'True'">
+                                    <v-btn
+                                        class="mt-4 font-weight-black"
+                                        color="#4CAF50"
+                                        elevation="2"
+                                        x-small
+                                        width="120px"
+                                        @click="unfollow">Followed</v-btn>
+                                </v-col>
                                 <v-col class="mt-n4" cols="12">
                                     <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Following</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Follower</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
                                 <v-col class="mt-n2">
                                     <p class="text--secondary mt-3">{{this.userBio}}</p>
@@ -118,9 +136,14 @@ export default {
         this.getId();
         this.getUserData();
         this.getAllPosts();
+        this.getVisitorId();
+        this.getFollowers();
+        this.getFollowing();
+        this.getFollowStatus();
     },
     data() {
         return {
+            visitorId: "",
             userId: "",
             userFullName: "",
             userPassword: "",
@@ -128,9 +151,17 @@ export default {
             userPhone:"",
             userBio: "",
             userPosts: [],
+            followersCount: "",
+            followingCount: "",
+            userFollower: [],
+            followID: "",
+            isFollowed: "False"
         }
     },
     methods: {
+        getVisitorId(){
+            this.visitorId = this.$route.params.vistId;
+        },
         getId(){
             this.userId = this.$route.params.userId;
         },
@@ -148,8 +179,37 @@ export default {
                     this.userPosts = response.data.data;
                 });
         },
+        getFollowers(){
+            axios.get(`http://localhost:8081/getFollowers/`+this.userId)
+                .then(response=>{
+                    this.followersCount = response.data.data.Count;
+                });
+        },
+        getFollowing(){
+            axios.get(`http://localhost:8081/getFollowing/`+this.userId)
+                .then(response=>{
+                    this.followingCount = response.data.data.Count;
+                });
+        },
+        getFollowStatus(){
+            axios.get(`http://localhost:8081/getFollowers/`+this.userId)
+                .then(response=>{
+                    this.userFollower = response.data.data.Followers;
+                    
+                    // var i=0;
+                    // while(this.userFollower[i].ID < (this.followersCount+1)){
+                    //     if(this.userFollower[i].user_id == this.visitorId){
+                    //         this.followID = this.userFollower[i].ID;
+                    //         this.isFollowed = "True";
+                    //         break;
+                    //     }
+                    //     i += 1;
+                    // }
+                    // console.log(this.isFollowed);
+                });
+        },
         goToPosts(){
-            this.$router.push({path:"/"+this.userId+"/profile"})
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.visitorId})
         },
         goToBookmark(){
             this.$router.push({path:"/"+this.userId+"/bookmark"})
@@ -162,6 +222,36 @@ export default {
         },
         goHome(){
             this.$router.push({path: "/home/"+this.userId})
+        },
+        follow(){
+            var visId = this.visitorId;
+            var followedId = this.userId;
+
+            var followObj = {
+                user_id: visId,
+                follow_id: followedId
+            }
+
+            axios
+                .post(`http://localhost:8081/postFollow`, followObj)
+                .then((response) => {
+                    console.log(response);
+                    window.alert("You Followed "+this.userFullName);
+                    this.goToPosts();
+                })
+                .catch(function (error) {
+                    window.alert("Followed Fail")
+                    console.log(error);
+                });
+        },
+        unfollow(){
+            axios
+                .delete(`http://localhost:8081/deleteFollow/`+this.followID)
+                .then(response => {
+                    console.log(response);
+                    window.alert("Unfollowed "+this.userFullName);
+                    this.goToPosts();
+                });
         }
     }
 }

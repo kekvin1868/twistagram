@@ -60,8 +60,8 @@
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
                                     <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Following</a>
-                                    <a href="" class="ml-5 text-decoration-none">10 Follower</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
+                                    <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
                                 <v-col class="mt-n2">
                                     <p class="text--secondary mt-3">{{this.userBio}}</p>
@@ -88,8 +88,7 @@
                             required
                             single-line
                             outlined 
-                            clearable
-                            disabled/>
+                            clearable/>
                     </v-row>    
                     <v-row class="mx-16">
                         <p class="py-4 mr-15">Bio</p>
@@ -174,6 +173,8 @@ export default {
     mounted(){
         this.getId();
         this.getUserData();
+        this.getFollowers();
+        this.getFollowing();
     },
     data() {
         return {
@@ -183,7 +184,9 @@ export default {
             userPassword: "",
             userGender: "",
             userPhone:"",
-            userBio: ""
+            userBio: "",
+            followersCount: "",
+            followingCount: "",
         }
     },
     methods: {
@@ -205,7 +208,7 @@ export default {
         updateProfile(){
             var id = this.userId;
             var email = this.userEmail;
-            var username = this.userFullName;
+            var username = document.getElementById("user-name").value;
             var password = this.userPassword;
             var phone = document.getElementById("user-phone").value;
             var gender = this.userGender;
@@ -214,7 +217,7 @@ export default {
             var userObj = {
                 id: id,
                 email: email,
-                username: username,
+                fullname: username,
                 password: password,
                 phone: phone,
                 gender: gender,
@@ -232,8 +235,20 @@ export default {
                     console.log(error);
                 });
         },
+        getFollowers(){
+            axios.get(`http://localhost:8081/getFollowers/`+this.userId)
+                .then(response=>{
+                    this.followersCount = response.data.data.Count;
+                });
+        },
+        getFollowing(){
+            axios.get(`http://localhost:8081/getFollowing/`+this.userId)
+                .then(response=>{
+                    this.followingCount = response.data.data.Count;
+                });
+        },
         goToPosts(){
-            this.$router.push({path:"/"+this.userId+"/profile"})
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.userId})
         },
         goToBookmark(){
             this.$router.push({path:"/"+this.userId+"/bookmark"})

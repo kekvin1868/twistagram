@@ -55,13 +55,26 @@
                 <v-footer class="ml-n2">
                   <div>
                     <v-row class="mx-n6 mt-1">
-                      <v-btn icon>
-                        <v-icon disabled>
-                          mdi-cards-heart
-                        </v-icon>
-                      </v-btn>
-                      <p class="">{{(this.postLike).length}} Likes</p>
+                      
+                      <v-col class="mr-n15">
+                        <v-btn icon class="ml-6">
+                          <v-icon disabled>
+                            mdi-cards-heart
+                          </v-icon>
+                          <p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p>
+                        </v-btn>
+                      </v-col>
+                      
+                      <v-col align="right" v-if="this.uid == this.userId">
+                        <v-btn tile color="success">
+                          <v-icon left>
+                            mdi-pencil
+                          </v-icon>
+                          Edit
+                        </v-btn>
+                      </v-col>
                     </v-row>
+                    
                     <v-row class="mx-n8 mt-n3 mb-n15">
                       <v-col>
                         <v-text-field
@@ -76,6 +89,7 @@
                         </v-btn>
                       </v-col>
                     </v-row>
+
                   </div>
                 </v-footer>
               </v-card>
@@ -140,11 +154,13 @@ import axios from 'axios'
 
 export default {
   mounted() {
-    this.getId();
+    this.getUserId();
+    this.getPostId();
     this.getPostData();
   },
   data() {
     return {
+      uid: "",
       userId: "",
       postId: "",
       postLike: [],
@@ -155,7 +171,11 @@ export default {
   },
 
   methods: {
-    getId(){
+    getUserId(){
+      this.uid = this.$route.params.userId;
+      console.log(this.uid);
+    },
+    getPostId(){
       this.postId = this.$route.params.postId;
     },
     getPostData(){
@@ -169,7 +189,6 @@ export default {
         });
     },
     goToAccount(){
-      window.alert(this.user_id)
       this.$router.push({path:"/"+this.userId+"/profile"})
     }
   },
