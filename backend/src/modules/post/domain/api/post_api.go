@@ -3,7 +3,6 @@ package api
 import (
 	comment "twistagram/src/modules/comment/domain/api"
 	like "twistagram/src/modules/like/domain/api"
-	photo "twistagram/src/modules/photo/domain/api"
 )
 
 type PostAPI struct {
@@ -13,7 +12,7 @@ type PostAPI struct {
 	UserID   uint                 `json:"user_id"`
 	Like     []like.LikeApi       `json:"like"`
 	Comment  []comment.CommentAPI `json:"comment"`
-	Photo    []photo.PhotoRes     `json:"photo"`
+	Photo    []byte               `json:"photo"`
 }
 
 type PostRes struct {
