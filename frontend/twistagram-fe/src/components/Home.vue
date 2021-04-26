@@ -14,6 +14,8 @@
 
       <v-spacer></v-spacer>
 
+      <v-icon large color="green darken-2"> mdi-magnify </v-icon>
+
       <v-row>
         <v-avatar size="60">
           <v-img src="../assets/kenji.jpg"></v-img>
@@ -114,6 +116,8 @@
                   </v-card-text>
                 </v-card>
 
+                <!-- Feeds --> 
+                <!-- Post with text -->
                 <v-card class="mx-auto my-10 rounded-xl" max-width="800">
                   <v-card-title>
                     <v-avatar size="70">
@@ -125,7 +129,7 @@
 
                     <v-card-actions>
                       <v-btn icon>
-                        <v-icon color="black" x-large> mdi-bookmark </v-icon>
+                        <v-icon color="black" disabled x-large> mdi-bookmark </v-icon>
                       </v-btn>
                       <v-btn icon>
                         <v-icon x-large color="black">
