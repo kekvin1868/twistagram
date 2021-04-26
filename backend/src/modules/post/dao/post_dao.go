@@ -3,9 +3,11 @@ package dao
 import (
 	commentDAO "twistagram/src/modules/comment/dao"
 	likeDAO "twistagram/src/modules/like/dao"
+	photoDAO "twistagram/src/modules/photo/dao"
 	"twistagram/src/modules/post/domain"
 	"twistagram/src/modules/post/domain/api"
 	"twistagram/src/orm"
+	// "github.com/lib/pq"
 )
 
 func GetPost(ID uint64) (*api.PostAPI, error) {
@@ -17,8 +19,10 @@ func GetPost(ID uint64) (*api.PostAPI, error) {
 	}
 	like, _ := likeDAO.GetLikes(ID)
 	comment, _ := commentDAO.GetComment(ID)
+	photo, _ := photoDAO.RetreivePhoto(ID)
 	post.Like = *like
 	post.Comment = *comment
+	post.Photo = *photo
 	return &post, nil
 
 }
@@ -41,15 +45,20 @@ func LoadFollowingPost(UserID uint64) (*[]api.PostID, error) {
 	}
 
 	var postID []api.PostID
-	var follow []uint
+	// follow := []int64{2, 3}
+
 	// res := orm.Engine.Table("follows").Select("follows.id,follows.follow_id").Where("user_id = ?", UserID).Scan(&following)
-	res := orm.Engine.Table("follows").Select("follows.follow_id").Where("user_id = ?", UserID).Scan(&follow)
+	// res := orm.Engine.Table("follows").Select("follows.follow_id").Where("user_id = ?", UserID).Scan(&follow)
+
+	res := orm.Engine.Raw("SELECT posts.id FROM posts WHERE posts.user_id IN (SELECT follows.follow_id FROM follows WHERE follows.user_id = ?)", UserID).Scan(&postID)
 
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	res = orm.Engine.Table("posts").Select("posts.id").Where("users_id IN ?", follow).Find(&postID)
+	// fmt.Println(follow)
+
+	// res = orm.Engine.Table("posts").Select("posts.id").Where("user_id IN ?", []int64{2, 3}).Find(&postID)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -70,4 +79,16 @@ func Post(post *domain.Post) (*domain.Post, error) {
 	}
 
 	return post, nil
+}
+
+func EditPost(post *domain.Post) (*domain.Post, error) {
+	var editedPost = post
+
+	res := orm.Engine.Model(&post).Update(&editedPost)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return editedPost, nil
 }
