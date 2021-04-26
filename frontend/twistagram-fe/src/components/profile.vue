@@ -196,16 +196,13 @@ export default {
                 .then(response=>{
                     this.userFollower = response.data.data.Followers;
                     
-                    // var i=0;
-                    // while(this.userFollower[i].ID < (this.followersCount+1)){
-                    //     if(this.userFollower[i].user_id == this.visitorId){
-                    //         this.followID = this.userFollower[i].ID;
-                    //         this.isFollowed = "True";
-                    //         break;
-                    //     }
-                    //     i += 1;
-                    // }
-                    // console.log(this.isFollowed);
+                    var follower = this.userFollower.find(fol => fol.user_id == this.visitorId);
+                    if(follower != null) {
+                        this.followID = follower.ID;
+                        this.isFollowed = "True";
+                    }
+
+                    console.log(this.isFollowed);
                 });
         },
         goToPosts(){
@@ -224,12 +221,9 @@ export default {
             this.$router.push({path: "/home/"+this.userId})
         },
         follow(){
-            var visId = this.visitorId;
-            var followedId = this.userId;
-
             var followObj = {
-                user_id: visId,
-                follow_id: followedId
+                user_id: this.visitorId,
+                follow_id: this.userId
             }
 
             axios
@@ -237,7 +231,7 @@ export default {
                 .then((response) => {
                     console.log(response);
                     window.alert("You Followed "+this.userFullName);
-                    this.goToPosts();
+                    this.reloadPage();
                 })
                 .catch(function (error) {
                     window.alert("Followed Fail")
@@ -250,8 +244,11 @@ export default {
                 .then(response => {
                     console.log(response);
                     window.alert("Unfollowed "+this.userFullName);
-                    this.goToPosts();
+                    this.reloadPage();
                 });
+        },
+        reloadPage(){
+            window.location.reload();
         }
     }
 }
