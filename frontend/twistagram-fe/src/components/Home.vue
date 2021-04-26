@@ -102,13 +102,14 @@
 
                     <v-divider color="white"> </v-divider>
                     <v-card-actions>
-                      <v-btn icon>
-                        <v-icon large color="green darken-2">
-                          mdi-image
-                        </v-icon>
-                      </v-btn>
+                      <v-file-input
+                        label="File input"
+                        prepend-icon="mdi-image"
+                        v-model="imgData"
+                      >
+                      </v-file-input>
                       <v-spacer></v-spacer>
-                      <v-btn color="primary"> post </v-btn>
+                      <v-btn color="primary" @click="post"> post </v-btn>
                     </v-card-actions>
                   </v-card-text>
                 </v-card>
@@ -225,6 +226,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      imgData: null,
       withPhoto: true,
       caption: "",
       userId: "",
@@ -251,6 +253,21 @@ export default {
   },
 
   methods: {
+    async post() {
+      let img = null;
+      const reader = new FileReader();
+      reader.readAsDataURL(this.imgData);
+      reader.onload = () => (img = reader.result);
+
+      console.log(img);
+
+      // const payload = imgArr.map(img => ({
+      //   content: img
+      // }))
+
+      // const res = await axios.post(`http://localhost:8081/storePhoto`, payload)
+      // console.log(res.data)
+    },
     getUserId() {
       this.userId = this.$route.params.userId;
     },
@@ -263,7 +280,7 @@ export default {
     },
     async getPostData() {
       await axios
-        .get("http://localhost:8081/getAllUserPost/"+this.userId)
+        .get("http://localhost:8081/getAllUserPost/" + this.userId)
         .then((response) => {
           this.postDataTemp = response.data.data;
         });
