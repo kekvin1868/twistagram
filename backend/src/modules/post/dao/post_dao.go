@@ -12,7 +12,7 @@ import (
 func GetPost(ID uint64) (*api.PostAPI, error) {
 	var post api.PostAPI
 
-	res := orm.Engine.Table("posts").Select("encode(posts.photo,'base64'),posts.caption, posts.id, posts.user_id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Where("posts.id = ?", ID).First(&post)
+	res := orm.Engine.Table("posts").Select("posts.photo,posts.caption, posts.id, posts.user_id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Where("posts.id = ?", ID).First(&post)
 	if res.Error != nil {
 		return nil, res.Error
 	}

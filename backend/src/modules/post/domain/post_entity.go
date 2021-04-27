@@ -20,7 +20,7 @@ func init() {
 type Post struct {
 	ID        uint        `json:"id" gorm:"'primaryKey;not Null;autoIncrement'"`
 	Caption   string      `json:"caption" gorm:"type:varchar(255)"`
-	Photo     []byte      `json:"photo" gorm:"type:bytea"`
+	Photo     string     `json:"photo" gorm:"type:text"`
 	CreatedAt time.Time   `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time   `json:"updated _at" gorm:"autoUpdateTime:milli"`
 	UserID    uint        `json:"user_id"`

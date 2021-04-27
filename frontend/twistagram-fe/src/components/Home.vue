@@ -257,16 +257,15 @@ export default {
       let img = null;
       const reader = new FileReader();
       reader.readAsDataURL(this.imgData);
-      reader.onload = () => (img = reader.result);
-
-      console.log(img);
-
-      // const payload = imgArr.map(img => ({
-      //   content: img
-      // }))
-
-      // const res = await axios.post(`http://localhost:8081/storePhoto`, payload)
-      // console.log(res.data)
+      reader.onload = () => {
+        img = reader.result;
+        console.log(img);
+        axios.post('http://localhost:8081/post',{
+          caption:"test",
+          photo: img,
+          user_id: parseInt(this.userId)
+        })
+      };
     },
     getUserId() {
       this.userId = this.$route.params.userId;
