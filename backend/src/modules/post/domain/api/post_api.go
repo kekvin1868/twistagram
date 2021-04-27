@@ -12,7 +12,7 @@ type PostAPI struct {
 	UserID   uint                 `json:"user_id"`
 	Like     []like.LikeApi       `json:"like"`
 	Comment  []comment.CommentAPI `json:"comment"`
-	Photo    []byte               `json:"photo"`
+	Photo    string              `json:"photo"`
 }
 
 type PostRes struct {

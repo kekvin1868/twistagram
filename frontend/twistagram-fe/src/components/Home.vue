@@ -95,6 +95,7 @@
                           placeholder="Type something here"
                           background-color="white"
                           rounded
+                          v-model="postCaption"
                         >
                         </v-textarea>
                       </v-col>
@@ -143,7 +144,7 @@
                           </v-btn>
                         </v-card-actions>
                       </v-card-title>
-                      <v-img src="../assets/kenji.jpg" height="750px"></v-img>
+                      <v-img :src="data.photo" height="750px"/>
                       <v-card-text>
                         <v-row no-gutters>
                           <v-col sm="5">
@@ -226,6 +227,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      postCaption: "",
       imgData: null,
       withPhoto: true,
       caption: "",
@@ -253,23 +255,46 @@ export default {
   },
 
   methods: {
+
     async post() {
-      let img = null;
-      const reader = new FileReader();
-      reader.readAsDataURL(this.imgData);
-      reader.onload = () => {
-        img = reader.result;
-        console.log(img);
-        axios.post('http://localhost:8081/post',{
-          caption:"test",
-          photo: img,
-          user_id: parseInt(this.userId)
-        })
-      };
+
+      if(this.postCaption == ""){
+        window.alert("Caption cannot be empty");
+      }else{
+        if(this.imgData == null){
+          axios.post('http://localhost:8081/post',{
+            caption:this.postCaption,
+            photo: null,
+            user_id: parseInt(this.userId)
+          }).then(()=>{
+            this.postCaption=""
+            this.getPostData()
+          })
+        }else{
+          let img = null;
+          const reader = new FileReader();
+          reader.readAsDataURL(this.imgData);
+          reader.onload = () => {
+            img = reader.result;
+            axios.post('http://localhost:8081/post',{
+              caption:this.postCaption,
+              photo: img,
+              user_id: parseInt(this.userId)
+            }).then(()=>{
+              this.postCaption=""
+              this.imgData=null
+              this.getPostData()
+            })
+          };
+        }
+      }
+      
     },
+
     getUserId() {
       this.userId = this.$route.params.userId;
     },
+
     getUserData() {
       axios
         .get(`http://localhost:8081/getUserData/` + this.userId)
@@ -277,6 +302,7 @@ export default {
           this.userData = response.data.data;
         });
     },
+
     async getPostData() {
       await axios
         .get("http://localhost:8081/getAllUserPost/" + this.userId)
@@ -289,10 +315,12 @@ export default {
             .get("http://localhost:8081/getPost/" + this.postDataTemp[index].ID)
             .then((response) => {
               this.postData.push(response.data.data);
+              console.log(this.postData[0].photo)
             });
         }
       }
     },
+
     comment(id) {
       let param = {
         user_id: parseInt(this.userId),
@@ -300,8 +328,12 @@ export default {
         content: this.caption,
       };
 
-      axios.post("http://localhost:8081/postComment", param);
+      axios.post("http://localhost:8081/postComment", param).then(()=>{
+        this.caption=""
+        this.getPostData()
+      })
     },
+    
   },
 
   mounted() {
