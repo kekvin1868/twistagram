@@ -73,19 +73,20 @@
             </div>
 
             <div class="bookmark">
-                <v-row class="px-5 py-3" v-for="content in this.userBookmark" :key="content.id">
+                <v-row class="px-5 py-3" v-for="(content, i) in this.userBookmark" :key="i">
                     <v-card
                         class="mx-auto px-3"
                         color="#FFFFFF"
                         elevate="0"
-                        width="900">
+                        width="900"
+                        @click.native="viewPost(content.id)">
                         
                         <v-card-title class="ml-n3">
                             <v-list-item-avatar color="grey darken-3">
                                 <v-img
                                     class="elevation-6"
                                     alt=""
-                                    src="../assets/default-profile.jpg"/>
+                                    :src="content.profile"/>
                             </v-list-item-avatar>
                             <p class="pt-5" style="color:#393E46"><b>{{content.fullname}}</b></p>
                         </v-card-title>
@@ -217,6 +218,9 @@ export default {
         },
         goHome(){
             this.$router.push({path: "/home/"+this.userId})
+        },
+        viewPost(postid) {
+            this.$router.push({path: "/post/"+postid+"/"+this.userId})
         }
     }
 }

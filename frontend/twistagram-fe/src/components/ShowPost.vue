@@ -29,7 +29,7 @@
         <v-row class="ma-3">
           <v-col>
             <v-img
-              src="../assets/kenji.jpg"
+              :src="postPhoto"
               aspect-ratio="1"
               max-height="800"/>
           </v-col>
@@ -39,12 +39,12 @@
               <v-card elevation="0" height="450px">
                 <v-card-text class="ml-n5">
                   <v-list>
-                    <p><a href="" class="mt-3 text-decoration-none" @onClick="goToAccount"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</p>
-                    <template v-for="i in postComment">
-                      <v-list-tile :key="i">
+                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(userId)"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</p>
+                    <template>
+                      <v-list-tile>
                         <v-list-tile-content>
-                          <div>
-                            <p><a href="" class="mt-3 text-decoration-none"><b>username</b></a> test</p>
+                          <div v-for="(comment, i) in postComment" :key="i">
+                            <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
                           </div>
                         </v-list-tile-content>
                       </v-list-tile>
@@ -65,7 +65,7 @@
                         </v-btn>
                       </v-col>
                       
-                      <v-col align="right" v-if="this.uid == this.userId">
+                      <v-col align="right" v-if="this.visitorId == this.userId">
                         <v-btn tile color="success">
                           <v-icon left>
                             mdi-pencil
@@ -78,12 +78,14 @@
                     <v-row class="mx-n8 mt-n3 mb-n15">
                       <v-col>
                         <v-text-field
+                          id="new-comment"
+                          v-model="newComment"
                           label="Post New Comment"
                           solo/>
                       </v-col>
                       <v-col class="mt-3">
-                        <v-btn icon>
-                          <v-icon disabled>
+                        <v-btn icon @click="addComment">
+                          <v-icon>
                             mdi-comment
                           </v-icon>
                         </v-btn>
@@ -157,23 +159,26 @@ export default {
     this.getUserId();
     this.getPostId();
     this.getPostData();
+    this.getAllUsers();
   },
   data() {
     return {
-      uid: "",
+      visitorId: "",
       userId: "",
       postId: "",
       postLike: [],
       postComment: [],
       postCaption: "",
       postFullname: "",
+      postPhoto: "",
+      newComment: ""
     };
   },
 
   methods: {
     getUserId(){
-      this.uid = this.$route.params.userId;
-      console.log(this.uid);
+      this.visitorId = this.$route.params.userId;
+      console.log(this.visitorId);
     },
     getPostId(){
       this.postId = this.$route.params.postId;
@@ -186,10 +191,33 @@ export default {
             this.postCaption = response.data.data.caption;
             this.userId = response.data.data.user_id;
             this.postFullname = response.data.data.fullname;
+            this.postPhoto = response.data.data.photo;
         });
     },
-    goToAccount(){
-      this.$router.push({path:"/"+this.userId+"/profile"})
+    goToAccount(userID){
+      this.$router.push({path:"/"+userID+"/profile/"+this.visitorId})
+    },
+    addComment(){
+      var comment = document.getElementById("new-comment").value
+
+      var commentObj = {
+        user_id: parseInt(this.visitorId),
+        post_id: parseInt(this.postId),
+        content: comment
+      }
+
+      axios.post("http://localhost:8081/postComment", commentObj)
+        .then((response) => {
+            console.log(response);
+            this.reloadPost();
+        })
+        .catch(function (error) {
+          window.alert("Unable to Comment");
+          console.log(error);
+        });
+    },
+    reloadPost(){
+      window.location.reload();
     }
   },
 };

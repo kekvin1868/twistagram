@@ -281,7 +281,7 @@ export default {
       userId: "",
       userData: [],
       profile: {
-        Following: "Following" + " " + 115,
+        Following: "Following" + " " + 100,
         Followers: "Followers" + " " + 120,
         ViewProfile: "View Profile",
       },
