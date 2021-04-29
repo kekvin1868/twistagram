@@ -121,7 +121,7 @@
 
                 <!-- posting card -->
                 <div v-if="this.postData != null">
-                  <div v-for="(data, i) in postData" :key="i">
+                  <div v-for="(data, i) in postData" :key="i" id="postDiv">
                     <!-- with photo -->
                     <v-card
                       class="mx-auto my-10 rounded-xl"
@@ -232,7 +232,7 @@
                     <!-- show data comment -->
                     <div v-if="data.comment != null">
                       <div v-for="(comment, i) in data.comment" :key="i">
-                        {{ comment.FullName }}
+                        {{ comment.FullName }}<br>
                         {{ comment.Content }}
                       </div>
                     </div>
@@ -313,6 +313,7 @@ export default {
             })
             .then(() => {
               this.postCaption = "";
+              this.reloadFeeds();
             });
         } else {
           let img = null;
@@ -329,12 +330,17 @@ export default {
               .then(() => {
                 this.postCaption = "";
                 this.imgData = null;
-                this.postData=[];
-                this.loadFeeds();
+                this.reloadFeeds();
               });
           };
         }
       }
+    },
+
+    reloadFeeds(){
+      this.postData=[];
+      this.loadFeeds();
+      document.getElementById("postDiv").innerHTML = document.getElementById("postDiv").innerHTML ;
     },
 
     getUserId() {
@@ -349,15 +355,16 @@ export default {
         });
     },
 
-    async comment(id) {
+    comment(id) {
       let param = {
         user_id: parseInt(this.userId),
         post_id: id,
         content: this.caption,
       };
 
-      await axios.post("http://localhost:8081/postComment", param).then(() => {
+    axios.post("http://localhost:8081/postComment", param).then(() => {
         this.caption = "";
+        this.reloadFeeds();
       });
 
     },
