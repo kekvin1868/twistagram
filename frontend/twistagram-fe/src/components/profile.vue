@@ -23,7 +23,7 @@
                             size="140">
                                 <img
                                     lazy-src="../assets/default-profile.jpg"
-                                    src="../assets/default-profile.jpg"
+                                    :src="this.userAvatar"
                                     alt="profilePicture"/>
                         </v-avatar>
                             
@@ -167,6 +167,7 @@ export default {
             userBio: "",
             userPostsID: [],
             userPosts: [],
+            userAvatar: "",
             followersCount: "",
             followingCount: "",
             userFollower: [],
@@ -187,6 +188,7 @@ export default {
                     this.userId = response.data.data.id;
                     this.userFullName = response.data.data.fullname;
                     this.userBio = response.data.data.bio;
+                    this.userAvatar = response.data.data.profile;
                 });
         },
         getAllPostsID(){

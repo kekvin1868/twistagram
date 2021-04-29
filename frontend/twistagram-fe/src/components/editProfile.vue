@@ -23,7 +23,7 @@
                             size="140">
                                 <img
                                     lazy-src="../assets/default-profile.jpg"
-                                    src="../assets/default-profile.jpg"
+                                    :src="this.userAvatar"
                                     alt="profilePicture"/>
                         </v-avatar>
                             
@@ -82,7 +82,7 @@
                         <v-file-input
                             label="File input"
                             prepend-icon="mdi-image"
-                            v-model="this.userAvatar"/>
+                            v-model="newAvatar"/>
                     </v-row> 
                     <v-row class="mx-16 mt-2">
                         <p class="py-4 mr-10">Name</p>
@@ -91,7 +91,7 @@
                             label="Name"
                             placeholder="User Name"
                             background-color="white"
-                            v-model="this.userFullName"
+                            v-model="userFullName"
                             required
                             single-line
                             outlined 
@@ -104,7 +104,7 @@
                             label="Bio"
                             placeholder="User Bio"
                             background-color="white"
-                            v-model="this.userBio"
+                            v-model="userBio"
                             required
                             single-line
                             outlined 
@@ -117,7 +117,7 @@
                             label="Email"
                             placeholder="User Email"
                             background-color="white"
-                            v-model="this.userEmail"
+                            v-model="userEmail"
                             required
                             single-line
                             outlined 
@@ -131,7 +131,7 @@
                             label="Phone"
                             placeholder="User Phone"
                             background-color="white"
-                            v-model="this.userPhone"
+                            v-model="userPhone"
                             required
                             single-line
                             outlined 
@@ -144,30 +144,28 @@
                             label="Gender"
                             placeholder="User Gender"
                             background-color="white"
-                            v-model="this.userGender"
+                            v-model="userGender"
                             required
                             single-line
                             outlined 
                             clearable
                             disabled/>
                     </v-row>  
-                    <v-layout-justify-center>
-                        <v-flex offset-sm4 md6>
-                            <div class="form-button mt-5">
-                                <v-btn
-                                    class="mr-3"
-                                    depressed
-                                    color="primary"
-                                    width="120px"
-                                    @click.prevent="updateProfile">Save</v-btn>
-                                <v-btn
-                                    depressed
-                                    color="error"
-                                    width="120px"
-                                    @click="goToPosts">Cancel</v-btn>
-                            </div>
-                        </v-flex>
-                    </v-layout-justify-center>
+                    <v-flex offset-sm4 md6>
+                        <div class="form-button mt-5">
+                            <v-btn
+                                class="mr-3"
+                                depressed
+                                color="primary"
+                                width="120px"
+                                @click.prevent="updateProfile">Save</v-btn>
+                            <v-btn
+                                depressed
+                                color="error"
+                                width="120px"
+                                @click="goToPosts">Cancel</v-btn>
+                        </div>
+                    </v-flex>
                 </v-card>
             </div>
         </v-main>
@@ -199,6 +197,7 @@ export default {
             userPosts: [],
             followersCount: "",
             followingCount: "",
+            newAvatar: null,
         }
     },
     methods: {
@@ -215,6 +214,7 @@ export default {
                     this.userBio = response.data.data.bio;
                     this.userEmail = response.data.data.email;
                     this.userPassword = response.data.data.password;
+                    this.userAvatar = response.data.data.profile;
                 });
         },
         getAllPosts(){
@@ -224,33 +224,17 @@ export default {
                 });
         },
         updateProfile(){
-            var id = this.userId;
-            var email = this.userEmail;
-            var username = document.getElementById("user-name").value;
-            var password = this.userPassword;
-            var phone = document.getElementById("user-phone").value;
-            var gender = this.userGender;
-            var bio = document.getElementById("user-bio").value;
-            
-            let img = null;
-            const reader = new FileReader();
-            reader.readAsDataURL(this.userAvatar);
-            reader.onload = () => {
-                img = reader.result;
-
-                var userObj = {
-                    id: id,
-                    email: email,
-                    fullname: username,
-                    password: password,
-                    phone: phone,
-                    gender: gender,
-                    bio: bio,
-                    photo: img
-                };
-
+            if(this.newAvatar == null) {
                 axios
-                    .patch(`http://localhost:8081/updateUserData`, userObj)
+                    .patch(`http://localhost:8081/updateUserData`, {
+                        id: this.userId,
+                        email: this.userEmail,
+                        fullname: this.userFullName,
+                        password: this.userPassword,
+                        phone: this.userPhone,
+                        gender: this.userGender,
+                        bio: this.userBio,
+                    })
                     .then((response) => {
                         console.log(response);
                         this.goToPosts();
@@ -259,6 +243,32 @@ export default {
                         window.alert("Update Data Failed");
                         console.log(error);
                     });
+            } else {
+                let img = null;
+                const reader = new FileReader();
+                reader.readAsDataURL(this.newAvatar);
+                reader.onload = () => {
+                    img = reader.result;
+                    axios
+                        .patch(`http://localhost:8081/updateUserData`, {
+                            id: this.userId,
+                            email: this.userEmail,
+                            fullname: this.userFullName,
+                            password: this.userPassword,
+                            phone: this.userPhone,
+                            gender: this.userGender,
+                            bio: this.userBio,
+                            profile: img
+                        })
+                        .then((response) => {
+                            console.log(response);
+                            this.goToPosts();
+                        })
+                        .catch(function (error) {
+                            window.alert("Update Data Failed");
+                            console.log(error);
+                        });
+                }
             }
         },
         getFollowers(){
