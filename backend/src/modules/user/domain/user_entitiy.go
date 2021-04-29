@@ -24,4 +24,5 @@ type User struct {
 	Bio       string    `json:"bio" gorm:"type:varchar(255);"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time `json:"updated _at" gorm:"autoUpdateTime:milli"`
+	Profile   string    `json:"profile" gorm:"type:text"`
 }

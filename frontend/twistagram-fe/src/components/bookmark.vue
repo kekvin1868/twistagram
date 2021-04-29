@@ -32,7 +32,7 @@
                                 <v-col cols="auto">
                                     <p class="mt-1 display-1 text--primary">{{this.userFullName}}</p>
                                 </v-col>
-                                <v-col cols="auto" v-if="this.visitorId == this.userId">
+                                <v-col cols="auto">
                                     <v-btn
                                         class="mt-4 font-weight-black"
                                         color="#FFD369"
@@ -40,7 +40,7 @@
                                         x-small
                                         @click="editProfile">Edit Profile</v-btn>
                                 </v-col>
-                                <v-col cols="auto" v-if="this.visitorId == this.userId">
+                                <v-col cols="auto">
                                     <v-btn
                                         class="ml-n3 mt-4 font-weight-black"
                                         color="#4CAF50"
@@ -49,7 +49,7 @@
                                         width="95px"
                                         @click="goToBookmark">Bookmarked</v-btn>
                                 </v-col>
-                                <v-col cols="auto" v-if="this.visitorId == this.userId">
+                                <v-col cols="auto">
                                     <v-btn
                                         class="ml-n3 mt-4 font-weight-black"
                                         color="#F85151"
@@ -57,24 +57,6 @@
                                         x-small
                                         width="95px"
                                         @click="logout">Logout</v-btn>
-                                </v-col>
-                                <v-col cols="auto" v-if="this.visitorId != this.userId && this.isFollowed == 'False'">
-                                    <v-btn
-                                        class="mt-4 font-weight-black"
-                                        color="#FFD369"
-                                        elevation="2"
-                                        x-small
-                                        width="120px"
-                                        @click="follow">Follow</v-btn>
-                                </v-col>
-                                <v-col cols="auto" v-if="this.visitorId != this.userId && this.isFollowed == 'True'">
-                                    <v-btn
-                                        class="mt-4 font-weight-black"
-                                        color="#4CAF50"
-                                        elevation="2"
-                                        x-small
-                                        width="120px"
-                                        @click="unfollow">Followed</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
                                     <a href="" class="text-decoration-none" @click="goToPosts">{{this.userPosts.length}} Posts</a>
@@ -90,8 +72,8 @@
                 </v-card>
             </div>
 
-            <div class="feeds">
-                <v-row class="px-5 py-3" v-for="content in this.userPosts" :key="content.id">
+            <div class="bookmark">
+                <v-row class="px-5 py-3" v-for="(content, i) in this.userBookmark" :key="i">
                     <v-card
                         class="mx-auto px-3"
                         color="#FFFFFF"
@@ -104,7 +86,7 @@
                                 <v-img
                                     class="elevation-6"
                                     alt=""
-                                    :src="userAvatar"/>
+                                    :src="content.profile"/>
                             </v-list-item-avatar>
                             <p class="pt-5" style="color:#393E46"><b>{{content.fullname}}</b></p>
                         </v-card-title>
@@ -119,7 +101,7 @@
                             </v-card-text>
                             <v-img
                                 class="mx-1"
-                                :src="content.photo"
+                                src="../assets/kenji.jpg"
                                 aspect-ratio="1"
                                 max-height="400"/>
                         </v-container>
@@ -151,35 +133,28 @@ export default {
     mounted(){
         this.getId();
         this.getUserData();
-        this.getAllPostsID();
-        this.getVisitorId();
+        this.getAllPosts();
+        this.getBookmarksID();
         this.getFollowers();
         this.getFollowing();
-        this.getFollowStatus();
     },
     data() {
         return {
-            visitorId: "",
             userId: "",
             userFullName: "",
             userPassword: "",
             userGender: "",
             userPhone:"",
             userBio: "",
-            userPostsID: [],
-            userPosts: [],
             userAvatar: "",
+            userPosts: [],
+            userBookmarkID: [],
+            userBookmark: [],
             followersCount: "",
             followingCount: "",
-            userFollower: [],
-            followID: "",
-            isFollowed: "False"
         }
     },
     methods: {
-        getVisitorId(){
-            this.visitorId = this.$route.params.vistId;
-        },
         getId(){
             this.userId = this.$route.params.userId;
         },
@@ -192,19 +167,25 @@ export default {
                     this.userAvatar = response.data.data.profile;
                 });
         },
-        getAllPostsID(){
+        getAllPosts(){
             axios.get(`http://localhost:8081/getAllUserPost/`+this.userId)
                 .then(response=>{
-                    this.userPostsID = response.data.data;
-                    this.userPosts = this.getAllPosts(this.userPostsID);
-                    // console.log(this.userPosts);
+                    this.userPosts = response.data.data;
                 });
         },
-        getAllPosts(postsID){
+        getBookmarksID(){
+            axios.get(`http://localhost:8081/getBookmark/`+this.userId)
+                .then(response=>{
+                    this.userBookmarkID = response.data.data;
+                    this.userBookmark = this.getBookmarks(this.userBookmarkID);
+                    console.log(this.userBookmark);
+                });
+        },
+        getBookmarks(postsID){
             var posts = [];
             var length = postsID.length;
             for(var i=0; i<length; i++) {
-                axios.get(`http://localhost:8081/getPost/`+postsID[i].ID)
+                axios.get(`http://localhost:8081/getPost/`+postsID[i].post_id)
                     .then(response=>{
                         posts.push(response.data.data);
                     });
@@ -223,20 +204,8 @@ export default {
                     this.followingCount = response.data.data.Count;
                 });
         },
-        getFollowStatus(){
-            axios.get(`http://localhost:8081/getFollowers/`+this.userId)
-                .then(response=>{
-                    this.userFollower = response.data.data.Followers;
-                    
-                    var follower = this.userFollower.find(fol => fol.user_id == this.visitorId);
-                    if(follower != null) {
-                        this.followID = follower.ID;
-                        this.isFollowed = "True";
-                    }
-                });
-        },
         goToPosts(){
-            this.$router.push({path:"/"+this.userId+"/profile/"+this.visitorId})
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.userId})
         },
         goToBookmark(){
             this.$router.push({path:"/"+this.userId+"/bookmark"})
@@ -250,38 +219,8 @@ export default {
         goHome(){
             this.$router.push({path: "/home/"+this.userId})
         },
-        follow(){
-            var followObj = {
-                user_id: parseInt(this.visitorId),
-                follow_id: parseInt(this.userId)
-            }
-
-            axios
-                .post(`http://localhost:8081/postFollow`, followObj)
-                .then((response) => {
-                    console.log(response);
-                    window.alert("You Followed "+this.userFullName);
-                    this.reloadPage();
-                })
-                .catch(function (error) {
-                    window.alert("Followed Fail")
-                    console.log(error);
-                });
-        },
-        unfollow(){
-            axios
-                .delete(`http://localhost:8081/deleteFollow/`+this.followID)
-                .then(response => {
-                    console.log(response);
-                    window.alert("Unfollowed "+this.userFullName);
-                    this.reloadPage();
-                });
-        },
-        reloadPage(){
-            window.location.reload();
-        },
         viewPost(postid) {
-            this.$router.push({path: "/post/"+postid+"/"+this.visitorId})
+            this.$router.push({path: "/post/"+postid+"/"+this.userId})
         }
     }
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"twistagram/src/modules/user/domain"
 	"twistagram/src/modules/user/service"
@@ -29,6 +30,7 @@ func GetUserData(c *gin.Context) {
 }
 func SearchUser(c *gin.Context) {
 	users, err := service.SearchUser(c.Param("key"))
+	fmt.Println(users)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

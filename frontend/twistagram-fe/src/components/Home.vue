@@ -1,3 +1,6 @@
+
+<!-- buat yang edit home: line 53 & 239 -->
+
 <template>
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
@@ -44,6 +47,7 @@
                     <v-divider class="mt-3" color="white"> </v-divider>
                     <h3 class="text-center" v-for="item in profile" :key="item">
                       {{ item }}
+                      <!-- ganti datanya jadi {{userData.follower, userData.following, dll}} -->
                       <v-divider class="mt-3" color="white"> </v-divider></h3
                   ></v-card-text>
                 </v-card>
@@ -91,6 +95,7 @@
                           placeholder="Type something here"
                           background-color="white"
                           rounded
+                          v-model="postCaption"
                         >
                         </v-textarea>
                       </v-col>
@@ -98,13 +103,14 @@
 
                     <v-divider color="white"> </v-divider>
                     <v-card-actions>
-                      <v-btn icon>
-                        <v-icon large color="green darken-2">
-                          mdi-image
-                        </v-icon>
-                      </v-btn>
+                      <v-file-input
+                        label="File input"
+                        prepend-icon="mdi-image"
+                        v-model="imgData"
+                      >
+                      </v-file-input>
                       <v-spacer></v-spacer>
-                      <v-btn color="primary"> post </v-btn>
+                      <v-btn color="primary" @click="post"> post </v-btn>
                     </v-card-actions>
                   </v-card-text>
                 </v-card>
@@ -143,11 +149,12 @@
                   </v-card-actions>
                 </v-card>
                 <div v-if="this.postData != null">
-                  <div v-for="(data, i) in postData" :key="i">
+                  <div v-for="(data, i) in postData" :key="i" id="postDiv">
+                    <!-- with photo -->
                     <v-card
                       class="mx-auto my-10 rounded-xl"
                       max-width="800"
-                      v-if="withPhoto"
+                      v-if="data.photo != ''"
                     >
                       <v-card-title>
                         <v-avatar size="70">
@@ -170,7 +177,7 @@
                           </v-btn>
                         </v-card-actions>
                       </v-card-title>
-                      <v-img src="../assets/kenji.jpg" height="750px"></v-img>
+                      <v-img :src="data.photo" />
                       <v-card-text>
                         <v-row no-gutters>
                           <v-col sm="5">
@@ -213,14 +220,53 @@
                         </v-row>
                       </v-card-text>
                     </v-card>
+
+                    <!-- without photo -->
+                    <v-card
+                      class="mt-5 rounded-xl"
+                      max-width="800"
+                      v-if="data.photo == ''"
+                    >
+                      <v-card-title>
+                        <v-avatar class="mt-2 ml-2" size="70">
+                          <v-img src="../assets/kenji.jpg"> </v-img>
+                        </v-avatar>
+                        <p class="ml-3">{{ data.fullname }}</p>
+                        <v-spacer></v-spacer>
+                        <v-btn icon>
+                          <v-icon large color="black">
+                            mdi-dots-vertical
+                          </v-icon>
+                        </v-btn>
+                      </v-card-title>
+
+                      <v-card-text>
+                        <p class="pt-3 pl-5">
+                          {{ data.caption }}
+                        </p>
+                      </v-card-text>
+
+                      <v-divider class="ml-8" width="650"></v-divider>
+                      <v-card-actions class="ml-4">
+                        <v-btn icon>
+                          <v-icon medium> mdi-comment </v-icon>
+                        </v-btn>
+                        <v-btn icon>
+                          <v-icon color="red"> mdi-heart </v-icon>
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+
+                    <!-- show data comment -->
                     <div v-if="data.comment != null">
                       <div v-for="(comment, i) in data.comment" :key="i">
-                        {{ comment.FullName }}
+                        {{ comment.FullName }}<br>
                         {{ comment.Content }}
                       </div>
                     </div>
                   </div>
                 </div>
+
                 <div v-if="this.postData == null">
                   <!-- tampilin sesuatu jika ga ada post -->
                 </div>
@@ -253,12 +299,17 @@ import axios from "axios";
 export default {
   data() {
     return {
+      feedsIds: [],
+      followingObj: [],
+      followerObj: [],
+      postCaption: "",
+      imgData: null,
       withPhoto: true,
       caption: "",
       userId: "",
       userData: [],
       profile: {
-        Following: "Following" + " " + 115,
+        Following: "Following" + " " + 100,
         Followers: "Followers" + " " + 120,
         ViewProfile: "View Profile",
       },
@@ -272,16 +323,58 @@ export default {
           text: "lol",
         },
       ],
-      model: 1,
-      postDataTemp: [],
       postData: [],
     };
   },
 
   methods: {
+    async post() {
+      if (this.postCaption == "") {
+        window.alert("Caption cannot be empty");
+      } else {
+        if (this.imgData == null) {
+          axios
+            .post("http://localhost:8081/post", {
+              caption: this.postCaption,
+              photo: null,
+              user_id: parseInt(this.userId),
+            })
+            .then(() => {
+              this.postCaption = "";
+              this.reloadFeeds();
+            });
+        } else {
+          let img = null;
+          const reader = new FileReader();
+          reader.readAsDataURL(this.imgData);
+          reader.onload = () => {
+            img = reader.result;
+            axios
+              .post("http://localhost:8081/post", {
+                caption: this.postCaption,
+                photo: img,
+                user_id: parseInt(this.userId),
+              })
+              .then(() => {
+                this.postCaption = "";
+                this.imgData = null;
+                this.reloadFeeds();
+              });
+          };
+        }
+      }
+    },
+
+    reloadFeeds(){
+      this.postData=[];
+      this.loadFeeds();
+      document.getElementById("postDiv").innerHTML = document.getElementById("postDiv").innerHTML ;
+    },
+
     getUserId() {
       this.userId = this.$route.params.userId;
     },
+
     getUserData() {
       axios
         .get(`http://localhost:8081/getUserData/` + this.userId)
@@ -289,22 +382,7 @@ export default {
           this.userData = response.data.data;
         });
     },
-    async getPostData() {
-      await axios
-        .get("http://localhost:8081/getAllUserPost/" + this.userId)
-        .then((response) => {
-          this.postDataTemp = response.data.data;
-        });
-      if (this.postDataTemp != null) {
-        for (let index = 0; index < this.postDataTemp.length; index++) {
-          axios
-            .get("http://localhost:8081/getPost/" + this.postDataTemp[index].ID)
-            .then((response) => {
-              this.postData.push(response.data.data);
-            });
-        }
-      }
-    },
+
     comment(id) {
       let param = {
         user_id: parseInt(this.userId),
@@ -312,14 +390,56 @@ export default {
         content: this.caption,
       };
 
-      axios.post("http://localhost:8081/postComment", param);
+    axios.post("http://localhost:8081/postComment", param).then(() => {
+        this.caption = "";
+        this.reloadFeeds();
+      });
+
     },
+
+    getFollowingAndFollowerData() {
+      axios
+        .get(`http://localhost:8081/getFollowing/` + this.userId)
+        .then((response) => {
+          this.followingObj = response.data.data;
+        });
+
+      axios
+        .get(`http://localhost:8081/getFollowers/` + this.userId)
+        .then((response) => {
+          this.followerObj = response.data.data;
+        });
+    },
+
+    async loadFeeds() {
+      await axios
+<<<<<<< HEAD
+        .get("http://localhost:8081/getAllUserPost/" + this.userId)
+=======
+        .get(`http://localhost:8081/loadFeeds/` + this.userId)
+>>>>>>> f454f3e4e673eb105252567fed1f08cc62abd18b
+        .then((response) => {
+          this.feedsIds = response.data.data;
+        });
+
+      if (this.feedsIds != null) {
+        for (let index = 0; index < this.feedsIds.length; index++) {
+          axios
+            .get("http://localhost:8081/getPost/" + this.feedsIds[index].ID)
+            .then((response) => {
+              this.postData.push(response.data.data);
+            });
+        }
+      }
+    },
+
   },
 
   mounted() {
     this.getUserId();
+    this.getFollowingAndFollowerData();
     this.getUserData();
-    this.getPostData();
+    this.loadFeeds();
   },
 };
 </script>
