@@ -295,7 +295,6 @@ export default {
           text: "lol",
         },
       ],
-      postDataTemp: [],
       postData: [],
     };
   },
@@ -330,6 +329,8 @@ export default {
               .then(() => {
                 this.postCaption = "";
                 this.imgData = null;
+                this.postData=[];
+                this.loadFeeds();
               });
           };
         }
@@ -346,23 +347,6 @@ export default {
         .then((response) => {
           this.userData = response.data.data;
         });
-    },
-
-    async getPostData() {
-      await axios
-        .get("http://localhost:8081/getAllUserPost/" + this.userId)
-        .then((response) => {
-          this.postDataTemp = response.data.data;
-        });
-      if (this.postDataTemp != null) {
-        for (let index = 0; index < this.postDataTemp.length; index++) {
-          axios
-            .get("http://localhost:8081/getPost/" + this.postDataTemp[index].ID)
-            .then((response) => {
-              this.postData.push(response.data.data);
-            });
-        }
-      }
     },
 
     async comment(id) {
@@ -417,7 +401,6 @@ export default {
     this.getFollowingAndFollowerData();
     this.getUserData();
     this.loadFeeds();
-    this.getPostData();
   },
 };
 </script>
