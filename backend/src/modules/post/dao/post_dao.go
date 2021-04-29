@@ -12,7 +12,7 @@ import (
 func GetPost(ID uint64) (*api.PostAPI, error) {
 	var post api.PostAPI
 
-	res := orm.Engine.Table("posts").Select("posts.photo,posts.caption, posts.id, posts.user_id,users.full_name").Joins("JOIN users on posts.user_id = users.id").Where("posts.id = ?", ID).First(&post)
+	res := orm.Engine.Table("posts").Select("posts.photo,posts.caption, posts.id, posts.user_id,users.full_name,users.profile").Joins("JOIN users on posts.user_id = users.id").Where("posts.id = ?", ID).First(&post)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -43,7 +43,7 @@ func LoadFollowingPost(UserID uint64) (*[]api.PostID, error) {
 	// res := orm.Engine.Table("follows").Select("follows.id,follows.follow_id").Where("user_id = ?", UserID).Scan(&following)
 	// res := orm.Engine.Table("follows").Select("follows.follow_id").Where("user_id = ?", UserID).Scan(&follow)
 
-	res := orm.Engine.Raw("SELECT posts.id,posts.created_at FROM posts WHERE (posts.user_id IN (SELECT follows.follow_id FROM follows WHERE follows.user_id = ?)) OR (posts.user_id = ?) ORDER BY created_at DESC", UserID, UserID).Scan(&postID)
+	res := orm.Engine.Raw("SELECT posts.id,posts.created_at FROM posts WHERE (posts.user_id IN (SELECT follows.follow_id FROM follows WHERE follows.user_id = ?)) OR (posts.user_id = ?) ORDER BY posts.created_at DESC", UserID, UserID).Scan(&postID)
 
 	if res.Error != nil {
 		return nil, res.Error
