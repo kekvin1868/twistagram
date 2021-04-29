@@ -72,12 +72,12 @@
                 </v-card>
             </div>
 
-            <div class="feeds">
+            <div class="form">
                 <v-card  
-                    class="mx-auto mt-5 py-5"
+                    class="mx-auto mt-8 py-8"
                     max-width="900"
                     elevate="0">
-                    <v-row class="mx-16">
+                    <v-row class="mx-16 mt-2">
                         <p class="py-4 mr-10">Name</p>
                         <v-text-field
                             id="user-name"
@@ -144,21 +144,23 @@
                             clearable
                             disabled/>
                     </v-row>  
-                    <v-row class="mx-auto">
-                        <div class="form-button">
-                            <v-btn
-                                class="mr-3"
-                                depressed
-                                color="primary"
-                                width="120px"
-                                @click.prevent="updateProfile">Save</v-btn>
-                            <v-btn
-                                depressed
-                                color="error"
-                                width="120px"
-                                @click="goToPosts">Cancel</v-btn>
-                        </div>
-                    </v-row>
+                    <v-layout-justify-center>
+                        <v-flex offset-sm4 md6>
+                            <div class="form-button mt-5">
+                                <v-btn
+                                    class="mr-3"
+                                    depressed
+                                    color="primary"
+                                    width="120px"
+                                    @click.prevent="updateProfile">Save</v-btn>
+                                <v-btn
+                                    depressed
+                                    color="error"
+                                    width="120px"
+                                    @click="goToPosts">Cancel</v-btn>
+                            </div>
+                        </v-flex>
+                    </v-layout-justify-center>
                 </v-card>
             </div>
         </v-main>

@@ -14,7 +14,7 @@
         <v-main>
             <div class="userProfile">
                 <v-card 
-                    class="mx-auto mt-8 py-5"
+                    class="mx-auto mt-8 mb-5 py-5"
                     max-width="900"
                     elevate="0">
                     <v-list-item>
@@ -91,37 +91,84 @@
             </div>
 
             <div class="feeds">
-                <v-card 
-                    class="mx-auto mt-5"
-                    max-width="900"
-                    elevate="0">
-                    <v-row class="px-5 py-3">
-                        <v-col
-                            v-for="n in 11"
-                            :key="n"
-                            class="d-flex child-flex"
-                            cols="4">
-                            <a :href="`https://picsum.photos/500/300?image=${n * 5 + 10}`">
+                <v-row class="px-5 py-3">
+                    <v-card
+                        class="mx-auto px-3"
+                        color="#FFFFFF"
+                        elevate="0"
+                        max-width="900">
+                        
+                        <v-card-title class="ml-n3">
+                            <v-list-item-avatar color="grey darken-3">
                                 <v-img
-                                    :src="`https://picsum.photos/500/300?image=${n * 5 + 10}`"
-                                    :lazy-src="`https://picsum.photos/10/6?image=${n * 5 + 10}`"
-                                    aspect-ratio="1"
-                                    class="grey lighten-2">
-                                    <template v-slot:placeholder>
-                                        <v-row
-                                            class="fill-height ma-0"
-                                            align="center"
-                                            justify="center">
-                                                <v-progress-circular
-                                                indeterminate
-                                                color="grey lighten-5"/>
-                                        </v-row>
-                                    </template>
-                                </v-img>
-                            </a>
-                        </v-col>
-                    </v-row>
-                </v-card>
+                                    class="elevation-6"
+                                    alt=""
+                                    src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"/>
+                            </v-list-item-avatar>
+                            <p class="pt-5" style="color:#393E46"><b>{{this.userFullName}}</b></p>
+                        </v-card-title>
+                        
+                        <v-card-text class="headline font-weight-normal" style="color:#393E46">
+                            "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-list-item class="grow">
+                                <v-row
+                                    align="center"
+                                    justify="end">
+                                    <v-btn icon>
+                                        <v-icon class="mr-1" disabled>mdi-heart</v-icon>
+                                    </v-btn>
+                                    <span class="subheading mr-2">256</span>
+                                </v-row>
+                            </v-list-item>
+                        </v-card-actions>
+                    </v-card>
+                </v-row>
+
+                <v-row class="px-5 py-3">
+                    <v-card
+                        class="mx-auto px-3"
+                        color="#FFFFFF"
+                        elevate="0"
+                        width="900">
+                        
+                        <v-card-title class="ml-n3">
+                            <v-list-item-avatar color="grey darken-3">
+                                <v-img
+                                    class="elevation-6"
+                                    alt=""
+                                    src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"/>
+                            </v-list-item-avatar>
+                            <p class="pt-5" style="color:#393E46"><b>Twistagram</b></p>
+                        </v-card-title>
+                        
+                        <v-container>
+                            <v-card-text class="mt-n10 ml-n3 font-weight-normal" style="color:#393E46">
+                                "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
+                            </v-card-text>
+                            <v-img
+                                class="mx-1"
+                                src="../assets/kenji.jpg"
+                                aspect-ratio="1"
+                                max-height="400"/>
+                        </v-container>
+
+                        <v-card-actions>
+                            <v-list-item class="grow">
+                                <v-row
+                                    align="center"
+                                    justify="end">
+                                    <v-btn icon>
+                                        <v-icon class="mr-1" disabled>mdi-heart</v-icon>
+                                    </v-btn>
+                                    <span class="subheading mr-2">256</span>
+                                </v-row>
+                            </v-list-item>
+                        </v-card-actions>
+                    </v-card>
+                </v-row>
             </div>
         </v-main>
     </v-app>  
@@ -135,6 +182,7 @@ export default {
     mounted(){
         this.getId();
         this.getUserData();
+        this.getAllPostsID();
         this.getAllPosts();
         this.getVisitorId();
         this.getFollowers();
@@ -150,6 +198,7 @@ export default {
             userGender: "",
             userPhone:"",
             userBio: "",
+            userPostsID: [],
             userPosts: [],
             followersCount: "",
             followingCount: "",
@@ -174,10 +223,11 @@ export default {
                 });
         },
         getAllPosts(){
-            axios.get(`http://localhost:8081/getAllUserPost/`+this.userId)
+            axios.get(`http://localhost:8081/loadFeeds/`+this.userId)
                 .then(response=>{
                     this.userPosts = response.data.data;
                 });
+            console.log(this.userPosts);
         },
         getFollowers(){
             axios.get(`http://localhost:8081/getFollowers/`+this.userId)
@@ -201,8 +251,6 @@ export default {
                         this.followID = follower.ID;
                         this.isFollowed = "True";
                     }
-
-                    console.log(this.isFollowed);
                 });
         },
         goToPosts(){
@@ -222,8 +270,8 @@ export default {
         },
         follow(){
             var followObj = {
-                user_id: this.visitorId,
-                follow_id: this.userId
+                user_id: parseInt(this.visitorId),
+                follow_id: parseInt(this.userId)
             }
 
             axios
