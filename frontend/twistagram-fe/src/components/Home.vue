@@ -14,14 +14,10 @@
 
       <v-spacer></v-spacer>
 
-      <v-row>
-        <v-avatar size="60">
-          <v-img src="../assets/kenji.jpg"></v-img>
-        </v-avatar>
-        <v-col md="9">
-          <p>{{ userData.fullname }}</p>
-        </v-col>
-      </v-row>
+      <v-avatar size="60">
+        <v-img src="../assets/kenji.jpg"></v-img>
+      </v-avatar>
+      <p>{{ userData.fullname }}</p>
     </v-app-bar>
 
     <v-main>
@@ -114,6 +110,38 @@
                 </v-card>
 
                 <!-- posting card -->
+                <v-card class="mt-5 rounded-xl" max-width="800">
+                  <v-card-title>
+                    <v-avatar class="mt-2 ml-2" size="70">
+                      <v-img src="../assets/kenji.jpg"> </v-img>
+                    </v-avatar>
+                    <p class="ml-3">Felixkd12</p>
+                    <v-spacer></v-spacer>
+                    <v-btn icon>
+                      <v-icon large color="black"> mdi-dots-vertical </v-icon>
+                    </v-btn>
+                  </v-card-title>
+
+                  <v-card-text>
+                    <p class="pt-3 pl-5">
+                      ITHB adalah kampus yang berada di Kota Bandung. ITHB
+                      adalah kampus yang berada di Kota Bandung. ITHB adalah
+                      kampus yang berada di Kota Bandung. ITHB adalah kampus
+                      yang berada di Kota Bandung. ITHB adalah kampus yang
+                      berada di Kota Bandung.
+                    </p>
+                  </v-card-text>
+
+                  <v-divider class="ml-8" width="650"></v-divider>
+                  <v-card-actions class="ml-4">
+                    <v-btn icon>
+                      <v-icon medium> mdi-comment </v-icon>
+                    </v-btn>
+                    <v-btn icon>
+                      <v-icon color="red"> mdi-heart </v-icon>
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
                 <div v-if="this.postData != null">
                   <div v-for="(data, i) in postData" :key="i">
                     <v-card
@@ -263,7 +291,7 @@ export default {
     },
     async getPostData() {
       await axios
-        .get("http://localhost:8081/getAllUserPost/"+this.userId)
+        .get("http://localhost:8081/getAllUserPost/" + this.userId)
         .then((response) => {
           this.postDataTemp = response.data.data;
         });

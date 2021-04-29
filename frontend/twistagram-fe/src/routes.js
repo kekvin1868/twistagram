@@ -25,6 +25,11 @@ export default new VueRouter({
             path: '/:userId/profile',
             name: 'profile',
             component: () => import('./components/profile')
+        },
+        {
+            path: '/home/:userId/search',
+            name: 'search',
+            component: () => import('./components/Search')
         }
         
     ]

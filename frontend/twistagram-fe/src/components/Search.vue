@@ -25,34 +25,28 @@
             <v-col class="mt-10" sm="6">
               <v-text-field
                 solo
-                v-model="text"
+                v-model="searchText"
                 @keyup.native="showAlert"
                 class="rounded-xl"
                 label="Search by Full name"
                 prepend-icon="mdi-magnify"
+                required
               >
               </v-text-field>
             </v-col>
           </v-row>
           <v-card class="mt-15" display="justify-center" width="500">
             <v-container fluid>
-              <v-row v-for="x in showProfile" :key="x.image">
-                <v-col sm="1">
-                  <p>1.</p>
-                </v-col>
-                <v-col>
-                  <v-divider height="auto" vertical> </v-divider>
-                </v-col>
-                <v-avatar size="60">
-                  <img :src="x.image" />
-                </v-avatar>
-                <v-col sm="6">
-                  {{ x.name }}
-                </v-col>
-                <v-col xs="4">
-                  <v-btn color="primary"> Follow </v-btn>
-                </v-col>
-              </v-row>
+              <div v-for="x in this.userObj" :key="x.image">
+                <v-row>
+                  <v-col sm="1">
+                    <v-divider height="auto" vertical> </v-divider>
+                  </v-col>
+                  <v-col sm="2">
+                    {{ x.fullname }}
+                  </v-col>
+                </v-row>
+              </div>
             </v-container>
           </v-card>
         </v-flex>
@@ -69,9 +63,13 @@
 </style>
 
 <script>
+import axios from "axios";
 export default {
   data: () => ({
-    text: "",
+    userId: "",
+    searchUserId: [],
+    userObj: [],
+    searchText: "",
     showProfile: [
       {
         image: "/images/kenji.jpg",
@@ -85,13 +83,39 @@ export default {
 
     model: 1,
   }),
+
+  mounted() {
+    this.getUserId;
+  },
   methods: {
-    showAlert: function(e) {
-        if(e.keyCode === 13 && this.text === ""){
-            alert("Field Fullname masih kosong");
-        }else if (e.keyCode===13){
-            alert(this.text); // ini nanti aka trigger, 
-        }
+    getUserId() {
+      this.userId = this.$route.params.userId;
+    },
+
+    showAlert: function (e) {
+      if (e.keyCode === 13 && this.searchText === "") {
+        alert("Field Fullname masih kosong");
+      } else if (e.keyCode === 13) {
+        axios
+          .get(`http://localhost:8081/searchUser/` + this.searchText)
+          .then((response) => {
+            this.searchUserId = response.data.data;
+
+            if (this.searchUserId != []) {
+              this.userObj = [];
+              for (let index = 0; index < this.searchUserId.length; index++) {
+                axios
+                  .get(
+                    `http://localhost:8081/getUserData/` +
+                      this.searchUserId[index].ID
+                  )
+                  .then((response) => {
+                    this.userObj.push(response.data.data);
+                  });
+              }
+            }
+          });
+      }
     },
   },
 };
