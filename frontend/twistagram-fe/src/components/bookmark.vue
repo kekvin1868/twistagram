@@ -73,7 +73,7 @@
             </div>
 
             <div class="bookmark">
-                <v-row class="px-5 py-3" v-for="content in this.userBookmark" :key="content">
+                <v-row class="px-5 py-3" v-for="content in this.userBookmark" :key="content.id">
                     <v-card
                         class="mx-auto px-3"
                         color="#FFFFFF"

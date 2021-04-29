@@ -78,6 +78,13 @@
                     max-width="900"
                     elevate="0">
                     <v-row class="mx-16 mt-2">
+                        <p class="py-4 mr-10">Upload Profile Picture</p>
+                        <v-file-input
+                            label="File input"
+                            prepend-icon="mdi-image"
+                            v-model="this.userAvatar"/>
+                    </v-row> 
+                    <v-row class="mx-16 mt-2">
                         <p class="py-4 mr-10">Name</p>
                         <v-text-field
                             id="user-name"
@@ -188,6 +195,7 @@ export default {
             userGender: "",
             userPhone:"",
             userBio: "",
+            userAvatar: "",
             userPosts: [],
             followersCount: "",
             followingCount: "",
@@ -223,27 +231,35 @@ export default {
             var phone = document.getElementById("user-phone").value;
             var gender = this.userGender;
             var bio = document.getElementById("user-bio").value;
+            
+            let img = null;
+            const reader = new FileReader();
+            reader.readAsDataURL(this.userAvatar);
+            reader.onload = () => {
+                img = reader.result;
 
-            var userObj = {
-                id: id,
-                email: email,
-                fullname: username,
-                password: password,
-                phone: phone,
-                gender: gender,
-                bio: bio
-            };
+                var userObj = {
+                    id: id,
+                    email: email,
+                    fullname: username,
+                    password: password,
+                    phone: phone,
+                    gender: gender,
+                    bio: bio,
+                    photo: img
+                };
 
-            axios
-                .patch(`http://localhost:8081/updateUserData`, userObj)
-                .then((response) => {
-                    console.log(response);
-                    this.goToPosts();
-                })
-                .catch(function (error) {
-                    window.alert("Update Data Failed");
-                    console.log(error);
-                });
+                axios
+                    .patch(`http://localhost:8081/updateUserData`, userObj)
+                    .then((response) => {
+                        console.log(response);
+                        this.goToPosts();
+                    })
+                    .catch(function (error) {
+                        window.alert("Update Data Failed");
+                        console.log(error);
+                    });
+            }
         },
         getFollowers(){
             axios.get(`http://localhost:8081/getFollowers/`+this.userId)

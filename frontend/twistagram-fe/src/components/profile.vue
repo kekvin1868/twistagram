@@ -91,7 +91,7 @@
             </div>
 
             <div class="feeds">
-                <v-row class="px-5 py-3" v-for="content in this.userPosts" :key="content">
+                <v-row class="px-5 py-3" v-for="content in this.userPosts" :key="content.id">
                     <v-card
                         class="mx-auto px-3"
                         color="#FFFFFF"
@@ -118,7 +118,7 @@
                             </v-card-text>
                             <v-img
                                 class="mx-1"
-                                src="../assets/kenji.jpg"
+                                :src="content.photo"
                                 aspect-ratio="1"
                                 max-height="400"/>
                         </v-container>
