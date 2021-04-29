@@ -22,7 +22,7 @@ func isLikeExist(PostID uint64, UserID uint64) bool {
 func GetLikes(PostID uint64) (*[]api.LikeApi, error) {
 	var likes []api.LikeApi
 
-	res := orm.Engine.Table("likes").Select("likes.id , users.full_name , users.id").Joins("JOIN posts on posts.id = likes.post_id").Joins("JOIN users on likes.user_id = users.id").Scan(&likes)
+	res := orm.Engine.Table("likes").Select("likes.id , users.full_name , users.id").Joins("JOIN posts on posts.id = likes.post_id").Joins("JOIN users on likes.user_id = users.id").Where("likes.post_id = ?", PostID).Scan(&likes)
 	if res.Error != nil {
 		return nil, res.Error
 	}
