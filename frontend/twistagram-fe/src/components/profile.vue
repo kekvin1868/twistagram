@@ -77,7 +77,7 @@
                                         @click="unfollow">Followed</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
-                                    <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
+                                    <a href="" class="text-decoration-none" @click="goToPosts">{{this.userPosts.length}} Posts</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
@@ -91,43 +91,7 @@
             </div>
 
             <div class="feeds">
-                <v-row class="px-5 py-3">
-                    <v-card
-                        class="mx-auto px-3"
-                        color="#FFFFFF"
-                        elevate="0"
-                        max-width="900">
-                        
-                        <v-card-title class="ml-n3">
-                            <v-list-item-avatar color="grey darken-3">
-                                <v-img
-                                    class="elevation-6"
-                                    alt=""
-                                    src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"/>
-                            </v-list-item-avatar>
-                            <p class="pt-5" style="color:#393E46"><b>{{this.userFullName}}</b></p>
-                        </v-card-title>
-                        
-                        <v-card-text class="headline font-weight-normal" style="color:#393E46">
-                            "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
-                        </v-card-text>
-
-                        <v-card-actions>
-                            <v-list-item class="grow">
-                                <v-row
-                                    align="center"
-                                    justify="end">
-                                    <v-btn icon>
-                                        <v-icon class="mr-1" disabled>mdi-heart</v-icon>
-                                    </v-btn>
-                                    <span class="subheading mr-2">256</span>
-                                </v-row>
-                            </v-list-item>
-                        </v-card-actions>
-                    </v-card>
-                </v-row>
-
-                <v-row class="px-5 py-3">
+                <v-row class="px-5 py-3" v-for="content in this.userPosts" :key="content">
                     <v-card
                         class="mx-auto px-3"
                         color="#FFFFFF"
@@ -139,14 +103,18 @@
                                 <v-img
                                     class="elevation-6"
                                     alt=""
-                                    src="https://avataaars.io/?avatarStyle=Transparent&topType=ShortHairShortCurly&accessoriesType=Prescription02&hairColor=Black&facialHairType=Blank&clotheType=Hoodie&clotheColor=White&eyeType=Default&eyebrowType=DefaultNatural&mouthType=Default&skinColor=Light"/>
+                                    src="../assets/default-profile.jpg"/>
                             </v-list-item-avatar>
-                            <p class="pt-5" style="color:#393E46"><b>Twistagram</b></p>
+                            <p class="pt-5" style="color:#393E46"><b>{{content.fullname}}</b></p>
                         </v-card-title>
                         
-                        <v-container>
+                        <v-card-text class="headline font-weight-normal" style="color:#393E46" v-if="content.photo==''">
+                            {{content.caption}}
+                        </v-card-text>
+
+                        <v-container v-if="content.photo!=''">
                             <v-card-text class="mt-n10 ml-n3 font-weight-normal" style="color:#393E46">
-                                "Turns out semicolon-less style is easier and safer in TS because most gotcha edge cases are type invalid as well."
+                                {{content.caption}}
                             </v-card-text>
                             <v-img
                                 class="mx-1"
@@ -163,7 +131,7 @@
                                     <v-btn icon>
                                         <v-icon class="mr-1" disabled>mdi-heart</v-icon>
                                     </v-btn>
-                                    <span class="subheading mr-2">256</span>
+                                    <span class="subheading mr-2">{{content.like.length}}</span>
                                 </v-row>
                             </v-list-item>
                         </v-card-actions>
@@ -183,7 +151,6 @@ export default {
         this.getId();
         this.getUserData();
         this.getAllPostsID();
-        this.getAllPosts();
         this.getVisitorId();
         this.getFollowers();
         this.getFollowing();
@@ -222,12 +189,24 @@ export default {
                     this.userBio = response.data.data.bio;
                 });
         },
-        getAllPosts(){
-            axios.get(`http://localhost:8081/loadFeeds/`+this.userId)
+        getAllPostsID(){
+            axios.get(`http://localhost:8081/getAllUserPost/`+this.userId)
                 .then(response=>{
-                    this.userPosts = response.data.data;
+                    this.userPostsID = response.data.data;
+                    this.userPosts = this.getAllPosts(this.userPostsID);
+                    // console.log(this.userPosts);
                 });
-            console.log(this.userPosts);
+        },
+        getAllPosts(postsID){
+            var posts = [];
+            var length = postsID.length;
+            for(var i=0; i<length; i++) {
+                axios.get(`http://localhost:8081/getPost/`+postsID[i].ID)
+                    .then(response=>{
+                        posts.push(response.data.data);
+                    });
+            }
+            return posts;
         },
         getFollowers(){
             axios.get(`http://localhost:8081/getFollowers/`+this.userId)

@@ -59,7 +59,7 @@
                                         @click="logout">Logout</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
-                                    <a href="" class="text-decoration-none" @click="goToPosts">10 Posts</a>
+                                    <a href="" class="text-decoration-none" @click="goToPosts">{{this.userPosts.length}} Posts</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
@@ -177,6 +177,7 @@ export default {
         this.getUserData();
         this.getFollowers();
         this.getFollowing();
+        this.getAllPosts();
     },
     data() {
         return {
@@ -187,6 +188,7 @@ export default {
             userGender: "",
             userPhone:"",
             userBio: "",
+            userPosts: [],
             followersCount: "",
             followingCount: "",
         }
@@ -205,6 +207,12 @@ export default {
                     this.userBio = response.data.data.bio;
                     this.userEmail = response.data.data.email;
                     this.userPassword = response.data.data.password;
+                });
+        },
+        getAllPosts(){
+            axios.get(`http://localhost:8081/getAllUserPost/`+this.userId)
+                .then(response=>{
+                    this.userPosts = response.data.data;
                 });
         },
         updateProfile(){
