@@ -1,5 +1,5 @@
 
-<!-- buat yang edit home: line 50 & 235 -->
+<!-- buat yang edit home: line 53 & 239 -->
 
 <template>
   <v-app id="app">
@@ -50,7 +50,8 @@
                     </v-layout>
                     <v-divider class="mt-3" color="white"> </v-divider>
                     <h3 class="text-center" v-for="item in profile" :key="item">
-                      {{ item }} <!-- ganti datanya jadi {{userData.follower, userData.following, dll}} -->
+                      {{ item }}
+                      <!-- ganti datanya jadi {{userData.follower, userData.following, dll}} -->
                       <v-divider class="mt-3" color="white"> </v-divider></h3
                   ></v-card-text>
                 </v-card>
@@ -148,7 +149,7 @@
                           </v-btn>
                         </v-card-actions>
                       </v-card-title>
-                      <v-img :src="data.photo" height="750px" />
+                      <v-img :src="data.photo" />
                       <v-card-text>
                         <v-row no-gutters>
                           <v-col sm="5">
@@ -193,12 +194,16 @@
                     </v-card>
 
                     <!-- without photo -->
-                    <v-card class="mt-5 rounded-xl" max-width="800" v-if='data.photo==""'>
+                    <v-card
+                      class="mt-5 rounded-xl"
+                      max-width="800"
+                      v-if="data.photo == ''"
+                    >
                       <v-card-title>
                         <v-avatar class="mt-2 ml-2" size="70">
                           <v-img src="../assets/kenji.jpg"> </v-img>
                         </v-avatar>
-                        <p class="ml-3">{{data.fullname}}</p>
+                        <p class="ml-3">{{ data.fullname }}</p>
                         <v-spacer></v-spacer>
                         <v-btn icon>
                           <v-icon large color="black">
@@ -209,7 +214,7 @@
 
                       <v-card-text>
                         <p class="pt-3 pl-5">
-                          {{data.caption}}
+                          {{ data.caption }}
                         </p>
                       </v-card-text>
 
@@ -231,7 +236,6 @@
                         {{ comment.Content }}
                       </div>
                     </div>
-
                   </div>
                 </div>
 
@@ -267,6 +271,9 @@ import axios from "axios";
 export default {
   data() {
     return {
+      feedsIds: [],
+      followingObj: [],
+      followerObj: [],
       postCaption: "",
       imgData: null,
       withPhoto: true,
@@ -288,7 +295,6 @@ export default {
           text: "lol",
         },
       ],
-      model: 1,
       postDataTemp: [],
       postData: [],
     };
@@ -308,7 +314,6 @@ export default {
             })
             .then(() => {
               this.postCaption = "";
-              this.getPostData();
             });
         } else {
           let img = null;
@@ -325,7 +330,6 @@ export default {
               .then(() => {
                 this.postCaption = "";
                 this.imgData = null;
-                this.getPostData();
               });
           };
         }
@@ -356,28 +360,63 @@ export default {
             .get("http://localhost:8081/getPost/" + this.postDataTemp[index].ID)
             .then((response) => {
               this.postData.push(response.data.data);
-              console.log(this.postData[0].photo);
             });
         }
       }
     },
 
-    comment(id) {
+    async comment(id) {
       let param = {
         user_id: parseInt(this.userId),
         post_id: id,
         content: this.caption,
       };
 
-      axios.post("http://localhost:8081/postComment", param).then(() => {
+      await axios.post("http://localhost:8081/postComment", param).then(() => {
         this.caption = "";
       });
+
     },
+
+    getFollowingAndFollowerData() {
+      axios
+        .get(`http://localhost:8081/getFollowing/` + this.userId)
+        .then((response) => {
+          this.followingObj = response.data.data;
+        });
+
+      axios
+        .get(`http://localhost:8081/getFollowers/` + this.userId)
+        .then((response) => {
+          this.followerObj = response.data.data;
+        });
+    },
+
+    async loadFeeds() {
+      await axios
+        .get(`http://localhost:8081/loadFeeds/` + this.userId)
+        .then((response) => {
+          this.feedsIds = response.data.data;
+        });
+
+      if (this.feedsIds != null) {
+        for (let index = 0; index < this.feedsIds.length; index++) {
+          axios
+            .get("http://localhost:8081/getPost/" + this.feedsIds[index].ID)
+            .then((response) => {
+              this.postData.push(response.data.data);
+            });
+        }
+      }
+    },
+
   },
 
   mounted() {
     this.getUserId();
+    this.getFollowingAndFollowerData();
     this.getUserData();
+    this.loadFeeds();
     this.getPostData();
   },
 };
