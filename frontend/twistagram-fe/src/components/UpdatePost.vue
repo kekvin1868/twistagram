@@ -2,19 +2,27 @@
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="../assets/twistagram-logo.png"
-          transition="scale-transition"
-          width="200"/>
+        <a href="">
+          <v-img
+            alt="Vuetify Logo"
+            class="shrink ma-2"
+            contain
+            src="../assets/twistagram-logo.png"
+            transition="scale-transition"
+            width="150"
+            @click.prevent="goHome"/>
+        </a>
       </div>
       <v-spacer> </v-spacer>
       <v-avatar size="50">
-        <v-img src="../assets/kenji.jpg"></v-img>
+        <v-img :src="this.postAvatar"></v-img>
       </v-avatar>
-      <p>JohnDoe</p>
+      <p class="mt-3 ml-3 mr-13">
+        <a href=""
+          class="text-decoration-none"
+          style="color:white;"
+          @click.prevent="goToProfile()">{{this.postFullname}}</a>
+      </p>
     </v-app-bar>
 
     <v-main>
@@ -25,10 +33,10 @@
         rounded
         elevation="5">
         
-        <v-row class="ma-3">
+        <v-row class="ma-3" v-if="this.postPhoto != ''">
           <v-col>
             <v-img
-              src="../assets/kenji.jpg"
+              :src="this.postPhoto"
               max-height="800"
               aspect-ratio="1"/>
           </v-col>
@@ -56,7 +64,37 @@
                 <v-btn
                   width="120px"
                   color="error"
-                  @click="goToPost">Cancel</v-btn>
+                  @click.prevent="goToPost">Cancel</v-btn>
+              </v-col>
+            </v-row>
+          </v-col>  
+        </v-row>  
+
+        <v-row class="ma-3" v-if="this.postPhoto == ''">
+          <v-col class="mt-5 ml-3">
+            <v-row>
+              <h2>Update Post:</h2>
+            </v-row>
+            <v-row>
+              <v-textarea
+                class="mt-5"
+                id="post-caption"
+                label="Caption"
+                placeholder="Post Caption"
+                v-model="this.postCaption"
+                clearable/>
+            </v-row>
+            <v-row>
+              <v-col class="ml-n3">
+                <v-btn 
+                  class="mr-3"
+                  width="120px"
+                  color="primary"
+                  @click="savePost">Save</v-btn>
+                <v-btn
+                  width="120px"
+                  color="error"
+                  @click.prevent="goToPost">Cancel</v-btn>
               </v-col>
             </v-row>
           </v-col>  
@@ -103,6 +141,8 @@ export default {
           postComment: [],
           postCaption: "",
           postFullname: "",
+          postPhoto: "",
+          postAvatar: ""
         }
     },
     methods: {
@@ -117,39 +157,53 @@ export default {
                 this.postCaption = response.data.data.caption;
                 this.userId = response.data.data.user_id;
                 this.postFullname = response.data.data.fullname;
+                this.postPhoto = response.data.data.photo;
+
+                axios.get(`http://localhost:8081/getUserData/`+this.userId)
+                  .then(response=>{
+                      this.postAvatar = response.data.data.profile; 
+                  });
           });
         },
         savePost(){
-          // var pid = this.postId;
-          // var uid = this.userId;
-          // var likes = this.postLike;
-          // var comments = this.postComment;
-          // var fullname = this.postFullname;
-          // var caption = document.getElementById("post-caption").value;
+          var pid = this.postId;
+          var uid = this.userId;
+          var photo = this.postPhoto;
+          var caption = document.getElementById("post-caption").value;
 
-          // var postObj = {
-          //   id: pid,
-          //   caption: caption,
-          //   user_id: uid,
-          //   fullname: fullname,
-          //   like: likes,
-          //   comment: comments
-          // }
+          var postObj = {
+            id: parseInt(pid),
+            caption: caption,
+            user_id: parseInt(uid),
+            photo: photo
+          }
           
-          // axios
-            // .patch()
-            // .then((response) => {
-          //     console.log(response);
-          //     this.goToPost();
-          //   })
-          //   .catch(function (error) {
-          //     window.alert("Update Data Failed");
-          //     console.log(error);
-          //   });
+          axios
+            .patch(`http://localhost:8081/editPost`, postObj)
+            .then((response) => {
+              console.log(response);
+              this.goToPost();
+            })
+            .catch(function (error) {
+              window.alert("Update Data Failed");
+              console.log(error);
+            });
         },
         goToPost(){
-          this.$router.push({path: "/post/"+this.postId+this.userId})
-        }
+          this.$router.push({path: "/post/"+this.postId+"/"+this.userId});
+        },
+        goToProfile(){
+          var r = confirm("Are you sure want to leave this page?");
+          if (r) {
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.userId});
+          }
+        },
+        goHome(){
+          var r = confirm("Are you sure want to leave this page?");
+          if (r) {
+            this.$router.push({path: "/home/"+this.userId})
+          }
+        },
     }
 }
 </script>

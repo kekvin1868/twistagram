@@ -2,20 +2,27 @@
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="../assets/twistagram-logo.png"
-          transition="scale-transition"
-          width="200"
-        />
+        <a href="">
+          <v-img
+            alt="Vuetify Logo"
+            class="shrink ma-2"
+            contain
+            src="../assets/twistagram-logo.png"
+            transition="scale-transition"
+            width="150"
+            @click.prevent="goHome"/>
+        </a>
       </div>
       <v-spacer> </v-spacer>
       <v-avatar size="50">
-        <v-img src="../assets/kenji.jpg"></v-img>
+        <v-img :src="this.visitorAvatar"></v-img>
       </v-avatar>
-      <p>JohnDoe</p>
+      <p class="mt-3 ml-3 mr-13">
+        <a href=""
+          class="text-decoration-none"
+          style="color:white;"
+          @click.prevent="goToProfile()">{{this.visitorFullname}}</a>
+      </p>
     </v-app-bar>
 
     <v-main>
@@ -26,7 +33,7 @@
         rounded
         elevation="5">
         
-        <v-row class="ma-3">
+        <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
             <v-img
               :src="postPhoto"
@@ -66,7 +73,7 @@
                       </v-col>
                       
                       <v-col align="right" v-if="this.visitorId == this.userId">
-                        <v-btn tile color="success">
+                        <v-btn tile color="success" @click="editPost">
                           <v-icon left>
                             mdi-pencil
                           </v-icon>
@@ -78,10 +85,11 @@
                     <v-row class="mx-n8 mt-n3 mb-n15">
                       <v-col>
                         <v-text-field
-                          id="new-comment"
+                          id="comment-pict"
                           v-model="newComment"
                           label="Post New Comment"
-                          solo/>
+                          solo
+                          style="width:400px"/>
                       </v-col>
                       <v-col class="mt-3">
                         <v-btn icon @click="addComment">
@@ -91,14 +99,90 @@
                         </v-btn>
                       </v-col>
                     </v-row>
-
                   </div>
                 </v-footer>
               </v-card>
             </div>
           </v-col>
         </v-row>
-      </v-card>               
+
+        <v-row class="ma-3" v-if="postPhoto == ''">
+          <v-col>
+            <v-card-title class="ml-n3">
+              <v-list-item-avatar color="grey darken-3">
+                <img
+                    lazy-src="../assets/default-profile.jpg"
+                    :src="userAvatar"
+                    alt="profilePicture"/>
+              </v-list-item-avatar>
+              <p class="pt-5">
+                <a href=""
+                  class="text-decoration-none"
+                  style="color:#393E46"
+                  @click="goToAccount(this.userId)"><b>{{this.postFullname}}</b></a>
+              </p>
+            </v-card-title>
+          
+            <v-card-text class="headline font-weight-normal" style="color:#393E46">
+                {{this.postCaption}}
+            </v-card-text>
+
+            <v-divider class="my-5"/>
+
+            <template>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <div class="ml-5" v-for="(comment, i) in postComment" :key="i">
+                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
+                  </div>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+
+            <v-footer class="ml-n5" style="background-color:white">
+              <v-row class="mx-4 mt-1">
+                <v-col class="mr-n15" md="11">
+                  <v-btn icon class="ml-6">
+                    <v-icon disabled>
+                      mdi-cards-heart
+                    </v-icon>
+                    <p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p>
+                  </v-btn>
+                </v-col>
+                
+                <v-col class="mr-n8 mt-1" align="right" v-if="this.visitorId == this.userId">
+                  <v-btn tile color="success" @click="editPost">
+                    <v-icon left>
+                      mdi-pencil
+                    </v-icon>
+                    Edit
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+              <v-row class="mx-n8 mb-n10">
+                <v-col class="ml-8" md="10">
+                  <v-text-field
+                    id="new-comment"
+                    v-model="newComment"
+                    label="Post New Comment"
+                    solo
+                    style="width:820px"/>
+                </v-col>
+                <v-spacer/>
+                <v-col class="mt-3 mr-5">
+                  <v-btn class="mr-n10" allign="right" icon @click="addComment">
+                    <v-icon>
+                      mdi-comment
+                    </v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-footer>
+
+          </v-col>
+        </v-row>
+      </v-card>    
     </v-main>
   </v-app>
 </template>
@@ -144,11 +228,6 @@ html {
   flex-grow: 1;
   overflow: auto;
 }
-
-.v-text-field {
-  font-size: 12px;
-  width: 410px;
-}
 </style>
 
 <script>
@@ -156,14 +235,16 @@ import axios from 'axios'
 
 export default {
   mounted() {
-    this.getUserId();
+    this.getVisitorId();
+    this.getVisitorData();
     this.getPostId();
     this.getPostData();
-    this.getAllUsers();
   },
   data() {
     return {
       visitorId: "",
+      visitorFullname: "",
+      visitorAvatar: "",
       userId: "",
       postId: "",
       postLike: [],
@@ -171,14 +252,22 @@ export default {
       postCaption: "",
       postFullname: "",
       postPhoto: "",
-      newComment: ""
+      newComment: "",
+      userAvatar: "",
     };
   },
 
   methods: {
-    getUserId(){
+    getVisitorId(){
       this.visitorId = this.$route.params.userId;
-      console.log(this.visitorId);
+      // console.log(this.visitorId);
+    },
+    getVisitorData(){
+      axios.get(`http://localhost:8081/getUserData/`+this.visitorId)
+            .then(response=>{
+                this.visitorFullname = response.data.data.fullname;
+                this.visitorAvatar = response.data.data.profile; 
+            });
     },
     getPostId(){
       this.postId = this.$route.params.postId;
@@ -192,10 +281,18 @@ export default {
             this.userId = response.data.data.user_id;
             this.postFullname = response.data.data.fullname;
             this.postPhoto = response.data.data.photo;
+
+            axios.get(`http://localhost:8081/getUserData/`+this.userId)
+              .then(response=>{
+                  this.userAvatar = response.data.data.profile; 
+              });
         });
     },
     goToAccount(userID){
       this.$router.push({path:"/"+userID+"/profile/"+this.visitorId})
+    },
+    goToProfile(){
+      this.$router.push({path:"/"+this.visitorId+"/profile/"+this.visitorId})
     },
     addComment(){
       var comment = document.getElementById("new-comment").value
@@ -218,7 +315,13 @@ export default {
     },
     reloadPost(){
       window.location.reload();
-    }
+    },
+    editPost(){
+      this.$router.push({path:"/updatePost/"+this.postId});
+    },
+    goHome(){
+      this.$router.push({path: "/home/"+this.visitorId});
+    },
   },
 };
 </script>
