@@ -11,16 +11,18 @@
           contain
           src="../assets/twistagram-logo.png"
           transition="scale-transition"
-          width="200"
+          width="150"
         />
       </div>
 
       <v-spacer></v-spacer>
 
-      <v-avatar size="60">
-        <v-img src="../assets/kenji.jpg"></v-img>
+      <v-icon>
+        mdi-magnify </v-icon>
+      <v-avatar size="50">
+        <v-img :src="userData.profile"></v-img>
       </v-avatar>
-      <p>{{ userData.fullname }}</p>
+      <p class="mt-3 ml-3 mr-13">{{ userData.fullname }}</p>
     </v-app-bar>
 
     <v-main>
@@ -34,7 +36,7 @@
                   <v-card-title>
                     <v-layout align-center justify-center>
                       <v-avatar size="95">
-                        <v-img src="../assets/kenji.jpg"> </v-img>
+                        <v-img :src="userData.profile"> </v-img>
                       </v-avatar>
                     </v-layout>
                   </v-card-title>
@@ -44,32 +46,17 @@
                         {{ userData.fullname }}
                       </h3>
                     </v-layout>
-                    <v-divider class="mt-3" color="white"> </v-divider>
-                    <h3 class="text-center" v-for="item in profile" :key="item">
-                      {{ item }}
-                      <!-- ganti datanya jadi {{userData.follower, userData.following, dll}} -->
-                      <v-divider class="mt-3" color="white"> </v-divider></h3
-                  ></v-card-text>
-                </v-card>
-
-                <!-- CARD FOR SUGGESTION -->
-                <v-card class="mt-5 rounded-xl" color="#222831">
-                  <v-card-title>
-                    <v-layout align-center justify-center>
-                      <h3>Suggestion</h3>
-                    </v-layout>
-                  </v-card-title>
-                  <v-divider color="white"> </v-divider>
-
-                  <v-row v-for="x in suggestions" :key="x.image">
-                    <v-card-text>
-                      <v-col>
-                        <v-avatar size="50">
-                          <img :src="x.image" />
-                        </v-avatar>
-                      </v-col>
-                    </v-card-text>
-                  </v-row>
+                    <v-divider class="my-3" color="white"> </v-divider>
+                    <h3 class="text-center">
+                      Follower {{ this.followerObj.Count }}
+                      <v-divider class="my-3" color="white"> </v-divider>
+                      Following {{ this.followingObj.Count }}
+                      <v-divider class="my-3" color="white"> </v-divider>
+                      <v-btn text color="white" @click="goToProfile">
+                        View Profile
+                      </v-btn>
+                    </h3>
+                  </v-card-text>
                 </v-card>
               </v-col>
 
@@ -85,7 +72,7 @@
                       <v-col md="3">
                         <v-card-title>
                           <v-avatar size="75">
-                            <v-img src="../assets/kenji.jpg"> </v-img>
+                            <v-img :src="userData.profile"> </v-img>
                           </v-avatar>
                         </v-card-title>
                       </v-col>
@@ -96,8 +83,7 @@
                           background-color="white"
                           rounded
                           v-model="postCaption"
-                        >
-                        </v-textarea>
+                        />
                       </v-col>
                     </v-row>
 
@@ -107,50 +93,16 @@
                         label="File input"
                         prepend-icon="mdi-image"
                         v-model="imgData"
-                      >
-                      </v-file-input>
+                      />
                       <v-spacer></v-spacer>
                       <v-btn color="primary" @click="post"> post </v-btn>
                     </v-card-actions>
                   </v-card-text>
                 </v-card>
 
-                <!-- posting card -->
-                <v-card class="mt-5 rounded-xl" max-width="800">
-                  <v-card-title>
-                    <v-avatar class="mt-2 ml-2" size="70">
-                      <v-img src="../assets/kenji.jpg"> </v-img>
-                    </v-avatar>
-                    <p class="ml-3">Felixkd12</p>
-                    <v-spacer></v-spacer>
-                    <v-btn icon>
-                      <v-icon large color="black"> mdi-dots-vertical </v-icon>
-                    </v-btn>
-                  </v-card-title>
-
-                  <v-card-text>
-                    <p class="pt-3 pl-5">
-                      ITHB adalah kampus yang berada di Kota Bandung. ITHB
-                      adalah kampus yang berada di Kota Bandung. ITHB adalah
-                      kampus yang berada di Kota Bandung. ITHB adalah kampus
-                      yang berada di Kota Bandung. ITHB adalah kampus yang
-                      berada di Kota Bandung.
-                    </p>
-                  </v-card-text>
-
-                  <v-divider class="ml-8" width="650"></v-divider>
-                  <v-card-actions class="ml-4">
-                    <v-btn icon>
-                      <v-icon medium> mdi-comment </v-icon>
-                    </v-btn>
-                    <v-btn icon>
-                      <v-icon color="red"> mdi-heart </v-icon>
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
+                <!-- WITH PHOTO -->
                 <div v-if="this.postData != null">
                   <div v-for="(data, i) in postData" :key="i" id="postDiv">
-                    <!-- with photo -->
                     <v-card
                       class="mx-auto my-10 rounded-xl"
                       max-width="800"
@@ -158,7 +110,7 @@
                     >
                       <v-card-title>
                         <v-avatar size="70">
-                          <v-img src="../assets/kenji.jpg"></v-img>
+                          <v-img :src="userData.profile"></v-img>
                         </v-avatar>
 
                         <p class="ml-5">{{ data.fullname }}</p>
@@ -177,51 +129,68 @@
                           </v-btn>
                         </v-card-actions>
                       </v-card-title>
-                      <v-img :src="data.photo" />
+                      <v-img max-height="500" :src="data.photo" />
                       <v-card-text>
                         <v-row no-gutters>
-                          <v-col sm="5">
+                          <v-col sm="2">
                             <h2 class="ml-5">{{ data.fullname }}</h2>
                           </v-col>
-                        </v-row>
-
-                        <v-row>
                           <v-col>
-                            <h2 class="ml-5">
+                            <p>
                               {{ data.caption }}
-                            </h2>
+                            </p>
                           </v-col>
                         </v-row>
-                        <br />
 
+                        <br />
+                        <!-- show data comment -->
+                        <div id="layout-comment">
+                          <h4>Comments</h4>
+                          <div v-if="data.comment != null">
+                            <div v-if="userData.length<= 2">
+                              <div
+                                v-for="(comment, i) in data.comment"
+                                :key="i"
+                              >
+                                {{ comment.FullName }}
+                                {{ comment.Content }}
+                              </div>
+                            </div>
+                            <div v-else>
+                              <v-btn text @click ="goToShowPost(data.id)"> Show more </v-btn>
+                            </div>
+                          </div>
+                        </div>
                         <v-divider color="black"></v-divider>
                         <v-row no-gutters>
-                          <v-col sm="2">
-                            <v-btn class="ml-2" icon x-large color="pink">
+                          <v-col sm="1">
+                            <v-btn class="mt-1 ml-2" icon x-large color="pink">
                               <v-icon>mdi-heart</v-icon>
                             </v-btn>
                           </v-col>
 
-                          <v-col cols="1" sm="1" md="9">
+                          <v-col sm="2" md="8">
                             <v-text-field
+                              required
                               single-line
                               display="flex"
-                              class="shrink ml-n5"
                               rounded
                               background-color="grey"
                               color="black"
                               label="Insert your comment here..."
                               v-model="caption"
                             />
-                            <v-btn @click="comment(data.id)" color="primary"
-                              >Send it bitches</v-btn
-                            >
+                          </v-col>
+                          <v-col class="mt-3 ml-5">
+                            <v-btn @click="comment(data.id)" color="primary">
+                              <v-icon> mdi-send </v-icon>
+                            </v-btn>
                           </v-col>
                         </v-row>
                       </v-card-text>
                     </v-card>
 
-                    <!-- without photo -->
+                    <!-- WITHOUT PHOTO -->
                     <v-card
                       class="mt-5 rounded-xl"
                       max-width="800"
@@ -229,7 +198,7 @@
                     >
                       <v-card-title>
                         <v-avatar class="mt-2 ml-2" size="70">
-                          <v-img src="../assets/kenji.jpg"> </v-img>
+                          <v-img :src="userData.profile"> </v-img>
                         </v-avatar>
                         <p class="ml-3">{{ data.fullname }}</p>
                         <v-spacer></v-spacer>
@@ -256,19 +225,14 @@
                         </v-btn>
                       </v-card-actions>
                     </v-card>
-
-                    <!-- show data comment -->
-                    <div v-if="data.comment != null">
-                      <div v-for="(comment, i) in data.comment" :key="i">
-                        {{ comment.FullName }}<br>
-                        {{ comment.Content }}
-                      </div>
-                    </div>
                   </div>
                 </div>
 
-                <div v-if="this.postData == null">
-                  <!-- tampilin sesuatu jika ga ada post -->
+                <div v-if="this.postData.length == 0">
+                  <v-card>
+                    <!-- tampilin sesuatu jika ga ada post -->
+                    <h1>LOL</h1>
+                  </v-card>
                 </div>
 
                 <br /><br />
@@ -277,13 +241,23 @@
               <!-- CARD FOR TRENDING -->
               <v-col sm="2">
                 <v-card class="rounded-xl" color="#222831">
-                  <h1 class="h1">Trending</h1>
-                  <v-divider class="ml-7" width="220" color="white"></v-divider>
-                  <div class="p">
-                    <p>#ITHB</p>
-                    <p>#ITHB</p>
-                    <p>#ITHB</p>
-                  </div>
+                  <v-card-title>
+                    <v-layout align-center justify-center>
+                      <h3>Suggestion</h3>
+                    </v-layout>
+                  </v-card-title>
+                  <v-divider color="white"> </v-divider>
+
+                  <v-row v-for="x in suggestions" :key="x.image">
+                    <v-card-text>
+                      <v-col>
+                        <v-avatar size="50">
+                          <img :src="x.image" />
+                        </v-avatar>
+                        {{ x.text }}
+                      </v-col>
+                    </v-card-text>
+                  </v-row>
                 </v-card>
               </v-col>
             </v-row>
@@ -299,23 +273,19 @@ import axios from "axios";
 export default {
   data() {
     return {
+      counts: "",
       feedsIds: [],
-      followingObj: [],
-      followerObj: [],
+      followingObj: "",
+      followerObj: "",
       postCaption: "",
       imgData: null,
       withPhoto: true,
       caption: "",
       userId: "",
       userData: [],
-      profile: {
-        Following: "Following" + " " + 100,
-        Followers: "Followers" + " " + 120,
-        ViewProfile: "View Profile",
-      },
       suggestions: [
         {
-          image: "/images/kenji.jpg",
+          image: "/images/default-profile.jpg",
           text: "Budi",
         },
         {
@@ -365,10 +335,24 @@ export default {
       }
     },
 
-    reloadFeeds(){
-      this.postData=[];
+    goToShowPost(postID) {
+      this.$router.push({
+        path: "/post/" + postID + "/" + this.userId
+      });
+    },
+
+    goToProfile() {
+      this.$router.push({
+        path: "/" + this.userId + "/profile/" + this.userId,
+      });
+    },
+
+    reloadFeeds() {
+      this.postData = [];
       this.loadFeeds();
-      document.getElementById("postDiv").innerHTML = document.getElementById("postDiv").innerHTML ;
+      document.getElementById("postDiv").innerHTML = document.getElementById(
+        "postDiv"
+      ).innerHTML;
     },
 
     getUserId() {
@@ -390,11 +374,14 @@ export default {
         content: this.caption,
       };
 
-    axios.post("http://localhost:8081/postComment", param).then(() => {
-        this.caption = "";
-        this.reloadFeeds();
-      });
-
+      if (this.caption == "") {
+        alert("Field Comment masih Kosong!");
+      } else {
+        axios.post("http://localhost:8081/postComment", param).then(() => {
+          this.caption = "";
+          this.reloadFeeds();
+        });
+      }
     },
 
     getFollowingAndFollowerData() {
@@ -413,11 +400,7 @@ export default {
 
     async loadFeeds() {
       await axios
-<<<<<<< HEAD
-        .get("http://localhost:8081/getAllUserPost/" + this.userId)
-=======
         .get(`http://localhost:8081/loadFeeds/` + this.userId)
->>>>>>> f454f3e4e673eb105252567fed1f08cc62abd18b
         .then((response) => {
           this.feedsIds = response.data.data;
         });
@@ -432,7 +415,6 @@ export default {
         }
       }
     },
-
   },
 
   mounted() {
@@ -463,6 +445,10 @@ export default {
 
 #margin {
   margin-left: 280px;
+}
+
+#layout-comment {
+  margin-left: 20px;
 }
 
 h3 {
