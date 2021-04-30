@@ -2,35 +2,35 @@ package controller
 
 import (
 	"net/http"
-	"twistagram/src/modules/report/domain"
-	"twistagram/src/modules/report/service"
+	"twistagram/src/modules/share/domain"
+	"twistagram/src/modules/share/service"
 	utils "twistagram/src/utils/Response"
 	"twistagram/src/utils/parser"
 
 	"github.com/gin-gonic/gin"
 )
 
-func PostReport(c *gin.Context) {
-	var report domain.Report
+func PostShare(c *gin.Context) {
+	var share domain.Share
 
-	err := c.ShouldBindJSON(&report)
+	err := c.ShouldBindJSON(&share)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	var newReport *domain.Report
-	newReport, err = service.PostReport(&report)
+	var newShare *domain.Share
+	newShare, err = service.PostShare(&share)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if newReport == nil {
+	if newShare == nil {
 		failed := utils.Response{
 			Status:  http.StatusConflict,
-			Message: "Already reported",
+			Message: "Already Shared",
 			Data:    nil,
 		}
 		c.JSON(http.StatusConflict, failed)
@@ -39,25 +39,35 @@ func PostReport(c *gin.Context) {
 
 	res := utils.Response{
 		Status: http.StatusOK,
-		Data:   *newReport,
+		Data:   *newShare,
 	}
+
 	c.JSON(http.StatusOK, res)
 }
 
-func GetReportCounts(c *gin.Context) {
+func LoadShare(c *gin.Context) {
 	ID, _ := parser.ParseID(c.Param("ID"))
-	report, err := service.GetReportCounts(ID)
+	share, err := service.LoadShare(ID)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
+	if share == nil {
+		failed := utils.Response{
+			Status:  http.StatusNoContent,
+			Message: "No content found",
+			Data:    nil,
+		}
+		c.JSON(http.StatusNoContent, failed)
+		return
+	}
+
 	res := utils.Response{
 		Status: http.StatusOK,
-		Data:   *report,
+		Data:   *share,
 	}
 
 	c.JSON(http.StatusOK, res)
-
 }

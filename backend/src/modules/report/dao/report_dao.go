@@ -2,6 +2,7 @@ package dao
 
 import (
 	"twistagram/src/modules/report/domain"
+	"twistagram/src/modules/report/domain/api"
 	"twistagram/src/orm"
 )
 
@@ -36,17 +37,18 @@ func PostReport(report *domain.Report) (*domain.Report, error) {
 	return report, nil
 }
 
-func GetReportCounts(PostID uint64) (int, error) {
+func GetReportCounts(PostID uint64) (*api.ReportAPI, error) {
 	var report domain.Report
-	var reportCounts int
+	var reportCounts *api.ReportAPI
 
 	res := orm.Engine.Table("reports").Select("user_id").Where("post_id = ?", PostID).Find(&report)
 
 	if res.Error != nil {
-		return -1, res.Error
+		reportCounts.Report = -1
+		return reportCounts, res.Error
 	}
 
-	reportCounts = int(res.RowsAffected)
+	reportCounts.Report = int(res.RowsAffected)
 	return reportCounts, nil
 
 }
