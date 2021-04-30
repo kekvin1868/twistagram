@@ -2,6 +2,7 @@ package dao
 
 import (
 	"twistagram/src/modules/share/domain"
+	"twistagram/src/modules/share/domain/api"
 	"twistagram/src/orm"
 )
 
@@ -34,4 +35,19 @@ func PostShare(share *domain.Share) (*domain.Share, error) {
 
 	return share, nil
 
+}
+
+func LoadShare(UserID uint64) (*[]api.ShareAPI, error) {
+	var shares []api.ShareAPI
+
+	res := orm.Engine.Table("shares").Raw("SELECT shares.id, shares.user_id, shares.post_id WHERE shares.user_id IN (SELECT follows.follow_id from follows WHERE follows.user_id = ?)", UserID).Find(&shares)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &shares, nil
 }
