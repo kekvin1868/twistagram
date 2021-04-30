@@ -17,8 +17,9 @@
 
       <v-spacer></v-spacer>
 
-      <v-icon>
-        mdi-magnify </v-icon>
+      <v-icon> mdi-magnify </v-icon>
+
+      <v-icon> mdi-search </v-icon>
       <v-avatar size="50">
         <v-img :src="userData.profile"></v-img>
       </v-avatar>
@@ -100,133 +101,184 @@
                   </v-card-text>
                 </v-card>
 
-                <!-- WITH PHOTO -->
-                <div v-if="this.postData != null">
-                  <div v-for="(data, i) in postData" :key="i" id="postDiv">
-                    <v-card
-                      class="mx-auto my-10 rounded-xl"
-                      max-width="800"
-                      v-if="data.photo != ''"
-                    >
-                      <v-card-title>
-                        <v-avatar size="70">
-                          <v-img :src="userData.profile"></v-img>
-                        </v-avatar>
+                <!-- TABS -->
+                <v-card>
+                  <v-tabs
+                    class="mt-5 rounded"
+                    v-model="tab"
+                    background-color="#222831"
+                    centered
+                    dark
+                    icons-and-text
+                  >
+                    <v-tabs-slider></v-tabs-slider>
 
-                        <p class="ml-5">{{ data.fullname }}</p>
-                        <v-spacer></v-spacer>
+                    <v-tab href="#tab-1">
+                      Feeds
+                      <v-icon>mdi-home</v-icon>
+                    </v-tab>
 
-                        <v-card-actions>
-                          <v-btn icon>
-                            <v-icon color="black" x-large>
-                              mdi-bookmark
-                            </v-icon>
-                          </v-btn>
-                          <v-btn icon>
-                            <v-icon x-large color="black">
-                              mdi-dots-vertical
-                            </v-icon>
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card-title>
-                      <v-img max-height="500" :src="data.photo" />
-                      <v-card-text>
-                        <v-row no-gutters>
-                          <v-col sm="2">
-                            <h2 class="ml-5">{{ data.fullname }}</h2>
-                          </v-col>
-                          <v-col>
-                            <p>
-                              {{ data.caption }}
-                            </p>
-                          </v-col>
-                        </v-row>
+                    <v-tab href="#tab-2">
+                      Share
+                      <v-icon>mdi-share-variant</v-icon>
+                    </v-tab>
+                  </v-tabs>
 
-                        <br />
-                        <!-- show data comment -->
-                        <div id="layout-comment">
-                          <h4>Comments</h4>
-                          <div v-if="data.comment != null">
-                            <div v-if="userData.length<= 2">
-                              <div
-                                v-for="(comment, i) in data.comment"
-                                :key="i"
-                              >
-                                {{ comment.FullName }}
-                                {{ comment.Content }}
-                              </div>
-                            </div>
-                            <div v-else>
-                              <v-btn text @click ="goToShowPost(data.id)"> Show more </v-btn>
-                            </div>
+                  <!-- TAB FOR FEEDS -->
+                  <v-tabs-items v-model="tab">
+                    <v-tab-item :value="'tab-' + 1">
+                      <v-card flat>
+                        <div v-if="postData != null">
+                          <div
+                            v-for="(data, i) in postData"
+                            :key="i"
+                            id="postDiv"
+                          >
+                            <v-card
+                              class="mx-auto my-10 rounded"
+                              max-width="800"
+                              v-if="data.photo != ''"
+                            >
+                              <v-card-title>
+                                <v-avatar size="70">
+                                  <v-img :src="userData.profile"></v-img>
+                                </v-avatar>
+
+                                <p class="ml-5">{{ data.fullname }}</p>
+                                <v-spacer></v-spacer>
+
+                                <v-card-actions>
+                                  <v-btn icon
+                                  @click="bookmark(data.id)">
+                                    <v-icon color="black" x-large>
+                                      mdi-bookmark
+                                    </v-icon>
+                                  </v-btn>
+                                  <v-btn icon>
+                                    <v-icon x-large color="black">
+                                      mdi-dots-vertical
+                                    </v-icon>
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card-title>
+                              <v-img :src="data.photo" />
+                              <v-card-text>
+                                <v-row no-gutters>
+                                  <v-col sm="2">
+                                    <h2 class="ml-5">{{ data.fullname }}</h2>
+                                  </v-col>
+                                  <v-col>
+                                    <p>
+                                      {{ data.caption }}
+                                    </p>
+                                  </v-col>
+                                </v-row>
+
+                                <br />
+                                <!-- show data comment -->
+                                <div id="layout-comment">
+                                  <h4>Comments</h4>
+                                  <div v-if="data.comment.length > 0">
+                                    <p>
+                                      <b> {{ data.comment[0].FullName }} </b>
+                                      {{ data.comment[0].Content }}
+                                    </p>
+                                    <a @click="goToShowPost(data.id)"
+                                      >Show More ...</a
+                                    >
+                                  </div>
+                                </div>
+                                <v-divider color="black"></v-divider>
+                                <v-row no-gutters>
+                                  <v-col sm="1">
+                                    <v-btn
+                                      class="mt-1 ml-2"
+                                      icon
+                                      x-large
+                                      color="pink"
+                                    >
+                                      <v-icon>mdi-heart</v-icon>
+                                    </v-btn>
+                                  </v-col>
+
+                                  <v-col sm="2" md="8">
+                                    <v-text-field
+                                      required
+                                      single-line
+                                      display="flex"
+                                      rounded
+                                      background-color="grey"
+                                      color="black"
+                                      label="Insert your comment here..."
+                                      v-model="caption"
+                                    />
+                                  </v-col>
+                                  <v-col class="mt-3 ml-5">
+                                    <v-btn
+                                      @click="comment(data.id)"
+                                      color="primary"
+                                    >
+                                      <v-icon> mdi-send </v-icon>
+                                    </v-btn>
+                                  </v-col>
+                                </v-row>
+                              </v-card-text>
+                            </v-card>
+
+                            <!-- WITHOUT PHOTO -->
+                            <v-card
+                              class="mt-5 rounded-xl"
+                              max-width="800"
+                              v-if="data.photo == ''"
+                            >
+                              <v-card-title>
+                                <v-avatar class="mt-2 ml-2" size="70">
+                                  <v-img :src="userData.profile"> </v-img>
+                                </v-avatar>
+                                <p class="ml-3">{{ data.fullname }}</p>
+                                <v-spacer></v-spacer>
+                                <v-btn icon>
+                                  <v-icon large color="black">
+                                    mdi-dots-vertical
+                                  </v-icon>
+                                </v-btn>
+                              </v-card-title>
+
+                              <v-card-text>
+                                <p class="pt-3 pl-5">
+                                  {{ data.caption }}
+                                </p>
+                              </v-card-text>
+
+                              <v-divider class="ml-8" width="650"></v-divider>
+                              <v-card-actions class="ml-4">
+                                <v-btn icon>
+                                  <v-icon medium> mdi-comment </v-icon>
+                                </v-btn>
+                                <v-btn icon>
+                                  <v-icon color="red"> mdi-heart </v-icon>
+                                </v-btn>
+                              </v-card-actions>
+                            </v-card>
                           </div>
                         </div>
-                        <v-divider color="black"></v-divider>
-                        <v-row no-gutters>
-                          <v-col sm="1">
-                            <v-btn class="mt-1 ml-2" icon x-large color="pink">
-                              <v-icon>mdi-heart</v-icon>
-                            </v-btn>
-                          </v-col>
+                      </v-card>
+                    </v-tab-item>
 
-                          <v-col sm="2" md="8">
-                            <v-text-field
-                              required
-                              single-line
-                              display="flex"
-                              rounded
-                              background-color="grey"
-                              color="black"
-                              label="Insert your comment here..."
-                              v-model="caption"
-                            />
-                          </v-col>
-                          <v-col class="mt-3 ml-5">
-                            <v-btn @click="comment(data.id)" color="primary">
-                              <v-icon> mdi-send </v-icon>
-                            </v-btn>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card>
-
-                    <!-- WITHOUT PHOTO -->
-                    <v-card
-                      class="mt-5 rounded-xl"
-                      max-width="800"
-                      v-if="data.photo == ''"
-                    >
-                      <v-card-title>
-                        <v-avatar class="mt-2 ml-2" size="70">
-                          <v-img :src="userData.profile"> </v-img>
-                        </v-avatar>
-                        <p class="ml-3">{{ data.fullname }}</p>
-                        <v-spacer></v-spacer>
-                        <v-btn icon>
-                          <v-icon large color="black">
-                            mdi-dots-vertical
-                          </v-icon>
-                        </v-btn>
-                      </v-card-title>
-
-                      <v-card-text>
-                        <p class="pt-3 pl-5">
-                          {{ data.caption }}
-                        </p>
-                      </v-card-text>
-
-                      <v-divider class="ml-8" width="650"></v-divider>
-                      <v-card-actions class="ml-4">
-                        <v-btn icon>
-                          <v-icon medium> mdi-comment </v-icon>
-                        </v-btn>
-                        <v-btn icon>
-                          <v-icon color="red"> mdi-heart </v-icon>
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </div>
-                </div>
+                    <!-- TAB FOR SHARE -->
+                    <v-tab-item :value="'tab-' + 2">
+                      <v-card flat>
+                        <v-card-text>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing
+                          elit, sed do eiusmod tempor incididunt ut labore et
+                          dolore magna aliqua. Ut enim ad minim veniam, quis
+                          nostrud exercitation ullamco laboris nisi ut aliquip
+                          ex ea commodo consequat.
+                        </v-card-text>
+                      </v-card>
+                    </v-tab-item>
+                  </v-tabs-items>
+                </v-card>
 
                 <div v-if="this.postData.length == 0">
                   <v-card>
@@ -273,6 +325,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      tab: null,
       counts: "",
       feedsIds: [],
       followingObj: "",
@@ -337,7 +390,7 @@ export default {
 
     goToShowPost(postID) {
       this.$router.push({
-        path: "/post/" + postID + "/" + this.userId
+        path: "/post/" + postID + "/" + this.userId,
       });
     },
 
@@ -415,6 +468,22 @@ export default {
         }
       }
     },
+
+    bookmark(postId) {
+      
+      axios
+        .post("http://localhost:8081/postBookmark", {
+          post_id: postId,
+          user_id: parseInt(this.userId),
+        })
+        .then((response) => {
+          if(response.data.message == "" ){
+            alert("Saved to bookmark");
+          } else if (response.data.message == "bookmark exist") {
+            alert("This post is already bookmarked");
+          }
+        });
+    },
   },
 
   mounted() {
@@ -427,10 +496,6 @@ export default {
 </script>
 
 <style>
-#app {
-  background-color: var(--v-background-base);
-}
-
 .h1 {
   padding-left: 25px;
   padding-top: 5px;

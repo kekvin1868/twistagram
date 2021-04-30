@@ -48,13 +48,15 @@
                   <v-list>
                     <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(userId)"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</p>
                     <template>
-                      <v-list-tile>
-                        <v-list-tile-content>
-                          <div v-for="(comment, i) in postComment" :key="i">
+                      <v-list>
+                        <v-list-tile-content
+                        v-for="(comment, i) in postComment"
+                        :key="i">
+                          <!-- <div v-for="(comment, i) in postComment" :key="i"> -->
                             <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
-                          </div>
+                          <!-- </div> -->
                         </v-list-tile-content>
-                      </v-list-tile>
+                      </v-list>
                     </template>
                   </v-list>
                 </v-card-text>
@@ -130,13 +132,16 @@
             <v-divider class="my-5"/>
 
             <template>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <div class="ml-5" v-for="(comment, i) in postComment" :key="i">
+              <v-list>
+                <v-list-tile-content
+                  v-for="(comment,i) in postComment"
+                  :key ="i"
+                  >
+                  <!-- <div class="ml-5" v-for="(comment, i) in postComment" :key="i"> -->
                     <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
-                  </div>
+                  <!-- </div> -->
                 </v-list-tile-content>
-              </v-list-tile>
+              </v-list>
             </template>
 
             <v-footer class="ml-n5" style="background-color:white">

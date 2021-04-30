@@ -23,7 +23,7 @@ func GetUserData(ID uint64) (*domain.User, error) {
 func SearchUser(keyword string) (*[]api.SearchAPI, error) {
 	var user []api.SearchAPI
 	keyword = keyword + "%"
-	res := orm.Engine.Table("users").Select("users.photo,users.id,users.full_name").Where("full_name LIKE ?", keyword).Find(&user)
+	res := orm.Engine.Table("users").Select("users.profile,users.id,users.full_name").Where("full_name LIKE ?", keyword).Find(&user)
 	var count int64
 	count = res.RowsAffected
 	fmt.Println(user)

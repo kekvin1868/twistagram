@@ -39,13 +39,21 @@
             <v-container fluid>
               <div v-for="x in this.userObj" :key="x.image">
                 <v-row>
-                  <v-col sm="1">
-                    <v-divider height="auto" vertical> </v-divider>
-                  </v-col>
                   <v-col sm="2">
-                    {{ x.fullname }}
+                    <v-avatar size="50">
+                      <v-img size="50" :src="x.profile"></v-img>
+                    </v-avatar>
+                  </v-col>
+                  <v-col sm="7">
+                    <p class="mt-3">{{ x.fullname }}</p>
+                  </v-col>
+                  <v-col class="mt-2" >
+                    <v-btn color="primary"> Follow </v-btn>
                   </v-col>
                 </v-row>
+                <v-col>
+                  <v-divider height="auto"> </v-divider>
+                </v-col>
               </div>
             </v-container>
           </v-card>
