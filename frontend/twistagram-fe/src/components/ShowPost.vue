@@ -26,7 +26,7 @@
         rounded
         elevation="5">
         
-        <v-row class="ma-3">
+        <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
             <v-img
               :src="postPhoto"
@@ -98,7 +98,52 @@
             </div>
           </v-col>
         </v-row>
-      </v-card>               
+
+        <v-row class="ma-3" v-if="postPhoto == ''">
+          <v-col>
+            <v-card-title class="ml-n3">
+              <v-list-item-avatar color="grey darken-3">
+                  <v-img
+                      class="elevation-6"
+                      alt=""
+                      :src="this.userAvatar"/>
+              </v-list-item-avatar>
+              <p class="pt-5" style="color:#393E46"><b>{{this.postFullname}}</b></p>
+            </v-card-title>
+          
+            <v-card-text class="headline font-weight-normal" style="color:#393E46">
+                {{this.postCaption}}
+            </v-card-text>
+
+            <template>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <div class="ml-10" v-for="(comment, i) in postComment" :key="i">
+                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
+                  </div>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
+
+            <v-row class="mx-n8 mt-n3 mb-n15">
+              <v-col>
+                <v-text-field
+                  id="new-comment"
+                  v-model="newComment"
+                  label="Post New Comment"
+                  solo/>
+              </v-col>
+              <v-col class="mt-3">
+                <v-btn icon @click="addComment">
+                  <v-icon>
+                    mdi-comment
+                  </v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+      </v-card>    
     </v-main>
   </v-app>
 </template>
