@@ -37,15 +37,34 @@ func PostFollow(follow *domain.Follow) (*domain.Follow, error) {
 	return follow, nil
 }
 
-func GetFollowers(UserID uint64) (*[]api.FollowAPI, error) {
-	var followers []api.FollowAPI
+func GetFollowers(UserID uint64) (*api.FollowersRes, error) {
+	var followers []api.Followers
+	var followRes api.FollowersRes
 
-	res := orm.Engine.Table("follows").Select("follows.id,follows.follow_id").Where("user_id = ?", UserID).Scan(&followers)
+	res := orm.Engine.Table("follows").Select("follows.id,follows.user_id").Where("follow_id = ?", UserID).Scan(&followers)
+	followRes.Followers = followers
+	followRes.Count = uint64(res.RowsAffected)
+
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	return &followers, nil
+	return &followRes, nil
+}
+
+func GetFollowing(UserID uint64) (*api.FollowingRes, error) {
+	var following []api.Following
+	var followRes api.FollowingRes
+
+	res := orm.Engine.Table("follows").Select("follows.id,follows.follow_id").Where("user_id = ?", UserID).Scan(&following)
+	followRes.Following = following
+	followRes.Count = uint64(res.RowsAffected)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &followRes, nil
 }
 
 func DeleteFollow(ID uint64) error {

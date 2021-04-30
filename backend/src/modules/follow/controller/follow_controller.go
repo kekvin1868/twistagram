@@ -62,6 +62,23 @@ func GetFollowers(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func GetFollowing(c *gin.Context) {
+	ID, _ := parser.ParseID(c.Param("ID"))
+	following, err := service.GetFollowing(ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	res := utils.Response{
+		Status: http.StatusOK,
+		Data:   *following,
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
 func DeleteBookmark(c *gin.Context) {
 	ID, _ := parser.ParseID(c.Param("ID"))
 	err := service.DeleteFollow(ID)

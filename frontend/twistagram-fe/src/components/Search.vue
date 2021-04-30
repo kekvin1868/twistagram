@@ -25,17 +25,26 @@
             <v-col class="mt-10" sm="6">
               <v-text-field
                 solo
+<<<<<<< HEAD
                 v-model="text"
+=======
+                v-model="searchText"
+>>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
                 @keyup.native="showAlert"
                 class="rounded-xl"
                 label="Search by Full name"
                 prepend-icon="mdi-magnify"
+<<<<<<< HEAD
+=======
+                required
+>>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
               >
               </v-text-field>
             </v-col>
           </v-row>
           <v-card class="mt-15" display="justify-center" width="500">
             <v-container fluid>
+<<<<<<< HEAD
               <v-row v-for="x in showProfile" :key="x.image">
                 <v-col sm="1">
                   <p>1.</p>
@@ -53,6 +62,26 @@
                   <v-btn color="primary"> Follow </v-btn>
                 </v-col>
               </v-row>
+=======
+              <div v-for="x in this.userObj" :key="x.image">
+                <v-row>
+                  <v-col sm="2">
+                    <v-avatar size="50">
+                      <v-img size="50" :src="x.profile"></v-img>
+                    </v-avatar>
+                  </v-col>
+                  <v-col sm="7">
+                    <p class="mt-3">{{ x.fullname }}</p>
+                  </v-col>
+                  <v-col class="mt-2" >
+                    <v-btn color="primary"> Follow </v-btn>
+                  </v-col>
+                </v-row>
+                <v-col>
+                  <v-divider height="auto"> </v-divider>
+                </v-col>
+              </div>
+>>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
             </v-container>
           </v-card>
         </v-flex>
@@ -69,9 +98,19 @@
 </style>
 
 <script>
+<<<<<<< HEAD
 export default {
   data: () => ({
     text: "",
+=======
+import axios from "axios";
+export default {
+  data: () => ({
+    userId: "",
+    searchUserId: [],
+    userObj: [],
+    searchText: "",
+>>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
     showProfile: [
       {
         image: "/images/kenji.jpg",
@@ -85,6 +124,7 @@ export default {
 
     model: 1,
   }),
+<<<<<<< HEAD
   methods: {
     showAlert: function(e) {
         if(e.keyCode === 13 && this.text === ""){
@@ -92,6 +132,41 @@ export default {
         }else if (e.keyCode===13){
             alert(this.text); // ini nanti aka trigger, 
         }
+=======
+
+  mounted() {
+    this.getUserId;
+  },
+  methods: {
+    getUserId() {
+      this.userId = this.$route.params.userId;
+    },
+
+    showAlert: function (e) {
+      if (e.keyCode === 13 && this.searchText === "") {
+        alert("Field Fullname masih kosong");
+      } else if (e.keyCode === 13) {
+        axios
+          .get(`http://localhost:8081/searchUser/` + this.searchText)
+          .then((response) => {
+            this.searchUserId = response.data.data;
+
+            if (this.searchUserId != []) {
+              this.userObj = [];
+              for (let index = 0; index < this.searchUserId.length; index++) {
+                axios
+                  .get(
+                    `http://localhost:8081/getUserData/` +
+                      this.searchUserId[index].ID
+                  )
+                  .then((response) => {
+                    this.userObj.push(response.data.data);
+                  });
+              }
+            }
+          });
+      }
+>>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
     },
   },
 };

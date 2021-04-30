@@ -24,7 +24,7 @@ func GetComment(PostID uint64) (*[]dto.CommentAPI, error) {
 	var comment []dto.CommentAPI
 
 	// res := orm.Engine.Model(&user.User{}).Joins("left join comments on comments.user_id = users.id").Scan(&comment)
-	res := orm.Engine.Table("comments").Select("users.full_name,comments.content").Joins("JOIN posts on comments.post_id = posts.id").Joins("JOIN users on comments.user_id = users.id").Scan(&comment)
+	res := orm.Engine.Table("comments").Select("users.id,users.full_name,comments.content").Joins("JOIN posts on comments.post_id = posts.id").Joins("JOIN users on comments.user_id = users.id").Where("comments.post_id = ?", PostID).Scan(&comment)
 	if res.Error != nil {
 		return nil, res.Error
 	}
