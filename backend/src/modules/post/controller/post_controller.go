@@ -90,3 +90,26 @@ func LoadFollowingPost(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 
 }
+
+func EditPost(c *gin.Context) {
+	var post *domain.Post
+	
+	err := c.ShouldBindJSON(&post)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	post, err = service.EditPost(post)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	res := utils.Response {
+		Status: http.StatusAccepted,
+		Data: *post,
+	}
+
+	c.JSON(http.StatusAccepted, res)
+}

@@ -1,14 +1,28 @@
 <template>
     <v-app id="app">
-        <v-app-bar app color = "#393E46" dark>
-            <a href="">
+        <v-app-bar app color="#222831" dark>
+            <div class="d-flex align-center">
+                <a href="">
                 <v-img
-                    class="ml-3 my-auto"
-                    max-height="100"
-                    max-width="130"
+                    alt="Vuetify Logo"
+                    class="shrink ma-2"
+                    contain
                     src="../assets/twistagram-logo.png"
+                    transition="scale-transition"
+                    width="150"
                     @click.prevent="goHome"/>
-            </a>
+                </a>
+            </div>
+            <v-spacer> </v-spacer>
+            <v-avatar size="50">
+                <v-img :src="this.visitorAvatar"></v-img>
+            </v-avatar>
+            <p class="mt-3 ml-3 mr-13">
+                <a href=""
+                class="text-decoration-none"
+                style="color:white;"
+                @click.prevent="goToProfile()">{{this.visitorFullname}}</a>
+            </p>
         </v-app-bar>
 
         <v-main>
@@ -77,7 +91,7 @@
                                         @click="unfollow">Followed</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
-                                    <a href="" class="text-decoration-none" @click="goToPosts">{{this.userPosts.length}} Posts</a>
+                                    <a href="" class="text-decoration-none" @click.prevent="goToPosts">{{this.userPosts.length}} Posts</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
@@ -153,6 +167,7 @@ export default {
         this.getUserData();
         this.getAllPostsID();
         this.getVisitorId();
+        this.getVisitorData();
         this.getFollowers();
         this.getFollowing();
         this.getFollowStatus();
@@ -160,6 +175,8 @@ export default {
     data() {
         return {
             visitorId: "",
+            visitorFullname: "",
+            visitorAvatar: "",
             userId: "",
             userFullName: "",
             userPassword: "",
@@ -190,6 +207,13 @@ export default {
                     this.userFullName = response.data.data.fullname;
                     this.userBio = response.data.data.bio;
                     this.userAvatar = response.data.data.profile;
+                });
+        },
+        getVisitorData(){
+            axios.get(`http://localhost:8081/getUserData/`+this.visitorId)
+                .then(response=>{
+                    this.visitorFullname = response.data.data.fullname;
+                    this.visitorAvatar = response.data.data.profile;
                 });
         },
         getAllPostsID(){
@@ -281,8 +305,12 @@ export default {
             window.location.reload();
         },
         viewPost(postid) {
-            this.$router.push({path: "/post/"+postid+"/"+this.visitorId})
-        }
+            this.$router.push({path: "/post/"+postid+"/"+this.visitorId});
+        },
+        goToProfile(){
+            this.$router.push({path:"/"+this.visitorId+"/profile/"+this.visitorId});
+            this.reloadPage();
+        },
     }
 }
 </script>

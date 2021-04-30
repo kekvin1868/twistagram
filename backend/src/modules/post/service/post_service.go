@@ -21,3 +21,7 @@ func GetAllUserPost(UserID uint64) (*[]api.PostRes, error) {
 func LoadFollowingPost(UserID uint64) (*[]api.PostID, error) {
 	return dao.LoadFollowingPost(UserID)
 }
+
+func EditPost(post *domain.Post) (*domain.Post, error) {
+	return dao.EditPost(post)
+}

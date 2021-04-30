@@ -1,14 +1,28 @@
 <template>
     <v-app id="app">
-        <v-app-bar app color = "#393E46" dark>
-            <a href="">
+        <v-app-bar app color="#222831" dark>
+            <div class="d-flex align-center">
+                <a href="">
                 <v-img
-                    class="ml-3 my-auto"
-                    max-height="100"
-                    max-width="130"
+                    alt="Vuetify Logo"
+                    class="shrink ma-2"
+                    contain
                     src="../assets/twistagram-logo.png"
+                    transition="scale-transition"
+                    width="150"
                     @click.prevent="goHome"/>
-            </a>
+                </a>
+            </div>
+            <v-spacer> </v-spacer>
+            <v-avatar size="50">
+                <v-img :src="this.userAvatar"></v-img>
+            </v-avatar>
+            <p class="mt-3 ml-3 mr-13">
+                <a href=""
+                class="text-decoration-none"
+                style="color:white;"
+                @click.prevent="goToProfile()">{{this.userFullName}}</a>
+            </p>
         </v-app-bar>
 
         <v-main>
@@ -59,7 +73,7 @@
                                         @click="logout">Logout</v-btn>
                                 </v-col>
                                 <v-col class="mt-n4" cols="12">
-                                    <a href="" class="text-decoration-none" @click="goToPosts">{{this.userPosts.length}} Posts</a>
+                                    <a href="" class="text-decoration-none" @click.prevent="goToPosts">{{this.userPosts.length}} Posts</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followingCount}} Following</a>
                                     <a href="" class="ml-5 text-decoration-none">{{this.followersCount}} Follower</a>
                                 </v-col>
@@ -295,9 +309,18 @@ export default {
         logout(){
             this.$router.push({path:"/"})
         },
+        goToProfile(){
+          var r = confirm("Are you sure want to leave this page?");
+          if (r) {
+            this.$router.push({path:"/"+this.userId+"/profile/"+this.userId});
+          }
+        },
         goHome(){
+          var r = confirm("Are you sure want to leave this page?");
+          if (r) {
             this.$router.push({path: "/home/"+this.userId})
-        }
+          }
+        },
     }
 }
 </script>
