@@ -7,6 +7,7 @@ import (
 	likeRouter "twistagram/src/modules/like/routing"
 	postRouter "twistagram/src/modules/post/routing"
 	regristrationRouter "twistagram/src/modules/regristration/routing"
+	reportRouter "twistagram/src/modules/report/routing"
 	userRouter "twistagram/src/modules/user/routing"
 )
 
@@ -18,4 +19,5 @@ func MapURLs() {
 	likeRouter.MapURLs(router)
 	bookmarkRouter.MapURLs(router)
 	followRouter.MapURLs(router)
+	reportRouter.MapURLs(router)
 }

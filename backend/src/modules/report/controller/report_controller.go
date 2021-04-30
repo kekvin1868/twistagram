@@ -5,6 +5,7 @@ import (
 	"twistagram/src/modules/report/domain"
 	"twistagram/src/modules/report/service"
 	utils "twistagram/src/utils/Response"
+	"twistagram/src/utils/parser"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,4 +42,22 @@ func PostReport(c *gin.Context) {
 		Data:   *newReport,
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func GetReportCounts(c *gin.Context) {
+	ID, _ := parser.ParseID(c.Param("ID"))
+	report, err := service.GetReportCounts(ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	res := utils.Response{
+		Status: http.StatusOK,
+		Data:   *report,
+	}
+
+	c.JSON(http.StatusOK, res)
+
 }
