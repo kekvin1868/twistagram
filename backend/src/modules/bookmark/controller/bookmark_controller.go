@@ -29,11 +29,11 @@ func PostBookmark(c *gin.Context) {
 
 	if newBookmark == nil {
 		failed := utils.Response{
-			Status:  http.StatusConflict,
+			Status:  http.StatusOK,
 			Message: "bookmark exist",
 			Data:    nil,
 		}
-		c.JSON(http.StatusConflict, failed)
+		c.JSON(http.StatusOK, failed)
 		return
 	}
 
