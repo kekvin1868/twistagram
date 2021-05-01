@@ -470,7 +470,6 @@ export default {
     },
 
     bookmark(postId) {
-      
       axios
         .post("http://localhost:8081/postBookmark", {
           post_id: postId,
