@@ -135,7 +135,7 @@
                             id="postDiv"
                           >
                             <v-card
-                              class="mx-auto my-10 rounded"
+                              class="mx-auto my-10 rounded-xl"
                               max-width="800"
                               v-if="data.photo != ''"
                             >
@@ -148,8 +148,7 @@
                                 <v-spacer></v-spacer>
 
                                 <v-card-actions>
-                                  <v-btn icon
-                                  @click="bookmark(data.id)">
+                                  <v-btn icon @click="bookmark(data.id)">
                                     <v-icon color="black" x-large>
                                       mdi-bookmark
                                     </v-icon>
@@ -175,51 +174,23 @@
                                 </v-row>
 
                                 <br />
-                                <!-- show data comment -->
-                                <div id="layout-comment">
-                                  <h4>Comments</h4>
-                                  <div v-if="data.comment.length > 0">
-                                    <p>
-                                      <b> {{ data.comment[0].FullName }} </b>
-                                      {{ data.comment[0].Content }}
-                                    </p>
-                                    <a @click="goToShowPost(data.id)"
-                                      >Show More ...</a
-                                    >
-                                  </div>
-                                </div>
-                                <v-divider color="black"></v-divider>
-                                <v-row no-gutters>
-                                  <v-col sm="1">
-                                    <v-btn
-                                      class="mt-1 ml-2"
-                                      icon
-                                      x-large
-                                      color="pink"
-                                    >
-                                      <v-icon>mdi-heart</v-icon>
-                                    </v-btn>
+
+                                <v-row>
+                                  <v-icon medium class="ml-5 mr-1">
+                                    mdi-comment
+                                  </v-icon>
+                                  <v-col class="ml-n3" sm="1">
+                                    {{ data.comment.length }}
                                   </v-col>
 
-                                  <v-col sm="2" md="8">
-                                    <v-text-field
-                                      required
-                                      single-line
-                                      display="flex"
-                                      rounded
-                                      background-color="grey"
-                                      color="black"
-                                      label="Insert your comment here..."
-                                      v-model="caption"
-                                    />
+                                  <v-icon color="red"> mdi-heart </v-icon>
+                                  <v-col class="ml-n2" sm="1">
+                                    {{ data.like.length }}
                                   </v-col>
-                                  <v-col class="mt-3 ml-5">
-                                    <v-btn
-                                      @click="comment(data.id)"
-                                      color="primary"
-                                    >
-                                      <v-icon> mdi-send </v-icon>
-                                    </v-btn>
+                                  <v-col sm="3">
+                                    <a @click="goToShowPost(data.id)">
+                                      Show more ...
+                                    </a>
                                   </v-col>
                                 </v-row>
                               </v-card-text>
@@ -250,14 +221,26 @@
                                 </p>
                               </v-card-text>
 
-                              <v-divider class="ml-8" width="650"></v-divider>
                               <v-card-actions class="ml-4">
-                                <v-btn icon>
-                                  <v-icon medium> mdi-comment </v-icon>
-                                </v-btn>
-                                <v-btn icon>
+                                <v-row>
+                                  <v-icon medium class="ml-5 mr-1">
+                                    mdi-comment
+                                  </v-icon>
+                                  <v-col class="ml-n3" sm="1">
+                                    {{ data.comment.length }}
+                                  </v-col>
+
                                   <v-icon color="red"> mdi-heart </v-icon>
-                                </v-btn>
+                                  <v-col class="ml-n2" sm="1">
+                                    {{ data.like.length }}
+                                  </v-col>
+
+                                  <v-col sm="3">
+                                    <a @click="goToShowPost(data.id)">
+                                      Show more ...
+                                    </a>
+                                  </v-col>
+                                </v-row>
                               </v-card-actions>
                             </v-card>
                           </div>
@@ -290,7 +273,7 @@
                 <br /><br />
               </v-col>
 
-              <!-- CARD FOR TRENDING -->
+              <!-- CARD FOR SUGGESTIONS -->
               <v-col sm="2">
                 <v-card class="rounded-xl" color="#222831">
                   <v-card-title>
@@ -470,14 +453,13 @@ export default {
     },
 
     bookmark(postId) {
-      
       axios
         .post("http://localhost:8081/postBookmark", {
           post_id: postId,
           user_id: parseInt(this.userId),
         })
         .then((response) => {
-          if(response.data.message == "" ){
+          if (response.data.message == "") {
             alert("Saved to bookmark");
           } else if (response.data.message == "bookmark exist") {
             alert("This post is already bookmarked");

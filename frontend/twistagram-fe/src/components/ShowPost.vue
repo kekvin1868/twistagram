@@ -13,7 +13,7 @@
             @click.prevent="goHome"/>
         </a>
       </div>
-      <v-spacer> </v-spacer>
+      <v-spacer></v-spacer>
       <v-avatar size="50">
         <v-img :src="this.visitorAvatar"></v-img>
       </v-avatar>
@@ -46,7 +46,19 @@
               <v-card elevation="0" height="450px">
                 <v-card-text class="ml-n5">
                   <v-list>
-                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(userId)"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</p>
+                    <v-list-item>
+                      <v-list-item-avatar color="grey darken-3" size="30" class="mb-3 ml-n3"> 
+                        <v-img
+                          :src="userAvatar"></v-img>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content>
+                        <v-list-item-title><a class="mt-3 text-decoration-none" @click.prevent="goToAccount(userId)"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+
+                    <v-divider color="black"/>
+                    <p class="mb-2"><b>Comments:</b></p> 
                     <template>
                       <v-list>
                         <v-list-tile-content
@@ -64,16 +76,16 @@
                 <v-footer class="ml-n2">
                   <div>
                     <v-row class="mx-n6 mt-1">
-                      
-                      <v-col class="mr-n15">
-                        <v-btn icon class="ml-6">
-                          <v-icon disabled>
+                      <v-col class="mr-n15" sm="2">
+                        <v-btn icon class="mb-n7 mr-7">
+                          <v-icon disabled >
                             mdi-cards-heart
                           </v-icon>
-                          <p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p>
                         </v-btn>
                       </v-col>
-                      
+
+                      <v-col class="ml-3"><p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p></v-col>
+
                       <v-col align="right" v-if="this.visitorId == this.userId">
                         <v-btn tile color="success" @click="editPost">
                           <v-icon left>
@@ -236,7 +248,7 @@ html {
 </style>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   mounted() {
@@ -259,73 +271,80 @@ export default {
       postPhoto: "",
       newComment: "",
       userAvatar: "",
+      isLiked: false
     };
   },
 
   methods: {
-    getVisitorId(){
+    getVisitorId() {
       this.visitorId = this.$route.params.userId;
       // console.log(this.visitorId);
     },
-    getVisitorData(){
-      axios.get(`http://localhost:8081/getUserData/`+this.visitorId)
-            .then(response=>{
-                this.visitorFullname = response.data.data.fullname;
-                this.visitorAvatar = response.data.data.profile; 
-            });
-    },
-    getPostId(){
-      this.postId = this.$route.params.postId;
-    },
-    getPostData(){
-      axios.get(`http://localhost:8081/getPost/`+this.postId)
-        .then(response=>{
-            this.postLike = response.data.data.like;
-            this.postComment = response.data.data.comment;
-            this.postCaption = response.data.data.caption;
-            this.userId = response.data.data.user_id;
-            this.postFullname = response.data.data.fullname;
-            this.postPhoto = response.data.data.photo;
-
-            axios.get(`http://localhost:8081/getUserData/`+this.userId)
-              .then(response=>{
-                  this.userAvatar = response.data.data.profile; 
-              });
+    getVisitorData() {
+      axios
+        .get(`http://localhost:8081/getUserData/` + this.visitorId)
+        .then((response) => {
+          this.visitorFullname = response.data.data.fullname;
+          this.visitorAvatar = response.data.data.profile;
         });
     },
-    goToAccount(userID){
-      this.$router.push({path:"/"+userID+"/profile/"+this.visitorId})
+    getPostId() {
+      this.postId = this.$route.params.postId;
     },
-    goToProfile(){
-      this.$router.push({path:"/"+this.visitorId+"/profile/"+this.visitorId})
+    getPostData() {
+      axios
+        .get(`http://localhost:8081/getPost/` + this.postId)
+        .then((response) => {
+          this.postLike = response.data.data.like;
+          this.postComment = response.data.data.comment;
+          this.postCaption = response.data.data.caption;
+          this.userId = response.data.data.user_id;
+          this.postFullname = response.data.data.fullname;
+          this.postPhoto = response.data.data.photo;
+
+          axios
+            .get(`http://localhost:8081/getUserData/` + this.userId)
+            .then((response) => {
+              this.userAvatar = response.data.data.profile;
+            });
+        });
     },
-    addComment(){
-      var comment = document.getElementById("new-comment").value
+    goToAccount(userID) {
+      this.$router.push({ path: "/" + userID + "/profile/" + this.visitorId });
+    },
+    goToProfile() {
+      this.$router.push({
+        path: "/" + this.visitorId + "/profile/" + this.visitorId,
+      });
+    },
+    addComment() {
+      var comment = document.getElementById("new-comment").value;
 
       var commentObj = {
         user_id: parseInt(this.visitorId),
         post_id: parseInt(this.postId),
-        content: comment
-      }
+        content: comment,
+      };
 
-      axios.post("http://localhost:8081/postComment", commentObj)
+      axios
+        .post("http://localhost:8081/postComment", commentObj)
         .then((response) => {
-            console.log(response);
-            this.reloadPost();
+          console.log(response);
+          this.reloadPost();
         })
         .catch(function (error) {
           window.alert("Unable to Comment");
           console.log(error);
         });
     },
-    reloadPost(){
+    reloadPost() {
       window.location.reload();
     },
-    editPost(){
-      this.$router.push({path:"/updatePost/"+this.postId});
+    editPost() {
+      this.$router.push({ path: "/updatePost/" + this.postId });
     },
-    goHome(){
-      this.$router.push({path: "/home/"+this.visitorId});
+    goHome() {
+      this.$router.push({ path: "/home/" + this.visitorId });
     },
   },
 };
