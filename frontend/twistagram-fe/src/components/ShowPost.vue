@@ -59,7 +59,9 @@
                   </v-list>
                 </v-card-text>
                 
-                <v-footer class="ml-n2">
+                <v-divider/>
+
+                <v-footer class="ml-n2" style="background-color:white">
                   <div>
                     <v-row class="mx-n6 mt-1">
                       
