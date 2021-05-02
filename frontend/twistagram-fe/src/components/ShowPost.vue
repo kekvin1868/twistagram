@@ -110,22 +110,39 @@
                           icon
                           class="mb-n7 mr-7"
                           v-if="!isLiked"
-                          @click="likePost()"
-                        >
+                          @click="likePost()">
                           <v-icon disabled> mdi-cards-heart </v-icon>
                         </v-btn>
                       </v-col>
 
-                      <v-col class="ml-3"
-                        ><p class="mt-4 ml-2">
+                      <v-col class="ml-3 mr-n5">
+                        <p class="mt-4 ml-2">
                           {{ postLike.length }} Likes
-                        </p></v-col
-                      >
+                        </p>
+                      </v-col>
+
+                      <v-col>
+                        <v-btn
+                          icon
+                          class="mb-n6 ml-n15"
+                          large>
+                          <v-icon disabled> mdi-share </v-icon>
+                        </v-btn>
+                      </v-col>
 
                       <v-col align="right" v-if="visitorId == userId">
                         <v-btn tile color="success" @click="editPost">
                           <v-icon left> mdi-pencil </v-icon>
                           Edit
+                        </v-btn>
+                      </v-col>
+
+                      <v-col align="right" class="mt-1 mr-n5" v-else>
+                        <v-btn icon large v-if="!isBookmarked" @click="bookmarkPost">
+                          <v-icon left> mdi-bookmark-outline </v-icon>
+                        </v-btn>
+                        <v-btn icon large v-if="isBookmarked" @click="bookmarkPost">
+                          <v-icon left> mdi-bookmark </v-icon>
                         </v-btn>
                       </v-col>
                     </v-row>
@@ -137,8 +154,7 @@
                           v-model="newComment"
                           label="Post New Comment"
                           solo
-                          style="width: 400px"
-                        />
+                          style="width: 400px"/>
                       </v-col>
                       <v-col class="mt-3">
                         <v-btn icon @click="addComment()">
@@ -169,15 +185,13 @@
                   class="text-decoration-none"
                   style="color: #393e46"
                   @click="goToAccount(userId)"
-                  ><b>{{ postFullname }}</b></a
-                >
+                  ><b>{{ postFullname }}</b></a>
               </p>
             </v-card-title>
 
             <v-card-text
               class="headline font-weight-normal"
-              style="color: #393e46"
-            >
+              style="color: #393e46">
               {{ postCaption }}
             </v-card-text>
 
@@ -187,16 +201,14 @@
               <v-list>
                 <v-list-item-content
                   v-for="(comment, i) in postComment"
-                  :key="i"
-                >
+                  :key="i">
                   <v-row class="ml-5">
                     <p>
                       <a
                         href=""
                         class="mt-3 text-decoration-none"
                         @click.prevent="goToAccount(comment.ID)"
-                        ><b>{{ comment.FullName }}</b></a
-                      >
+                        ><b>{{ comment.FullName }}</b></a>
                       {{ comment.Content }}
                     </p>
                   </v-row>
@@ -212,8 +224,7 @@
                     class="ml-6"
                     color="pink"
                     v-if="isLiked"
-                    @click="likePost()"
-                  >
+                    @click="likePost()">
                     <v-icon> mdi-cards-heart </v-icon>
                     <p class="mt-4 ml-2">{{ postLike.length }} Likes</p>
                   </v-btn>
@@ -224,38 +235,53 @@
                       <b>{{ postLike.length }} Likes</b>
                     </p>
                   </v-btn>
+                  <v-btn
+                    icon
+                    class="ml-15"
+                    large>
+                    <v-icon disabled> mdi-share </v-icon>
+                  </v-btn>
                 </v-col>
-
+                
                 <v-col
                   class="mr-n8 mt-1"
                   align="right"
-                  v-if="visitorId == userId"
-                >
+                  v-if="visitorId == userId">
                   <v-btn tile color="success" @click="editPost">
                     <v-icon left> mdi-pencil </v-icon>
                     Edit
                   </v-btn>
                 </v-col>
+                <v-col 
+                  class="mr-n8 mt-3"
+                  align="right"
+                  v-if="visitorId != userId">
+                  <v-btn icon large v-if="!isBookmarked" @click="bookmarkPost">
+                    <v-icon left> mdi-bookmark-outline </v-icon>
+                  </v-btn>
+                  <v-btn icon large v-if="isBookmarked" @click="bookmarkPost">
+                    <v-icon left> mdi-bookmark </v-icon>
+                  </v-btn>
+                </v-col>
               </v-row>
 
               <v-row class="ml-n5 mb-n10">
-                <v-col class="ml-8" md="10">
+                <v-col class="ml-8" md="11">
                   <v-text-field
                     id="new-comment"
                     v-model="newComment"
                     label="Post New Comment"
                     solo
-                    style="width: 820px"
-                  />
+                    style="width: 840px"/>
                 </v-col>
                 <v-spacer />
-                <v-col class="mt-3 mr-5">
+                <v-col class="mt-3">
                   <v-btn
-                    class="mr-n10"
+                    class="ml-n5"
                     allign="right"
                     icon
-                    @click="addComment()"
-                  >
+                    large
+                    @click="addComment()">
                     <v-icon> mdi-comment </v-icon>
                   </v-btn>
                 </v-col>
@@ -320,6 +346,7 @@ export default {
     this.getVisitorData();
     this.getPostId();
     this.getPostData();
+    this.getBookmarkStatus();
   },
   data() {
     return {
@@ -337,6 +364,9 @@ export default {
       userAvatar: "",
       isLiked: false,
       likeId: null,
+      idBookmark: "",
+      isBookmarked: false,
+      userBookmark: []
     };
   },
 
@@ -388,6 +418,26 @@ export default {
       this.$router.push({
         path: "/" + this.visitorId + "/profile/" + this.visitorId,
       });
+    },
+    getBookmarkStatus() {
+      axios
+        .get(`http://localhost:8081/getBookmark/` + this.visitorId)
+        .then((response) => {
+          this.userBookmark = response.data.data;
+          var bookmark = null;
+
+          bookmark = this.userBookmark.find(
+              (book) => book.post_id == this.postId
+          );
+
+          if(bookmark != null) {
+              this.isBookmarked = true;
+              this.idBookmark = bookmark.ID;
+          } else {
+            this.isBookmarked = false;
+          }
+          console.log(this.idBookmark);
+        });
     },
     addComment() {
       var comment = this.newComment;
@@ -441,6 +491,35 @@ export default {
             this.getPostData();
             this.isLiked = false;
           });
+      }
+    },
+    async bookmarkPost() {
+      if (!this.isBookmarked) {
+        axios
+          .post(`http://localhost:8081/postBookmark`, {
+              post_id: parseInt(this.postId),
+              user_id: parseInt(this.userId)
+          })
+          .then((response) => {
+              this.idBookmark = response.data.data.id;
+              this.getBookmarkStatus();
+          })
+          .catch(function (error) {
+              window.alert("Bookmark Post Failed");
+              console.log(error);
+          });
+      } else {
+        await axios
+            .delete(`http://localhost:8081/deleteBookmark/` + this.idBookmark)
+            .then((response) => {
+                console.log(response);
+                this.isBookmarked = false;
+                this.getBookmarkStatus();
+            })
+            .catch(function (error) {
+                window.alert("Bookmark unPost Failed");
+                console.log(error);
+            });
       }
     },
   },
