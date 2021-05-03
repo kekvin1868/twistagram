@@ -17,9 +17,9 @@
 
       <v-spacer></v-spacer>
 
-      <v-icon> mdi-magnify </v-icon>
-
-      <v-icon> mdi-search </v-icon>
+      <v-btn @click="goToSearch()" transparant>
+        <v-icon> mdi-magnify </v-icon>
+      </v-btn>
       <v-avatar size="50">
         <v-img :src="userData.profile"></v-img>
       </v-avatar>
@@ -374,6 +374,12 @@ export default {
     goToShowPost(postID) {
       this.$router.push({
         path: "/post/" + postID + "/" + this.userId,
+      });
+    },
+
+    goToSearch(){
+      this.$router.push({
+        path: "/home/" + this.userId + "/search"
       });
     },
 

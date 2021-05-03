@@ -45,6 +45,11 @@ export default new VueRouter({
             path: '/updatePost/:postId',
             name: 'editPost',
             component: () => import('./components/UpdatePost')
+        },
+        {
+            path: '/:userID/search',
+            name: 'search',
+            component: () => import('./components/Search')
         }
         
     ]

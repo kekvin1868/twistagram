@@ -12,10 +12,10 @@
         />
       </div>
       <v-spacer> </v-spacer>
-      <v-avatar size="60">
-        <v-img src="../assets/kenji.jpg"></v-img>
+      <v-avatar size="50" class="mr-3">
+        <v-img :src="userData.profile"></v-img>
       </v-avatar>
-      <h1>Felix</h1>
+      <h1>{{ userData.fullname }}</h1>
     </v-app-bar>
 
     <v-main>
@@ -47,7 +47,7 @@
                   <v-col sm="7">
                     <p class="mt-3">{{ x.fullname }}</p>
                   </v-col>
-                  <v-col class="mt-2" >
+                  <v-col class="mt-2">
                     <v-btn color="primary"> Follow </v-btn>
                   </v-col>
                 </v-row>
@@ -75,29 +75,27 @@ import axios from "axios";
 export default {
   data: () => ({
     userId: "",
-    searchUserId: [],
+    userData: [],
     userObj: [],
     searchText: "",
-    showProfile: [
-      {
-        image: "/images/kenji.jpg",
-        name: "Felix",
-      },
-      {
-        image: "/images/default-profile.jpg",
-        name: "Joh Doe",
-      },
-    ],
 
-    model: 1,
   }),
 
   mounted() {
-    this.getUserId;
+    this.getUserId();
+    this.getUserData();
   },
   methods: {
     getUserId() {
-      this.userId = this.$route.params.userId;
+      this.userId = this.$route.params.userID;
+    },
+
+    getUserData() {
+      axios
+        .get(`http://localhost:8081/getUserData/` + this.userId)
+        .then((response) => {
+          this.userData = response.data.data;
+        });
     },
 
     showAlert: function (e) {
@@ -107,19 +105,19 @@ export default {
         axios
           .get(`http://localhost:8081/searchUser/` + this.searchText)
           .then((response) => {
-            this.searchUserId = response.data.data;
+            var searchUserId = response.data.data;
 
-            if (this.searchUserId != []) {
-              this.userObj = [];
-              for (let index = 0; index < this.searchUserId.length; index++) {
-                axios
-                  .get(
-                    `http://localhost:8081/getUserData/` +
-                      this.searchUserId[index].ID
-                  )
-                  .then((response) => {
-                    this.userObj.push(response.data.data);
-                  });
+            if (searchUserId != []) {
+              for (let index = 0; index < searchUserId.length; index++) {
+                if (this.userId != searchUserId[index].ID ){
+
+                  var userSearchObj = {
+                    fullname: searchUserId[index].FullName,
+                    id: searchUserId[index].ID,
+                    profile: searchUserId[index].Profile,
+                  }
+                  this.userObj.push(userSearchObj);
+                }
               }
             }
           });
