@@ -572,7 +572,7 @@ export default {
         axios
           .post(`http://localhost:8081/postShare`, {
               post_id: parseInt(this.postId),
-              user_id: parseInt(this.userId)
+              user_id: parseInt(this.visitorId)
           })
           .then((response) => {
               this.idShare = response.data.data.id;

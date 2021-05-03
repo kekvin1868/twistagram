@@ -147,7 +147,9 @@
                                 <v-card-actions>
                                   <v-btn
                                     icon
-                                    @click="bookmark(data.id, data.isBookmarked)"
+                                    @click="
+                                      bookmark(data.id, data.isBookmarked)
+                                    "
                                     v-if="data.isBookmarked == null"
                                   >
                                     <v-icon color="black" x-large>
@@ -156,7 +158,9 @@
                                   </v-btn>
                                   <v-btn
                                     icon
-                                    @click="bookmark(data.id, data.isBookmarked)"
+                                    @click="
+                                      bookmark(data.id, data.isBookmarked)
+                                    "
                                     v-else
                                   >
                                     <v-icon color="blue" x-large>
@@ -261,13 +265,118 @@
                     <!-- TAB FOR SHARE -->
                     <v-tab-item :value="'tab-' + 2">
                       <v-card flat>
-                        <v-card-text>
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua. Ut enim ad minim veniam, quis
-                          nostrud exercitation ullamco laboris nisi ut aliquip
-                          ex ea commodo consequat.
-                        </v-card-text>
+                        <div v-if="postData != null">
+                          <div
+                            v-for="(data, i) in shareData"
+                            :key="i"
+                            id="shareDiv"
+                          >
+                            <v-card
+                              class="mx-auto my-10 rounded-xl"
+                              max-width="800"
+                              v-if="data.postData.photo != ''"
+                            >
+                              <v-card-title>
+                                <v-avatar size="70">
+                                  <v-img :src="data.userData.profile"></v-img>
+                                </v-avatar>
+
+                                <p class="ml-5">{{ data.userData.fullname }}</p>
+                                <v-spacer></v-spacer>
+
+                                <v-card-actions>
+                                  <v-btn icon>
+                                    <v-icon x-large color="black">
+                                      mdi-dots-vertical
+                                    </v-icon>
+                                  </v-btn>
+                                </v-card-actions>
+                              </v-card-title>
+                              <v-img :src="data.postData.photo" />
+                              <v-card-text>
+                                <v-row no-gutters>
+                                  <v-col sm="2">
+                                    <h2 class="ml-5">{{ data.userData.fullname }}</h2>
+                                  </v-col>
+                                  <v-col>
+                                    <p>
+                                      {{ data.postData.caption }}
+                                    </p>
+                                  </v-col>
+                                </v-row>
+
+                                <br />
+
+                                <v-row>
+                                  <v-icon medium class="ml-5 mr-1">
+                                    mdi-comment
+                                  </v-icon>
+                                  <v-col class="ml-n3" sm="1">
+                                    {{ data.postData.comment.length }}
+                                  </v-col>
+
+                                  <v-icon color="red"> mdi-heart </v-icon>
+                                  <v-col class="ml-n2" sm="1">
+                                    {{ data.postData.like.length }}
+                                  </v-col>
+                                  <v-col sm="3">
+                                    <a @click="goToShowPost(data.postData.id)">
+                                      Show more ...
+                                    </a>
+                                  </v-col>
+                                </v-row>
+                              </v-card-text>
+                            </v-card>
+
+                            <!-- WITHOUT PHOTO -->
+                            <v-card
+                              class="mt-5 rounded-xl"
+                              max-width="800"
+                              v-if="data.postData.photo == ''"
+                            >
+                              <v-card-title>
+                                <v-avatar class="mt-2 ml-2" size="70">
+                                  <v-img :src="data.userData.profile"> </v-img>
+                                </v-avatar>
+                                <p class="ml-3">{{ data.userData.fullname }}</p>
+                                <v-spacer></v-spacer>
+                                <v-btn icon>
+                                  <v-icon large color="black">
+                                    mdi-dots-vertical
+                                  </v-icon>
+                                </v-btn>
+                              </v-card-title>
+
+                              <v-card-text>
+                                <p class="pt-3 pl-5">
+                                  {{ data.postData.caption }}
+                                </p>
+                              </v-card-text>
+
+                              <v-card-actions class="ml-4">
+                                <v-row>
+                                  <v-icon medium class="ml-5 mr-1">
+                                    mdi-comment
+                                  </v-icon>
+                                  <v-col class="ml-n3" sm="1">
+                                    {{ data.postData.comment.length }}
+                                  </v-col>
+
+                                  <v-icon color="red"> mdi-heart </v-icon>
+                                  <v-col class="ml-n2" sm="1">
+                                    {{ data.postData.like.length }}
+                                  </v-col>
+
+                                  <v-col sm="3">
+                                    <a @click="goToShowPost(data.postData.id)">
+                                      Show more ...
+                                    </a>
+                                  </v-col>
+                                </v-row>
+                              </v-card-actions>
+                            </v-card>
+                          </div>
+                        </div>
                       </v-card>
                     </v-tab-item>
                   </v-tabs-items>
@@ -340,7 +449,7 @@ export default {
           text: "lol",
         },
       ],
-      shareData: []
+      shareData: [],
     };
   },
   methods: {
@@ -386,9 +495,9 @@ export default {
       });
     },
 
-    goToSearch(){
+    goToSearch() {
       this.$router.push({
-        path: "/home/" + this.userId + "/search"
+        path: "/home/" + this.userId + "/search",
       });
     },
 
@@ -453,19 +562,23 @@ export default {
             .get("http://localhost:8081/getPost/" + this.feedsIds[index].ID)
             .then((response) => {
               var postId = response.data.data.id;
-              var caption= response.data.data.caption;
-              var fullname= response.data.data.fullname;
-              var user_id= response.data.data.user_id;
-              var like= response.data.data.like;
-              var comment= response.data.data.comment;
-              var photo= response.data.data.photo;
+              var caption = response.data.data.caption;
+              var fullname = response.data.data.fullname;
+              var user_id = response.data.data.user_id;
+              var like = response.data.data.like;
+              var comment = response.data.data.comment;
+              var photo = response.data.data.photo;
               var isBookmarked = null;
 
               axios
                 .get("http://localhost:8081/getBookmark/" + this.userId)
                 .then((response) => {
                   if (response.data.data.length > 0) {
-                    for (let index = 0;index < response.data.data.length;index++) {
+                    for (
+                      let index = 0;
+                      index < response.data.data.length;
+                      index++
+                    ) {
                       if (response.data.data[index].post_id == postId) {
                         isBookmarked = response.data.data[index].ID;
                       }
@@ -498,39 +611,46 @@ export default {
             this.reloadFeeds();
           } else if (response.data.message == "bookmark exist") {
             axios
-              .delete("http://localhost:8081/deleteBookmark/"+bookmarkId).then(()=>{
+              .delete("http://localhost:8081/deleteBookmark/" + bookmarkId)
+              .then(() => {
                 this.reloadFeeds();
-              })
+              });
           }
         });
     },
-    getShareData(){
-      
+    getShareData() {
       axios
-        .get("http://localhost:8081/loadShare/"+this.userId).then((response)=>{
+        .get("http://localhost:8081/loadShare/" + this.userId)
+        .then((response) => {
           var responseShare = response.data.data;
-          for(let index = 0; index < responseShare.length; index++){
+          for (let index = 0; index < responseShare.length; index++) {
             axios
-              .get(`http://localhost:8081/getUserData/` + responseShare[index].UserID)
+              .get(
+                `http://localhost:8081/getUserData/` +
+                  responseShare[index].UserID
+              )
               .then((responseUser) => {
                 var userData = responseUser.data.data;
 
-                 axios
-                  .get("http://localhost:8081/getPost/" + responseShare[index].PostID)
-                  .then((responsePost)=>{
+                axios
+                  .get(
+                    "http://localhost:8081/getPost/" +
+                      responseShare[index].PostID
+                  )
+                  .then((responsePost) => {
                     var postData = responsePost.data.data;
 
                     var shareDataObj = {
                       id: responseShare[index].ID,
                       userData: userData,
-                      postData: postData
+                      postData: postData,
                     };
                     this.shareData.push(shareDataObj);
-                  })
-              });            
+                  });
+              });
           }
-        })
-    }
+        });
+    },
   },
   mounted() {
     this.getUserId();

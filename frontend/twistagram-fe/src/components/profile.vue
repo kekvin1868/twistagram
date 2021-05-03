@@ -322,7 +322,7 @@ export default {
       this.$router.push({ path: "/" });
     },
     goHome() {
-      this.$router.push({ path: "/home/" + this.userId });
+      this.$router.push({ path: "/home/" + this.visitorId });
     },
     follow() {
       var followObj = {
