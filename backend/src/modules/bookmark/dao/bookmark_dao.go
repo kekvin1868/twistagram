@@ -35,7 +35,7 @@ func PostBookmark(bookmark *domain.Bookmark) (*domain.Bookmark, error) {
 		return nil, res.Error
 	}
 
-	return bookmark, nil
+	return &newBookmark, nil
 }
 
 func GetBookmark(UserID uint64) (*[]api.BookmarkAPI, error) {

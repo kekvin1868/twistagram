@@ -50,6 +50,11 @@ export default new VueRouter({
             path: '/home/:userID/search',
             name: 'search',
             component: () => import('./components/Search')
+        },
+        {
+            path: '/:userId/showFollow/:vistId',
+            name: 'showFollow',
+            component: () => import('./components/showFollow')
         }
         
     ]

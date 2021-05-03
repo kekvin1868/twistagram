@@ -1,6 +1,3 @@
-
-<!-- buat yang edit home: line 53 & 239 -->
-
 <template>
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
@@ -148,8 +145,21 @@
                                 <v-spacer></v-spacer>
 
                                 <v-card-actions>
-                                  <v-btn icon @click="bookmark(data.id)">
+                                  <v-btn
+                                    icon
+                                    @click="bookmark(data.id, data.isBookmarked)"
+                                    v-if="data.isBookmarked == null"
+                                  >
                                     <v-icon color="black" x-large>
+                                      mdi-bookmark
+                                    </v-icon>
+                                  </v-btn>
+                                  <v-btn
+                                    icon
+                                    @click="bookmark(data.id, data.isBookmarked)"
+                                    v-else
+                                  >
+                                    <v-icon color="blue" x-large>
                                       mdi-bookmark
                                     </v-icon>
                                   </v-btn>
@@ -310,6 +320,7 @@ export default {
     return {
       tab: null,
       counts: "",
+      postData: [],
       feedsIds: [],
       followingObj: "",
       followerObj: "",
@@ -329,10 +340,9 @@ export default {
           text: "lol",
         },
       ],
-      postData: [],
+      shareData: []
     };
   },
-
   methods: {
     async post() {
       if (this.postCaption == "") {
@@ -370,7 +380,6 @@ export default {
         }
       }
     },
-
     goToShowPost(postID) {
       this.$router.push({
         path: "/post/" + postID + "/" + this.userId,
@@ -388,7 +397,6 @@ export default {
         path: "/" + this.userId + "/profile/" + this.userId,
       });
     },
-
     reloadFeeds() {
       this.postData = [];
       this.loadFeeds();
@@ -396,11 +404,9 @@ export default {
         "postDiv"
       ).innerHTML;
     },
-
     getUserId() {
       this.userId = this.$route.params.userId;
     },
-
     getUserData() {
       axios
         .get(`http://localhost:8081/getUserData/` + this.userId)
@@ -408,14 +414,12 @@ export default {
           this.userData = response.data.data;
         });
     },
-
     comment(id) {
       let param = {
         user_id: parseInt(this.userId),
         post_id: id,
         content: this.caption,
       };
-
       if (this.caption == "") {
         alert("Field Comment masih Kosong!");
       } else {
@@ -425,40 +429,65 @@ export default {
         });
       }
     },
-
     getFollowingAndFollowerData() {
       axios
         .get(`http://localhost:8081/getFollowing/` + this.userId)
         .then((response) => {
           this.followingObj = response.data.data;
         });
-
       axios
         .get(`http://localhost:8081/getFollowers/` + this.userId)
         .then((response) => {
           this.followerObj = response.data.data;
         });
     },
-
     async loadFeeds() {
       await axios
         .get(`http://localhost:8081/loadFeeds/` + this.userId)
         .then((response) => {
           this.feedsIds = response.data.data;
         });
-
       if (this.feedsIds != null) {
         for (let index = 0; index < this.feedsIds.length; index++) {
           axios
             .get("http://localhost:8081/getPost/" + this.feedsIds[index].ID)
             .then((response) => {
-              this.postData.push(response.data.data);
+              var postId = response.data.data.id;
+              var caption= response.data.data.caption;
+              var fullname= response.data.data.fullname;
+              var user_id= response.data.data.user_id;
+              var like= response.data.data.like;
+              var comment= response.data.data.comment;
+              var photo= response.data.data.photo;
+              var isBookmarked = null;
+
+              axios
+                .get("http://localhost:8081/getBookmark/" + this.userId)
+                .then((response) => {
+                  if (response.data.data.length > 0) {
+                    for (let index = 0;index < response.data.data.length;index++) {
+                      if (response.data.data[index].post_id == postId) {
+                        isBookmarked = response.data.data[index].ID;
+                      }
+                    }
+                  }
+                  var postDataObj = {
+                    id: postId,
+                    caption: caption,
+                    fullname: fullname,
+                    user_id: user_id,
+                    like: like,
+                    comment: comment,
+                    photo: photo,
+                    isBookmarked: isBookmarked,
+                  };
+                  this.postData.push(postDataObj);
+                });
             });
         }
       }
     },
-
-    bookmark(postId) {
+    bookmark(postId, bookmarkId) {
       axios
         .post("http://localhost:8081/postBookmark", {
           post_id: postId,
@@ -466,19 +495,49 @@ export default {
         })
         .then((response) => {
           if (response.data.message == "") {
-            alert("Saved to bookmark");
+            this.reloadFeeds();
           } else if (response.data.message == "bookmark exist") {
-            alert("This post is already bookmarked");
+            axios
+              .delete("http://localhost:8081/deleteBookmark/"+bookmarkId).then(()=>{
+                this.reloadFeeds();
+              })
           }
         });
     },
-  },
+    getShareData(){
+      
+      axios
+        .get("http://localhost:8081/loadShare/"+this.userId).then((response)=>{
+          var responseShare = response.data.data;
+          for(let index = 0; index < responseShare.length; index++){
+            axios
+              .get(`http://localhost:8081/getUserData/` + responseShare[index].UserID)
+              .then((responseUser) => {
+                var userData = responseUser.data.data;
 
+                 axios
+                  .get("http://localhost:8081/getPost/" + responseShare[index].PostID)
+                  .then((responsePost)=>{
+                    var postData = responsePost.data.data;
+
+                    var shareDataObj = {
+                      id: responseShare[index].ID,
+                      userData: userData,
+                      postData: postData
+                    };
+                    this.shareData.push(shareDataObj);
+                  })
+              });            
+          }
+        })
+    }
+  },
   mounted() {
     this.getUserId();
     this.getFollowingAndFollowerData();
     this.getUserData();
     this.loadFeeds();
+    this.getShareData();
   },
 };
 </script>
@@ -495,15 +554,12 @@ export default {
   padding-top: 5px;
   color: white;
 }
-
 #margin {
   margin-left: 280px;
 }
-
 #layout-comment {
   margin-left: 20px;
 }
-
 h3 {
   color: white;
 }

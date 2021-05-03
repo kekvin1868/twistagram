@@ -38,7 +38,7 @@
           <v-card class="mt-15" display="justify-center" width="500">
             <v-container fluid>
               <div v-for="x in this.userObj" :key="x.image">
-                <v-row>
+                <v-row @click="goToUserProfile(x.id)">
                   <v-col sm="2">
                     <v-avatar size="50">
                       <v-img size="50" :src="x.profile"></v-img>
@@ -46,9 +46,6 @@
                   </v-col>
                   <v-col sm="7">
                     <p class="mt-3">{{ x.fullname }}</p>
-                  </v-col>
-                  <v-col class="mt-2">
-                    <v-btn color="primary"> Follow </v-btn>
                   </v-col>
                 </v-row>
                 <v-col>
@@ -78,7 +75,6 @@ export default {
     userData: [],
     userObj: [],
     searchText: "",
-
   }),
 
   mounted() {
@@ -98,6 +94,12 @@ export default {
         });
     },
 
+    goToUserProfile(id) {
+      this.$router.push({
+        path: "/" + id + "/profile/" + this.userId,
+      });
+    },
+
     showAlert: function (e) {
       if (e.keyCode === 13 && this.searchText === "") {
         alert("Field Fullname masih kosong");
@@ -109,13 +111,12 @@ export default {
 
             if (searchUserId != []) {
               for (let index = 0; index < searchUserId.length; index++) {
-                if (this.userId != searchUserId[index].ID ){
-
+                if (this.userId != searchUserId[index].ID) {
                   var userSearchObj = {
                     fullname: searchUserId[index].FullName,
                     id: searchUserId[index].ID,
                     profile: searchUserId[index].Profile,
-                  }
+                  };
                   this.userObj.push(userSearchObj);
                 }
               }
