@@ -23,8 +23,7 @@
           href=""
           class="text-decoration-none"
           style="color: white"
-          @click.prevent="goToProfile()"
-          >{{ visitorFullname }}</a></p>
+          @click.prevent="goToProfile()">{{ visitorFullname }}</a></p>
     </v-app-bar>
 
     <v-main>
@@ -40,8 +39,7 @@
                         <v-img
                             lazy-src="../assets/default-profile.jpg"
                             :src="userAvatar"
-                            alt="profilePicture"
-                        />
+                            alt="profilePicture"/>
                     </v-avatar>
 
                     <v-list-item-content class="ml-10 my-auto">
@@ -99,16 +97,15 @@
                             elevation="2"
                             x-small
                             width="120px"
-                            @click="unfollow"
-                            >Followed</v-btn>
+                            @click="unfollow">Followed</v-btn>
                         </v-col>
                         <v-col class="mt-n4" cols="12">
                         <a
                             href=""
                             class="text-decoration-none"
                             @click.prevent="goToPosts">{{ this.userPosts.length }} Posts</a>
-                        <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()">{{ this.followingCount }} Following</a>
-                        <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()">{{ this.followersCount }} Follower</a>
+                        <a href="" class="ml-5 text-decoration-none" @click.prevent="reloadPage()">{{ this.followingCount }} Following</a>
+                        <a href="" class="ml-5 text-decoration-none" @click.prevent="reloadPage()">{{ this.followersCount }} Follower</a>
                         </v-col>
                         <v-col class="mt-n2">
                         <p class="text--secondary mt-3">{{ this.userBio }}</p>
@@ -530,7 +527,6 @@ export default {
       this.$router.push({
         path: "/" + this.visitorId + "/profile/" + this.visitorId,
       });
-      this.reloadPage();
     },
     goToFollow() {
       this.$router.push({ path: "/" + this.userId + "/showFollow/" + this.visitorId });

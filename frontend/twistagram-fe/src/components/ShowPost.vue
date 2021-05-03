@@ -125,8 +125,19 @@
                         <v-btn
                           icon
                           class="mb-n6 ml-n15"
-                          large>
-                          <v-icon disabled> mdi-share </v-icon>
+                          large
+                          v-if="isShared"
+                          @click="shareAlert">
+                          <v-icon disabled
+                          @click="shareAlert"> mdi-share </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          class="mb-n6 ml-n15"
+                          large
+                          v-if="!isShared"
+                          @click="postShare">
+                          <v-icon disabled> mdi-share-outline </v-icon>
                         </v-btn>
                       </v-col>
 
@@ -238,8 +249,18 @@
                   <v-btn
                     icon
                     class="ml-15"
-                    large>
+                    large
+                    v-if="isShared"
+                    @click="shareAlert">
                     <v-icon disabled> mdi-share </v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    class="ml-15"
+                    large
+                    v-if="!isShared"
+                    @click="postShare">
+                    <v-icon disabled> mdi-share-outline </v-icon>
                   </v-btn>
                 </v-col>
                 
@@ -347,6 +368,7 @@ export default {
     this.getPostId();
     this.getPostData();
     this.getBookmarkStatus();
+    this.getShareStatus();
   },
   data() {
     return {
@@ -366,7 +388,9 @@ export default {
       likeId: null,
       idBookmark: "",
       isBookmarked: false,
-      userBookmark: []
+      userBookmark: [],
+      idShare: "",
+      isShared: false
     };
   },
 
@@ -436,7 +460,26 @@ export default {
           } else {
             this.isBookmarked = false;
           }
-          console.log(this.idBookmark);
+        });
+    },
+    getShareStatus() {
+      axios
+        .get(`http://localhost:8081/loadShare/` + this.visitorId)
+        .then((response) => {
+          var userShare = response.data.data;
+          var sharedPost = null;
+
+          sharedPost = userShare.find(
+              (share) => share.PostID == this.postId
+          );
+
+          if(sharedPost != null) {
+            this.isShared = true;
+            this.idShare = sharedPost.ID;
+          } else {
+            this.isShared = false;
+          }
+          console.log(this.isShared);
         });
     },
     addComment() {
@@ -498,7 +541,7 @@ export default {
         axios
           .post(`http://localhost:8081/postBookmark`, {
               post_id: parseInt(this.postId),
-              user_id: parseInt(this.userId)
+              user_id: parseInt(this.visitorId)
           })
           .then((response) => {
               this.idBookmark = response.data.data.id;
@@ -522,6 +565,29 @@ export default {
             });
       }
     },
+    postShare() {
+      var r = confirm("Are you sure want to Share this post?");
+      if (r) {
+        axios
+          .post(`http://localhost:8081/postShare`, {
+              post_id: parseInt(this.postId),
+              user_id: parseInt(this.userId)
+          })
+          .then((response) => {
+              this.idShare = response.data.data.id;
+              this.isShared = true;
+              window.alert("You Share this Post!");
+              this.getShareStatus();
+          })
+          .catch(function (error) {
+              window.alert("Share Post Failed");
+              console.log(error);
+          });
+      }
+    },
+    shareAlert() {
+      window.alert("You Already Share this Post");
+    }
   },
 };
 </script>
