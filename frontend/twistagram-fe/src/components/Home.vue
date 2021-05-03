@@ -274,7 +274,7 @@
                 </v-card>
 
                 <div v-if="this.postData.length == 0">
-                  <v-card>
+                  <v-card class="mx-5">
                     <!-- tampilin sesuatu jika ga ada post -->
                     <h1>LOL</h1>
                   </v-card>
