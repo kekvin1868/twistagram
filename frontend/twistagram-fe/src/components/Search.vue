@@ -2,20 +2,31 @@
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
       <div class="d-flex align-center">
-        <v-img
-          alt="twistagram Logo"
-          class="shrink mr-2"
-          contain
-          src="../assets/twistagram-logo.png"
-          transition="scale-transition"
-          width="200"
-        />
+        <a href="">
+          <v-img
+            alt="Vuetify Logo"
+            class="shrink ma-2"
+            contain
+            src="../assets/twistagram-logo.png"
+            transition="scale-transition"
+            width="150"
+            @click.prevent="goHome()"
+          />
+        </a>
       </div>
       <v-spacer> </v-spacer>
-      <v-avatar size="50" class="mr-3">
+      <v-avatar size="50">
         <v-img :src="userData.profile"></v-img>
       </v-avatar>
-      <h1>{{ userData.fullname }}</h1>
+      <p class="mt-3 ml-3 mr-13">
+        <a
+          href=""
+          class="text-decoration-none"
+          style="color: white"
+          @click.prevent="goToUserProfile(userId)"
+          >{{ this.userData.fullname }}</a
+        >
+      </p>
     </v-app-bar>
 
     <v-main>
@@ -121,9 +132,14 @@ export default {
                 }
               }
             }
+          }).catch(function (){
+            window.alert("User not Found");
           });
       }
     },
+    goHome() {
+      this.$router.push({ path: "/home/" + this.userId});
+    }
   },
 };
 </script>

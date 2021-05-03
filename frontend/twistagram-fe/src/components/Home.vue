@@ -14,7 +14,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn @click="goToSearch()" transparant>
+      <v-btn @click="goToSearch()" icon>
         <v-icon> mdi-magnify </v-icon>
       </v-btn>
       <v-avatar size="50">

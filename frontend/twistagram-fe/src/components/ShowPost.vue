@@ -39,7 +39,46 @@
       >
         <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
-            <v-img :src="postPhoto" aspect-ratio="1" max-height="800" />
+            <v-dialog   max-width="1200">
+              <template v-slot:activator="{ on, attrs }">
+                  <v-img
+                    :src="postPhoto"
+                    max-height="800"
+                    icon
+                    aspect-ratio="1"
+                    v-bind="attrs"
+                    v-on="on"
+                  />
+              </template>
+
+              <v-card>
+                <v-card-title class="headline" background-color="#222831">
+                  <v-list-item>
+                      <v-list-item-avatar
+                        color="#222831"
+                        size="30"
+                        class="mb-3 ml-n3"
+                      >
+                        <v-img :src="userAvatar"/>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content>
+                        <v-list-item-title
+                          ><a
+                            class="mt-3 text-decoration-none"
+                            @click.prevent="goToAccount(userId)"
+                            ><b>{{ postFullname }}</b></a
+                          >
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-img :src="postPhoto" contain max-height="600"/>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
           </v-col>
 
           <v-col>
@@ -110,15 +149,14 @@
                           icon
                           class="mb-n7 mr-7"
                           v-if="!isLiked"
-                          @click="likePost()">
+                          @click="likePost()"
+                        >
                           <v-icon disabled> mdi-cards-heart </v-icon>
                         </v-btn>
                       </v-col>
 
                       <v-col class="ml-3 mr-n5">
-                        <p class="mt-4 ml-2">
-                          {{ postLike.length }} Likes
-                        </p>
+                        <p class="mt-4 ml-2">{{ postLike.length }} Likes</p>
                       </v-col>
 
                       <v-col>
@@ -127,16 +165,19 @@
                           class="mb-n6 ml-n15"
                           large
                           v-if="isShared"
-                          @click="shareAlert">
-                          <v-icon disabled
-                          @click="shareAlert"> mdi-share </v-icon>
+                          @click="shareAlert"
+                        >
+                          <v-icon color="blue" @click="shareAlert()">
+                            mdi-share
+                          </v-icon>
                         </v-btn>
                         <v-btn
                           icon
                           class="mb-n6 ml-n15"
                           large
                           v-if="!isShared"
-                          @click="postShare">
+                          @click="postShare()"
+                        >
                           <v-icon disabled> mdi-share-outline </v-icon>
                         </v-btn>
                       </v-col>
@@ -149,10 +190,20 @@
                       </v-col>
 
                       <v-col align="right" class="mt-1 mr-n5" v-else>
-                        <v-btn icon large v-if="!isBookmarked" @click="bookmarkPost">
+                        <v-btn
+                          icon
+                          large
+                          v-if="!isBookmarked"
+                          @click="bookmarkPost"
+                        >
                           <v-icon left> mdi-bookmark-outline </v-icon>
                         </v-btn>
-                        <v-btn icon large v-if="isBookmarked" @click="bookmarkPost">
+                        <v-btn
+                          icon
+                          large
+                          v-if="isBookmarked"
+                          @click="bookmarkPost"
+                        >
                           <v-icon left> mdi-bookmark </v-icon>
                         </v-btn>
                       </v-col>
@@ -165,7 +216,8 @@
                           v-model="newComment"
                           label="Post New Comment"
                           solo
-                          style="width: 400px"/>
+                          style="width: 400px"
+                        />
                       </v-col>
                       <v-col class="mt-3">
                         <v-btn icon @click="addComment()">
@@ -196,13 +248,15 @@
                   class="text-decoration-none"
                   style="color: #393e46"
                   @click="goToAccount(userId)"
-                  ><b>{{ postFullname }}</b></a>
+                  ><b>{{ postFullname }}</b></a
+                >
               </p>
             </v-card-title>
 
             <v-card-text
               class="headline font-weight-normal"
-              style="color: #393e46">
+              style="color: #393e46"
+            >
               {{ postCaption }}
             </v-card-text>
 
@@ -212,14 +266,16 @@
               <v-list>
                 <v-list-item-content
                   v-for="(comment, i) in postComment"
-                  :key="i">
+                  :key="i"
+                >
                   <v-row class="ml-5">
                     <p>
                       <a
                         href=""
                         class="mt-3 text-decoration-none"
                         @click.prevent="goToAccount(comment.ID)"
-                        ><b>{{ comment.FullName }}</b></a>
+                        ><b>{{ comment.FullName }}</b></a
+                      >
                       {{ comment.Content }}
                     </p>
                   </v-row>
@@ -235,7 +291,8 @@
                     class="ml-6"
                     color="pink"
                     v-if="isLiked"
-                    @click="likePost()">
+                    @click="likePost()"
+                  >
                     <v-icon> mdi-cards-heart </v-icon>
                     <p class="mt-4 ml-2">{{ postLike.length }} Likes</p>
                   </v-btn>
@@ -251,32 +308,36 @@
                     class="ml-15"
                     large
                     v-if="isShared"
-                    @click="shareAlert">
-                    <v-icon disabled> mdi-share </v-icon>
+                    @click="shareAlert()"
+                  >
+                    <v-icon color="blue"> mdi-share </v-icon>
                   </v-btn>
                   <v-btn
                     icon
                     class="ml-15"
                     large
                     v-if="!isShared"
-                    @click="postShare">
+                    @click="postShare()"
+                  >
                     <v-icon disabled> mdi-share-outline </v-icon>
                   </v-btn>
                 </v-col>
-                
+
                 <v-col
                   class="mr-n8 mt-1"
                   align="right"
-                  v-if="visitorId == userId">
+                  v-if="visitorId == userId"
+                >
                   <v-btn tile color="success" @click="editPost">
                     <v-icon left> mdi-pencil </v-icon>
                     Edit
                   </v-btn>
                 </v-col>
-                <v-col 
+                <v-col
                   class="mr-n8 mt-3"
                   align="right"
-                  v-if="visitorId != userId">
+                  v-if="visitorId != userId"
+                >
                   <v-btn icon large v-if="!isBookmarked" @click="bookmarkPost">
                     <v-icon left> mdi-bookmark-outline </v-icon>
                   </v-btn>
@@ -293,7 +354,8 @@
                     v-model="newComment"
                     label="Post New Comment"
                     solo
-                    style="width: 840px"/>
+                    style="width: 840px"
+                  />
                 </v-col>
                 <v-spacer />
                 <v-col class="mt-3">
@@ -302,7 +364,8 @@
                     allign="right"
                     icon
                     large
-                    @click="addComment()">
+                    @click="addComment()"
+                  >
                     <v-icon> mdi-comment </v-icon>
                   </v-btn>
                 </v-col>
@@ -390,7 +453,7 @@ export default {
       isBookmarked: false,
       userBookmark: [],
       idShare: "",
-      isShared: false
+      isShared: false,
     };
   },
 
@@ -443,7 +506,7 @@ export default {
         path: "/" + this.visitorId + "/profile/" + this.visitorId,
       });
     },
-   
+
     getBookmarkStatus() {
       axios
         .get(`http://localhost:8081/getBookmark/` + this.visitorId)
@@ -452,12 +515,12 @@ export default {
           var bookmark = null;
 
           bookmark = this.userBookmark.find(
-              (book) => book.post_id == this.postId
+            (book) => book.post_id == this.postId
           );
 
-          if(bookmark != null) {
-              this.isBookmarked = true;
-              this.idBookmark = bookmark.ID;
+          if (bookmark != null) {
+            this.isBookmarked = true;
+            this.idBookmark = bookmark.ID;
           } else {
             this.isBookmarked = false;
           }
@@ -465,22 +528,19 @@ export default {
     },
     getShareStatus() {
       axios
-        .get(`http://localhost:8081/loadShare/` + this.visitorId)
+        .get(`http://localhost:8081/getUserShare/` + this.visitorId)
         .then((response) => {
           var userShare = response.data.data;
           var sharedPost = null;
 
-          sharedPost = userShare.find(
-              (share) => share.PostID == this.postId
-          );
+          sharedPost = userShare.find((share) => share.PostID == this.postId);
 
-          if(sharedPost != null) {
+          if (sharedPost != null) {
             this.isShared = true;
             this.idShare = sharedPost.ID;
           } else {
             this.isShared = false;
           }
-          console.log(this.isShared);
         });
     },
     addComment() {
@@ -495,8 +555,7 @@ export default {
 
         axios
           .post("http://localhost:8081/postComment", commentObj)
-          .then((response) => {
-            console.log(response);
+          .then(() => {
             this.newComment = "";
             this.getPostData();
           })
@@ -541,29 +600,29 @@ export default {
       if (!this.isBookmarked) {
         axios
           .post(`http://localhost:8081/postBookmark`, {
-              post_id: parseInt(this.postId),
-              user_id: parseInt(this.visitorId)
+            post_id: parseInt(this.postId),
+            user_id: parseInt(this.visitorId),
           })
           .then((response) => {
-              this.idBookmark = response.data.data.id;
-              this.getBookmarkStatus();
+            this.idBookmark = response.data.data.id;
+            this.getBookmarkStatus();
           })
           .catch(function (error) {
-              window.alert("Bookmark Post Failed");
-              console.log(error);
+            window.alert("Bookmark Post Failed");
+            console.log(error);
           });
       } else {
         await axios
-            .delete(`http://localhost:8081/deleteBookmark/` + this.idBookmark)
-            .then((response) => {
-                console.log(response);
-                this.isBookmarked = false;
-                this.getBookmarkStatus();
-            })
-            .catch(function (error) {
-                window.alert("Bookmark unPost Failed");
-                console.log(error);
-            });
+          .delete(`http://localhost:8081/deleteBookmark/` + this.idBookmark)
+          .then((response) => {
+            console.log(response);
+            this.isBookmarked = false;
+            this.getBookmarkStatus();
+          })
+          .catch(function (error) {
+            window.alert("Bookmark unPost Failed");
+            console.log(error);
+          });
       }
     },
     postShare() {
@@ -571,24 +630,24 @@ export default {
       if (r) {
         axios
           .post(`http://localhost:8081/postShare`, {
-              post_id: parseInt(this.postId),
-              user_id: parseInt(this.visitorId)
+            post_id: parseInt(this.postId),
+            user_id: parseInt(this.visitorId),
           })
           .then((response) => {
-              this.idShare = response.data.data.id;
-              this.isShared = true;
-              window.alert("You Share this Post!");
-              this.getShareStatus();
+            this.idShare = response.data.data.id;
+            this.isShared = true;
+            window.alert("You Share this Post!");
+            this.getShareStatus();
           })
           .catch(function (error) {
-              window.alert("Share Post Failed");
-              console.log(error);
+            window.alert("Share Post Failed");
+            console.log(error);
           });
       }
     },
     shareAlert() {
       window.alert("You Already Share this Post");
-    }
+    },
   },
 };
 </script>

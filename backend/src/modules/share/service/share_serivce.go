@@ -13,3 +13,8 @@ func PostShare(share *domain.Share) (*domain.Share, error) {
 func LoadShare(UserID uint64) (*[]api.ShareAPI, error) {
 	return dao.LoadShare(UserID)
 }
+
+func GetUserShare(UserID uint64) (*[]api.ShareAPI, error) {
+	return dao.GetUserShare(UserID)
+}
+
