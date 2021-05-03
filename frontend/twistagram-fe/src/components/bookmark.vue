@@ -87,10 +87,10 @@
                     @click.prevent="goToPosts"
                     >{{ this.userPosts.length }} Posts</a
                   >
-                  <a href="" class="ml-5 text-decoration-none"
+                  <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()"
                     >{{ this.followingCount }} Following</a
                   >
-                  <a href="" class="ml-5 text-decoration-none"
+                  <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()"
                     >{{ this.followersCount }} Follower</a
                   >
                 </v-col>
@@ -274,6 +274,9 @@ export default {
         path: "/" + this.userId + "/profile/" + this.userId,
       });
       this.reloadPage();
+    },
+    goToFollow() {
+      this.$router.push({ path: "/" + this.userId + "/showFollow/" + this.userId });
     },
   },
 };
