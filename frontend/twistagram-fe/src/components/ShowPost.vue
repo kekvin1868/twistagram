@@ -39,17 +39,30 @@
       >
         <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
-            <v-dialog   max-width="1200">
+            <v-dialog max-width="1200">
+              
               <template v-slot:activator="{ on, attrs }">
+                <v-hover v-slot="{ hover }">
                   <v-img
                     :src="postPhoto"
                     max-height="800"
                     icon
                     aspect-ratio="1"
                     v-bind="attrs"
-                    v-on="on"
-                  />
+                    v-on="on">
+                  <v-expand-transition>
+                    <div
+                      v-if="hover"
+                      class="d-flex transition-fast-in-fast-out black darken-2 v-card--reveal display-1 white--text"
+                      style="height: 100%;"
+                    >
+                      Show Full Picture
+                    </div>
+                  </v-expand-transition>
+                  </v-img>
+                </v-hover>
               </template>
+              
 
               <v-card>
                 <v-card-title class="headline" background-color="#222831">
@@ -651,3 +664,13 @@ export default {
   },
 };
 </script>
+<style>
+  .v-card--reveal {
+    align-items: center;
+    bottom: 0;
+    justify-content: center;
+    opacity: .7;
+    position: absolute;
+    width: 100%;
+  }
+</style>
