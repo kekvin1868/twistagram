@@ -55,7 +55,8 @@ func EditUserData(user *domain.User) (*domain.User, error) {
 func GetSugestion(UserID uint64) (*[]api.SearchAPI, error) {
 	var user []api.SearchAPI
 	// UserID, _ := parser.ParseID(UserID)
-	res := orm.Engine.Raw("SELECT users.id, users.full_name, users.profile FROM users WHERE (users.id <> ?) AND (users.id NOT IN(SELECT follows.follow_id FROM follows WHERE follows.user_id = ?))", UserID, UserID).Find(&user)
+	res := orm.Engine.Raw("SELECT users.id, users.full_name, users.profile FROM users WHERE (users.id <> ?) AND (users.id NOT IN(SELECT follows.follow_id FROM follows WHERE follows.user_id = ?)) LIMIT 3", UserID, UserID).Find(&user)
+
 	if res.Error != nil {
 		return nil, res.Error
 	}

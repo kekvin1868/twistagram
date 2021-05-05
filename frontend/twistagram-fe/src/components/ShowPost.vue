@@ -10,7 +10,7 @@
             src="../assets/twistagram-logo.png"
             transition="scale-transition"
             width="150"
-            @click.prevent="goHome"
+            @click.prevent="goHome()"
           />
         </a>
       </div>
@@ -260,7 +260,7 @@
                   href=""
                   class="text-decoration-none"
                   style="color: #393e46"
-                  @click="goToAccount(userId)"
+                  @click.prevent="goToAccount(userId)"
                   ><b>{{ postFullname }}</b></a
                 >
               </p>
@@ -545,15 +545,17 @@ export default {
         .then((response) => {
           var userShare = response.data.data;
           var sharedPost = null;
+          if(userShare.length>0){
+            sharedPost = userShare.find((share) => share.PostID == this.postId);
 
-          sharedPost = userShare.find((share) => share.PostID == this.postId);
-
-          if (sharedPost != null) {
-            this.isShared = true;
-            this.idShare = sharedPost.ID;
-          } else {
-            this.isShared = false;
+            if (sharedPost != null) {
+              this.isShared = true;
+              this.idShare = sharedPost.ID;
+            } else {
+              this.isShared = false;
+            }
           }
+          
         });
     },
     addComment() {
