@@ -27,9 +27,6 @@ export default new VueRouter({
             component: () => import('./components/profile')
         },
         {
-<<<<<<< HEAD
-            path: '/home/:userId/search',
-=======
             path: '/:userId/bookmark',
             name: 'bookmark',
             component: () => import('./components/bookmark')
@@ -51,7 +48,6 @@ export default new VueRouter({
         },
         {
             path: '/home/:userID/search',
->>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
             name: 'search',
             component: () => import('./components/Search')
         }

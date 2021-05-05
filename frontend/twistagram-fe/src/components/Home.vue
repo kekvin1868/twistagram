@@ -17,18 +17,6 @@
 
       <v-spacer></v-spacer>
 
-<<<<<<< HEAD
-      <v-icon large color="green darken-2"> mdi-magnify </v-icon>
-
-      <v-row>
-        <v-avatar size="60">
-          <v-img src="../assets/kenji.jpg"></v-img>
-        </v-avatar>
-        <v-col md="9">
-          <p>felix</p>
-        </v-col>
-      </v-row>
-=======
       <v-icon> mdi-magnify </v-icon>
 
       <v-icon> mdi-search </v-icon>
@@ -36,7 +24,6 @@
         <v-img :src="userData.profile"></v-img>
       </v-avatar>
       <p class="mt-3 ml-3 mr-13">{{ userData.fullname }}</p>
->>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
     </v-app-bar>
 
     <v-main>
@@ -114,15 +101,6 @@
                   </v-card-text>
                 </v-card>
 
-<<<<<<< HEAD
-                <!-- Feeds --> 
-                <!-- Post with text -->
-                <v-card class="mx-auto my-10 rounded-xl" max-width="800">
-                  <v-card-title>
-                    <v-avatar size="70">
-                      <v-img src="../assets/kenji.jpg"></v-img>
-                    </v-avatar>
-=======
                 <!-- TABS -->
                 <v-card>
                   <v-tabs
@@ -134,39 +112,17 @@
                     icons-and-text
                   >
                     <v-tabs-slider></v-tabs-slider>
->>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
 
                     <v-tab href="#tab-1">
                       Feeds
                       <v-icon>mdi-home</v-icon>
                     </v-tab>
 
-<<<<<<< HEAD
-                    <v-card-actions>
-                      <v-btn icon>
-                        <v-icon color="black" disabled x-large> mdi-bookmark </v-icon>
-                      </v-btn>
-                      <v-btn icon>
-                        <v-icon x-large color="black">
-                          mdi-dots-vertical
-                        </v-icon>
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card-title>
-                  <v-img src="../assets/kenji.jpg" height="750px"></v-img>
-                  <v-card-text>
-                    <v-row no-gutters>
-                      <v-col sm="5">
-                        <h2 class="ml-5">Kenji Edrich Lyn</h2>
-                      </v-col>
-                    </v-row>
-=======
                     <v-tab href="#tab-2">
                       Share
                       <v-icon>mdi-share-variant</v-icon>
                     </v-tab>
                   </v-tabs>
->>>>>>> eaa3ab2cf3f706741d59d8a073f38ba56aff3af7
 
                   <!-- TAB FOR FEEDS -->
                   <v-tabs-items v-model="tab">

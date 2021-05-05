@@ -1,23 +1,23 @@
 package dao
 
 import (
+	"fmt"
 	"twistagram/src/modules/bookmark/dao/api"
 	"twistagram/src/modules/bookmark/domain"
 	"twistagram/src/orm"
 )
 
-func isBookmarkExist(UserID uint64, PostID uint64) bool {
+func isBookmarkExist(UserID uint64, PostID uint64) (bool, *api.BookmarkAPI) {
 	var bookmark domain.Bookmark
-	var exist bool
+	var api *api.BookmarkAPI
 
 	if err := orm.Engine.Where("post_id = ? AND user_id = ?", PostID, UserID).First(&bookmark).Error; err != nil {
-		exist = false
-	} else {
-		exist = true
+		return false, nil
 	}
+	res := orm.Engine.Table("bookmarks").Select("bookmark.id,bookmark.post_id").Where("post_id = ? AND user_id = ?", PostID, UserID).First(&api)
+	fmt.Println(res)
 
-	return exist
-
+	return true, api
 }
 
 func PostBookmark(bookmark *domain.Bookmark) (*domain.Bookmark, error) {

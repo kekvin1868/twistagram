@@ -1,4 +1,4 @@
-package response
+package Response
 
 type Response struct {
 	Status  int64       `json:"status"`
