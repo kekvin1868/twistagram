@@ -878,7 +878,9 @@ export default {
         });
     },
     reportPost(postId) {
-      axios
+      var r = confirm("Are you sure want to report this post?");
+      if(r){
+        axios
         .post("http://localhost:8081/report", {
           post_id: parseInt(postId),
           user_id: parseInt(this.userId),
@@ -886,6 +888,8 @@ export default {
         .then(() => {
           window.alert("reported post-id: " + postId);
         });
+      }
+      
     },
     getSugestion() {
       axios

@@ -104,8 +104,8 @@
                             href=""
                             class="text-decoration-none"
                             @click.prevent="goToPosts">{{ this.userPosts.length }} Posts</a>
-                        <a href="" class="ml-5 text-decoration-none" @click.prevent="reloadPage()">{{ this.followingCount }} Following</a>
-                        <a href="" class="ml-5 text-decoration-none" @click.prevent="reloadPage()">{{ this.followersCount }} Follower</a>
+                        <a href="" class="ml-5 text-decoration-none" @click.prevent="changeTab(1)">{{ this.followingCount }} Following</a>
+                        <a href="" class="ml-5 text-decoration-none" @click.prevent="changeTab(2)">{{ this.followersCount }} Follower</a>
                         </v-col>
                         <v-col class="mt-n2">
                         <p class="text--secondary mt-3">{{ this.userBio }}</p>
@@ -531,6 +531,13 @@ export default {
     goToFollow() {
       this.$router.push({ path: "/" + this.userId + "/showFollow/" + this.visitorId });
     },
+    changeTab(x){
+      if(x == 1){
+        this.tab="tab-1"
+      }else{
+        this.tab="tab-2"
+      }
+    }
   },
 };
 </script>
