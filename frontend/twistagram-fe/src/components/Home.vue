@@ -210,7 +210,7 @@
                               </v-card-text>
                             </v-card>
 
-                            <!-- WITHOUT PHOTO -->
+                            <!-- FEEDS WITHOUT PHOTO -->
                             <v-card
                               class="mt-5 rounded-xl"
                               max-width="800"
@@ -278,25 +278,36 @@
                             >
                               <v-card-title>
                                 <v-avatar size="70">
-                                  <v-img :src="data.userData.profile"></v-img>
+                                  <v-img :src="data.postData.profile"></v-img>
                                 </v-avatar>
 
-                                <p class="ml-5">{{ data.userData.fullname }}</p>
+                                <p class="ml-5">{{ data.postData.fullname }}</p>
                                 <v-spacer></v-spacer>
 
-                                <v-card-actions>
-                                  <v-btn icon>
-                                    <v-icon x-large color="black">
-                                      mdi-dots-vertical
-                                    </v-icon>
-                                  </v-btn>
-                                </v-card-actions>
+                                <v-menu bottom left>
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn dark icon v-bind="attrs" v-on="on">
+                                      <v-icon x-large color="black">mdi-dots-vertical</v-icon>
+                                    </v-btn>
+                                  </template>
+
+                                  <v-list>
+                                    <v-list-item>
+                                      <v-list-item-title><button @click="reportPost(data.postData.id)"><v-icon color="red">mdi-alert</v-icon> Report</button></v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item>
+                                      <v-list-item-title><button @click="goToShowPost(data.postData.id)"><v-icon color="blue">mdi-page-next</v-icon> Go to Original Post</button></v-list-item-title>
+                                    </v-list-item>
+                                  </v-list>
+                                </v-menu>
                               </v-card-title>
                               <v-img :src="data.postData.photo" />
                               <v-card-text>
                                 <v-row no-gutters>
                                   <v-col sm="2">
-                                    <h2 class="ml-5">{{ data.userData.fullname }}</h2>
+                                    <h2 class="ml-5">
+                                      {{ data.userData.fullname }}
+                                    </h2>
                                   </v-col>
                                   <v-col>
                                     <p>
@@ -304,31 +315,44 @@
                                     </p>
                                   </v-col>
                                 </v-row>
-
-                                <br />
-
-                                <v-row>
-                                  <v-icon medium class="ml-5 mr-1">
-                                    mdi-comment
-                                  </v-icon>
-                                  <v-col class="ml-n3" sm="1">
-                                    {{ data.postData.comment.length }}
-                                  </v-col>
-
-                                  <v-icon color="red"> mdi-heart </v-icon>
-                                  <v-col class="ml-n2" sm="1">
-                                    {{ data.postData.like.length }}
-                                  </v-col>
-                                  <v-col sm="3">
-                                    <a @click="goToShowPost(data.postData.id)">
-                                      Show more ...
-                                    </a>
-                                  </v-col>
-                                </v-row>
                               </v-card-text>
+                              <v-card-actions>
+                                <v-list-item class="grow">
+                                  <v-list-item-avatar color="grey darken-3">
+                                    <v-img
+                                      class="elevation-6"
+                                      alt=""
+                                      :src="data.userData.profile"
+                                    ></v-img>
+                                  </v-list-item-avatar>
+
+                                  <v-list-item-content>
+                                    <v-list-item-subtitle
+                                      >Shared by</v-list-item-subtitle
+                                    >
+                                    <v-list-item-title>{{
+                                      data.userData.fullname
+                                    }}</v-list-item-title>
+                                  </v-list-item-content>
+
+                                  <v-row align="center" justify="end">
+                                    <v-icon class="mr-1" color="red">
+                                      mdi-heart
+                                    </v-icon>
+                                    <span class="subheading mr-2">{{
+                                      data.postData.like.length
+                                    }}</span>
+                                    <span class="mr-1">·</span>
+                                    <v-icon class="mr-1"> mdi-comment </v-icon>
+                                    <span class="subheading">{{
+                                      data.postData.comment.length
+                                    }}</span>
+                                  </v-row>
+                                </v-list-item>
+                              </v-card-actions>
                             </v-card>
 
-                            <!-- WITHOUT PHOTO -->
+                            <!-- SHARE WITHOUT PHOTO -->
                             <v-card
                               class="mt-5 rounded-xl"
                               max-width="800"
@@ -336,15 +360,26 @@
                             >
                               <v-card-title>
                                 <v-avatar class="mt-2 ml-2" size="70">
-                                  <v-img :src="data.userData.profile"> </v-img>
+                                  <v-img :src="data.postData.profile"> </v-img>
                                 </v-avatar>
-                                <p class="ml-3">{{ data.userData.fullname }}</p>
+                                <p class="ml-3">{{ data.postData.fullname }}</p>
                                 <v-spacer></v-spacer>
-                                <v-btn icon>
-                                  <v-icon large color="black">
-                                    mdi-dots-vertical
-                                  </v-icon>
-                                </v-btn>
+                                <v-menu bottom left>
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-btn dark icon v-bind="attrs" v-on="on">
+                                      <v-icon x-large color="black">mdi-dots-vertical</v-icon>
+                                    </v-btn>
+                                  </template>
+
+                                  <v-list>
+                                    <v-list-item>
+                                      <v-list-item-title><button @click="reportPost(data.postData.id)"><v-icon color="red">mdi-alert</v-icon> Report</button></v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item>
+                                      <v-list-item-title><button @click="goToShowPost(data.postData.id)"><v-icon color="blue">mdi-page-next</v-icon> Go to Original Post</button></v-list-item-title>
+                                    </v-list-item>
+                                  </v-list>
+                                </v-menu>
                               </v-card-title>
 
                               <v-card-text>
@@ -353,26 +388,39 @@
                                 </p>
                               </v-card-text>
 
-                              <v-card-actions class="ml-4">
-                                <v-row>
-                                  <v-icon medium class="ml-5 mr-1">
-                                    mdi-comment
-                                  </v-icon>
-                                  <v-col class="ml-n3" sm="1">
-                                    {{ data.postData.comment.length }}
-                                  </v-col>
+                              <v-card-actions>
+                                <v-list-item class="grow">
+                                  <v-list-item-avatar color="grey darken-3">
+                                    <v-img
+                                      class="elevation-6"
+                                      alt=""
+                                      :src="data.userData.profile"
+                                    ></v-img>
+                                  </v-list-item-avatar>
 
-                                  <v-icon color="red"> mdi-heart </v-icon>
-                                  <v-col class="ml-n2" sm="1">
-                                    {{ data.postData.like.length }}
-                                  </v-col>
+                                  <v-list-item-content>
+                                    <v-list-item-subtitle
+                                      >Shared by</v-list-item-subtitle
+                                    >
+                                    <v-list-item-title>{{
+                                      data.userData.fullname
+                                    }}</v-list-item-title>
+                                  </v-list-item-content>
 
-                                  <v-col sm="3">
-                                    <a @click="goToShowPost(data.postData.id)">
-                                      Show more ...
-                                    </a>
-                                  </v-col>
-                                </v-row>
+                                  <v-row align="center" justify="end">
+                                    <v-icon class="mr-1" color="red">
+                                      mdi-heart
+                                    </v-icon>
+                                    <span class="subheading mr-2">{{
+                                      data.postData.like.length
+                                    }}</span>
+                                    <span class="mr-1">·</span>
+                                    <v-icon class="mr-1"> mdi-comment </v-icon>
+                                    <span class="subheading">{{
+                                      data.postData.comment.length
+                                    }}</span>
+                                  </v-row>
+                                </v-list-item>
                               </v-card-actions>
                             </v-card>
                           </div>
@@ -651,6 +699,9 @@ export default {
           }
         });
     },
+    reportPost(postId){
+      window.alert("reported post-id: "+postId)
+    }
   },
   mounted() {
     this.getUserId();
