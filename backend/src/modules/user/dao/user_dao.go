@@ -5,6 +5,7 @@ import (
 	"twistagram/src/modules/user/domain"
 	"twistagram/src/modules/user/domain/api"
 	"twistagram/src/orm"
+	// "twistagram/src/utils/parser"
 )
 
 func GetUserData(ID uint64) (*domain.User, error) {
@@ -53,8 +54,10 @@ func EditUserData(user *domain.User) (*domain.User, error) {
 
 func GetSugestion(UserID uint64) (*[]api.SearchAPI, error) {
 	var user []api.SearchAPI
-	res := orm.Engine.Raw("SELECT id, full_name, profile FROM users WHERE users.id NOT IN(SELECT follows.follow_id FROM follows WHERE follows.user_id = ?) LIMIT 3",UserID).Find(&user)
+	// UserID, _ := parser.ParseID(UserID)
+	res := orm.Engine.Raw("SELECT id, full_name, profile FROM users WHERE users.id NOT IN(SELECT follows.follow_id FROM follows WHERE follows.user_id = ? OR users.id = ?) LIMIT 3",UserID,UserID).Find(&user)
 	
+
 	if res.Error != nil {
 		return nil, res.Error
 	}

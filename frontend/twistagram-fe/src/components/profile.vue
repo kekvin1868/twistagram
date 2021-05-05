@@ -404,9 +404,6 @@ export default {
 </script>
 
 <style>
-#app {
-  background-color: var(--v-background2-base);
-}
 .v-card--reveal {
   align-items: center;
   bottom: 0;

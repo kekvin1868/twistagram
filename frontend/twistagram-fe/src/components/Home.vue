@@ -199,7 +199,7 @@
                                       </template>
 
                                       <v-list>
-                                        <v-list-item>
+                                        <v-list-item v-if="data.user_id!=userId">
                                           <v-list-item-title
                                             ><button
                                               @click="reportPost(data.id)"
@@ -285,7 +285,7 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item>
+                                      <v-list-item v-if="data.user_id!=userId">
                                         <v-list-item-title
                                           ><button @click="reportPost(data.id)">
                                             <v-icon color="red"
@@ -394,7 +394,7 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item>
+                                      <v-list-item v-if="data.postData.user_id!=userId">
                                         <v-list-item-title
                                           ><button
                                             @click="
@@ -503,7 +503,7 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item>
+                                      <v-list-item v-if="data.postData.user_id!=userId">
                                         <v-list-item-title
                                           ><button
                                             @click="
@@ -591,7 +591,7 @@
 
               <!-- CARD FOR SUGGESTIONS -->
               <v-col sm="2">
-                <v-card class="rounded-xl" color="#222831">
+                <v-card class="rounded-xl" color="#222831" dark>
                   <v-card-title>
                     <v-layout align-center justify-center>
                       <h3>Suggestion</h3>
@@ -599,16 +599,24 @@
                   </v-card-title>
                   <v-divider color="white"> </v-divider>
 
-                  <v-row v-for="x in suggestions" :key="x.image">
+                  <div v-if="suggestions.length > 0">
+                    <v-row v-for="x in suggestions" :key="x.Profile">
+                      <v-card-text>
+                        <v-col>
+                          <v-avatar size="50">
+                            <v-img :src="x.Profile" />
+                          </v-avatar>
+                          <p @click="goToAccount(x.ID)" style="cursor: pointer">{{ x.FullName }}</p>
+                        </v-col>
+                      </v-card-text>
+                    </v-row>
+                  </div>
+
+                  <div class="mt-5" v-else>
                     <v-card-text>
-                      <v-col>
-                        <v-avatar size="50">
-                          <img :src="x.image" />
-                        </v-avatar>
-                        {{ x.text }}
-                      </v-col>
+                      <v-card-subtitle color="white">No Suggestion</v-card-subtitle>
                     </v-card-text>
-                  </v-row>
+                  </div>
                 </v-card>
               </v-col>
             </v-row>
@@ -636,16 +644,7 @@ export default {
       caption: "",
       userId: "",
       userData: [],
-      suggestions: [
-        {
-          image: "/images/default-profile.jpg",
-          text: "Budi",
-        },
-        {
-          image: "../assets/logo.png",
-          text: "lol",
-        },
-      ],
+      suggestions: [],
       shareData: [],
     };
   },
@@ -685,6 +684,10 @@ export default {
           };
         }
       }
+    },
+
+    goToAccount(userID) {
+      this.$router.push({ path: "/" + userID + "/profile/" + this.userId });
     },
     goToShowPost(postID) {
       this.$router.push({
@@ -820,7 +823,8 @@ export default {
         .get("http://localhost:8081/loadShare/" + this.userId)
         .then((response) => {
           var responseShare = response.data.data;
-          for (let index = 0; index < responseShare.length; index++) {
+          if(responseShare != null){
+            for (let index = 0; index < responseShare.length; index++) {
             axios
               .get(
                 `http://localhost:8081/getUserData/` +
@@ -845,12 +849,24 @@ export default {
                     this.shareData.push(shareDataObj);
                   });
               });
+            }
           }
+          
         });
     },
     reportPost(postId) {
-      window.alert("reported post-id: " + postId);
+      axios.post("http://localhost:8081/report",{
+        post_id: parseInt(postId),
+        user_id: parseInt(this.userId)
+      }).then(()=>{
+        window.alert("reported post-id: " + postId);
+      });
     },
+    getSugestion(){
+      axios.get("http://localhost:8081/getSuggestion/"+this.userId).then((response)=>{
+        this.suggestions=response.data.data;
+      })
+    }
   },
   mounted() {
     this.getUserId();
@@ -858,6 +874,7 @@ export default {
     this.getUserData();
     this.loadFeeds();
     this.getShareData();
+    this.getSugestion();
   },
 };
 </script>
