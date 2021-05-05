@@ -153,7 +153,7 @@
                               >
                                 <v-card-title>
                                   <v-avatar size="70">
-                                    <v-img :src="userData.profile"></v-img>
+                                    <v-img :src="data.profile"></v-img>
                                   </v-avatar>
 
                                   <p class="ml-5">{{ data.fullname }}</p>
@@ -199,7 +199,9 @@
                                       </template>
 
                                       <v-list>
-                                        <v-list-item v-if="data.user_id!=userId">
+                                        <v-list-item
+                                          v-if="data.user_id != userId"
+                                        >
                                           <v-list-item-title
                                             ><button
                                               @click="reportPost(data.id)"
@@ -271,7 +273,7 @@
                               >
                                 <v-card-title>
                                   <v-avatar class="mt-2 ml-2" size="70">
-                                    <v-img :src="userData.profile"> </v-img>
+                                    <v-img :src="data.profile"> </v-img>
                                   </v-avatar>
                                   <p class="ml-3">{{ data.fullname }}</p>
                                   <v-spacer></v-spacer>
@@ -285,7 +287,9 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item v-if="data.user_id!=userId">
+                                      <v-list-item
+                                        v-if="data.user_id != userId"
+                                      >
                                         <v-list-item-title
                                           ><button @click="reportPost(data.id)">
                                             <v-icon color="red"
@@ -347,7 +351,8 @@
 
                     <!-- TAB FOR SHARE -->
                     <v-tab-item :value="'tab-' + 2">
-                      <div v-if="this.postData.length == 0">
+                      <div v-if="this.shareData.length == 0">
+                        <!-- WITH PHOTO -->
                         <v-card>
                           <v-layout justify-center>
                             <v-img
@@ -394,7 +399,9 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item v-if="data.postData.user_id!=userId">
+                                      <v-list-item
+                                        v-if="data.postData.user_id != userId"
+                                      >
                                         <v-list-item-title
                                           ><button
                                             @click="
@@ -503,7 +510,9 @@
                                     </template>
 
                                     <v-list>
-                                      <v-list-item v-if="data.postData.user_id!=userId">
+                                      <v-list-item
+                                        v-if="data.postData.user_id != userId"
+                                      >
                                         <v-list-item-title
                                           ><button
                                             @click="
@@ -600,21 +609,34 @@
                   <v-divider color="white"> </v-divider>
 
                   <div v-if="suggestions.length > 0">
-                    <v-row v-for="x in suggestions" :key="x.Profile">
+                    <v-row v-for="x in suggestions" :key="x.ID">
                       <v-card-text>
-                        <v-col>
-                          <v-avatar size="50">
-                            <v-img :src="x.Profile" />
-                          </v-avatar>
-                          <p @click="goToAccount(x.ID)" style="cursor: pointer">{{ x.FullName }}</p>
-                        </v-col>
+                        <v-list-item>
+                          <v-list-item-avatar>
+                            <v-img :src="x.Profile"></v-img>
+                          </v-list-item-avatar>
+
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              <p
+                                class="mt-3"
+                                @click="goToAccount(x.ID)"
+                                style="cursor: pointer"
+                              >
+                                {{ x.FullName }}
+                              </p>
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
                       </v-card-text>
                     </v-row>
                   </div>
 
                   <div class="mt-5" v-else>
                     <v-card-text>
-                      <v-card-subtitle color="white">No Suggestion</v-card-subtitle>
+                      <v-card-subtitle color="white"
+                        >No Suggestion</v-card-subtitle
+                      >
                     </v-card-text>
                   </div>
                 </v-card>
@@ -769,6 +791,7 @@ export default {
               var comment = response.data.data.comment;
               var photo = response.data.data.photo;
               var isBookmarked = null;
+              var profile = response.data.data.profile;
 
               axios
                 .get("http://localhost:8081/getBookmark/" + this.userId)
@@ -793,6 +816,7 @@ export default {
                     comment: comment,
                     photo: photo,
                     isBookmarked: isBookmarked,
+                    profile: profile
                   };
                   this.postData.push(postDataObj);
                 });
@@ -823,50 +847,53 @@ export default {
         .get("http://localhost:8081/loadShare/" + this.userId)
         .then((response) => {
           var responseShare = response.data.data;
-          if(responseShare != null){
+          if (responseShare != null) {
             for (let index = 0; index < responseShare.length; index++) {
-            axios
-              .get(
-                `http://localhost:8081/getUserData/` +
-                  responseShare[index].UserID
-              )
-              .then((responseUser) => {
-                var userData = responseUser.data.data;
+              axios
+                .get(
+                  `http://localhost:8081/getUserData/` +
+                    responseShare[index].UserID
+                )
+                .then((responseUser) => {
+                  var userData = responseUser.data.data;
 
-                axios
-                  .get(
-                    "http://localhost:8081/getPost/" +
-                      responseShare[index].PostID
-                  )
-                  .then((responsePost) => {
-                    var postData = responsePost.data.data;
+                  axios
+                    .get(
+                      "http://localhost:8081/getPost/" +
+                        responseShare[index].PostID
+                    )
+                    .then((responsePost) => {
+                      var postData = responsePost.data.data;
 
-                    var shareDataObj = {
-                      id: responseShare[index].ID,
-                      userData: userData,
-                      postData: postData,
-                    };
-                    this.shareData.push(shareDataObj);
-                  });
-              });
+                      var shareDataObj = {
+                        id: responseShare[index].ID,
+                        userData: userData,
+                        postData: postData,
+                      };
+                      this.shareData.push(shareDataObj);
+                    });
+                });
             }
           }
-          
         });
     },
     reportPost(postId) {
-      axios.post("http://localhost:8081/report",{
-        post_id: parseInt(postId),
-        user_id: parseInt(this.userId)
-      }).then(()=>{
-        window.alert("reported post-id: " + postId);
-      });
+      axios
+        .post("http://localhost:8081/report", {
+          post_id: parseInt(postId),
+          user_id: parseInt(this.userId),
+        })
+        .then(() => {
+          window.alert("reported post-id: " + postId);
+        });
     },
-    getSugestion(){
-      axios.get("http://localhost:8081/getSuggestion/"+this.userId).then((response)=>{
-        this.suggestions=response.data.data;
-      })
-    }
+    getSugestion() {
+      axios
+        .get("http://localhost:8081/getSuggestion/" + this.userId)
+        .then((response) => {
+          this.suggestions = response.data.data;
+        });
+    },
   },
   mounted() {
     this.getUserId();

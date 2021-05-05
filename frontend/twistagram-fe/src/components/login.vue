@@ -1,5 +1,5 @@
 <template>
-    <v-app id="app">
+    <v-app style="background-color:#222831" dark>
         <v-app-bar app color = "#393E46" dark>
             <v-img
                 max-height="100"
@@ -95,9 +95,3 @@ export default {
     }
 }
 </script>
-
-<style>
-    #app {
-        background-color: var(--v-background-base);
-    }
-</style>
