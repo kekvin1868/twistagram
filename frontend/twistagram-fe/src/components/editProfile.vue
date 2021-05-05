@@ -332,10 +332,6 @@ export default {
 </script>
 
 <style>
-    #app {
-        background-color: var(--v-background2-base);
-    }
-
     div.form-button {
         justify-content: center;
     }

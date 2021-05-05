@@ -10,7 +10,7 @@ func isReported(UserID uint64, PostID uint64) bool {
 	var report domain.Report
 	var exist bool
 
-	if err := orm.Engine.Where("post + id ? AND user_id = ?", PostID, UserID).First(&report).Error; err != nil {
+	if err := orm.Engine.Where("post_id = ? AND user_id = ?", PostID, UserID).First(&report).Error; err != nil {
 		exist = false
 	} else {
 		exist = true

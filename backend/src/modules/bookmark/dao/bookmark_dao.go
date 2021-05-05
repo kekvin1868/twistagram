@@ -41,7 +41,7 @@ func PostBookmark(bookmark *domain.Bookmark) (*domain.Bookmark, error) {
 func GetBookmark(UserID uint64) (*[]api.BookmarkAPI, error) {
 	var bookmarks []api.BookmarkAPI
 
-	res := orm.Engine.Table("bookmarks").Select("bookmarks.id,bookmarks.post_id").Joins("JOIN posts on bookmarks.post_id = posts.id").Joins("JOIN users on bookmarks.user_id = users.id").Scan(&bookmarks)
+	res := orm.Engine.Table("bookmarks").Select("bookmarks.id,bookmarks.post_id").Joins("JOIN posts on bookmarks.post_id = posts.id").Joins("JOIN users on bookmarks.user_id = users.id").Where("bookmarks.user_id = ?", UserID).Scan(&bookmarks)
 	if res.Error != nil {
 		return nil, res.Error
 	}

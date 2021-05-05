@@ -10,4 +10,5 @@ func MapURLs(router *gin.Engine) {
 	router.GET("/getUserData/:id", controller.GetUserData)
 	router.PATCH("/updateUserData", controller.EditUserData)
 	router.GET("/searchUser/:key", controller.SearchUser)
+	router.GET("/getSuggestion/:id", controller.GetSugestion)
 }

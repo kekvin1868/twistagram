@@ -29,11 +29,11 @@ func PostReport(c *gin.Context) {
 
 	if newReport == nil {
 		failed := utils.Response{
-			Status:  http.StatusConflict,
+			Status:  http.StatusOK,
 			Message: "Already reported",
 			Data:    nil,
 		}
-		c.JSON(http.StatusConflict, failed)
+		c.JSON(http.StatusOK, failed)
 		return
 	}
 

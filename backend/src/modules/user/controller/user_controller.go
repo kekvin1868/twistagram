@@ -78,3 +78,30 @@ func EditUserData(c *gin.Context) {
 	c.JSON(http.StatusAccepted, res)
 
 }
+
+func GetSugestion(c *gin.Context) {
+	ID, _ := parser.ParseID(c.Param("id"))
+	user, err := service.GetSugestion(ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if user == nil {
+		noData := utils.Response{
+			Data:    nil,
+			Message: "No user found ",
+			Status:  http.StatusNotFound,
+		}
+		c.JSON(http.StatusNotFound, noData)
+		return
+	}
+
+	res := utils.Response{
+		Status: http.StatusOK,
+		Data:   *user,
+	}
+
+	c.JSON(http.StatusOK, res)
+}
