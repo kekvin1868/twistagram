@@ -119,10 +119,16 @@
                     @click.prevent="goToPosts"
                     >{{ this.userPosts.length }} Posts</a
                   >
-                  <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()"
+                  <a
+                    href=""
+                    class="ml-5 text-decoration-none"
+                    @click.prevent="goToFollow()"
                     >{{ this.followingCount }} Following</a
                   >
-                  <a href="" class="ml-5 text-decoration-none" @click.prevent="goToFollow()"
+                  <a
+                    href=""
+                    class="ml-5 text-decoration-none"
+                    @click.prevent="goToFollow()"
                     >{{ this.followersCount }} Follower</a
                   >
                 </v-col>
@@ -141,55 +147,80 @@
           v-for="content in this.userPosts"
           :key="content.id"
         >
-          <v-card
-            class="mx-auto px-3"
-            color="#FFFFFF"
-            elevate="0"
-            width="900"
-            @click.native="viewPost(content.id)"
-          >
-            <v-card-title class="ml-n3">
-              <v-list-item-avatar color="grey darken-3">
-                <v-img class="elevation-6" alt="" :src="userAvatar" />
-              </v-list-item-avatar>
-              <p class="pt-5" style="color: #393e46">
-                <b>{{ content.fullname }}</b>
-              </p>
-            </v-card-title>
-
-            <v-card-text
-              class="headline font-weight-normal"
-              style="color: #393e46"
-              v-if="content.photo == ''"
+          <v-hover v-slot="{ hover }">
+            <v-card
+              :elevation="hover ? 16 : 2"
+              :class="{ 'on-hover': hover }"
+              class="mx-auto px-3"
+              color="#FFFFFF"
+              elevate="0"
+              width="900"
+              @click.native="viewPost(content.id)"
             >
-              {{ content.caption }}
-            </v-card-text>
+              <v-card-title class="ml-n3">
+                <v-list-item-avatar color="grey darken-3">
+                  <v-img class="elevation-6" alt="" :src="userAvatar" />
+                </v-list-item-avatar>
+                <p class="pt-5" style="color: #393e46">
+                  <b>{{ content.fullname }}</b>
+                </p>
+              </v-card-title>
 
-            <v-container v-if="content.photo != ''">
               <v-card-text
-                class="mt-n10 ml-n3 font-weight-normal"
+                class="headline font-weight-normal"
                 style="color: #393e46"
+                v-if="content.photo == ''"
               >
+                <v-expand-transition>
+                  <div
+                    v-if="hover"
+                    class="d-flex transition-fast-in-fast-out orange darken-3 v-card--reveal display-1 white--text ml-n7"
+                    style="height: 100%"
+                  >
+                    Show Post
+                  </div>
+                </v-expand-transition>
                 {{ content.caption }}
               </v-card-text>
-              <v-img
-                class="mx-1"
-                :src="content.photo"
-                aspect-ratio="1"
-                max-height="400"
-              />
-            </v-container>
 
-            <v-card-actions>
-              <v-list-item class="grow">
-                <v-row align="center" justify="end">
-                  <v-icon class="mr-1" color="pink">mdi-heart</v-icon>
+              <v-container v-if="content.photo != ''">
+                <v-card-text
+                  class="mt-n10 ml-n3 font-weight-normal"
+                  style="color: #393e46"
+                >
+                  {{ content.caption }}
+                </v-card-text>
+                <v-img
+                  class="mx-1"
+                  :src="content.photo"
+                  aspect-ratio="1"
+                  max-height="400"
+                >
+                  <v-expand-transition>
+                    <div
+                      v-if="hover"
+                      class="d-flex transition-fast-in-fast-out orange darken-3 v-card--reveal display-1 white--text"
+                      style="height: 100%"
+                    >
+                      Show Post
+                    </div>
+                  </v-expand-transition>
+                </v-img>
+              </v-container>
 
-                  <span class="subheading mr-2">{{ content.like.length }}</span>
-                </v-row>
-              </v-list-item>
-            </v-card-actions>
-          </v-card>
+              <v-card-actions>
+                <v-list-item class="grow">
+                  <v-row align="center" justify="end">
+                    <v-icon class="mr-1" color="pink">mdi-heart</v-icon>
+
+                    <span class="subheading mr-2">{{
+                      content.like.length
+                    }}</span>
+                  </v-row>
+                </v-list-item>
+              </v-card-actions>
+            </v-card>
+          </v-hover>
         </v-row>
       </div>
     </v-main>
@@ -364,7 +395,9 @@ export default {
       this.reloadPage();
     },
     goToFollow() {
-      this.$router.push({ path: "/" + this.userId + "/showFollow/" + this.visitorId });
+      this.$router.push({
+        path: "/" + this.userId + "/showFollow/" + this.visitorId,
+      });
     },
   },
 };
@@ -373,5 +406,14 @@ export default {
 <style>
 #app {
   background-color: var(--v-background2-base);
+}
+.v-card--reveal {
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  opacity: 0.7;
+  position: absolute;
+  width: 100%;
+  cursor: pointer;
 }
 </style>

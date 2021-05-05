@@ -51,3 +51,18 @@ func LoadShare(UserID uint64) (*[]api.ShareAPI, error) {
 
 	return &shares, nil
 }
+
+func GetUserShare(UserID uint64) (*[]api.ShareAPI, error) {
+	var shares []api.ShareAPI
+
+	res := orm.Engine.Raw("SELECT shares.id, shares.user_id, shares.post_id FROM shares WHERE shares.user_id = ?", UserID).Find(&shares)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	if res.RowsAffected == 0 {
+		return nil, nil
+	}
+
+	return &shares, nil
+}
