@@ -2,20 +2,31 @@
   <v-app id="app">
     <v-app-bar app color="#222831" dark>
       <div class="d-flex align-center">
-        <v-img
-          alt="twistagram Logo"
-          class="shrink mr-2"
-          contain
-          src="../assets/twistagram-logo.png"
-          transition="scale-transition"
-          width="200"
-        />
+        <a href="">
+          <v-img
+            alt="Vuetify Logo"
+            class="shrink ma-2"
+            contain
+            src="../assets/twistagram-logo.png"
+            transition="scale-transition"
+            width="150"
+            @click.prevent="goHome()"
+          />
+        </a>
       </div>
       <v-spacer> </v-spacer>
-      <v-avatar size="60">
-        <v-img src="../assets/kenji.jpg"></v-img>
+      <v-avatar size="50">
+        <v-img :src="userData.profile"></v-img>
       </v-avatar>
-      <h1>Felix</h1>
+      <p class="mt-3 ml-3 mr-13">
+        <a
+          href=""
+          class="text-decoration-none"
+          style="color: white"
+          @click.prevent="goToUserProfile(userId)"
+          >{{ this.userData.fullname }}</a
+        >
+      </p>
     </v-app-bar>
 
     <v-main>
@@ -38,7 +49,7 @@
           <v-card class="mt-15" display="justify-center" width="500">
             <v-container fluid>
               <div v-for="x in this.userObj" :key="x.image">
-                <v-row>
+                <v-row @click="goToUserProfile(x.id)">
                   <v-col sm="2">
                     <v-avatar size="50">
                       <v-img size="50" :src="x.profile"></v-img>
@@ -46,9 +57,6 @@
                   </v-col>
                   <v-col sm="7">
                     <p class="mt-3">{{ x.fullname }}</p>
-                  </v-col>
-                  <v-col class="mt-2" >
-                    <v-btn color="primary"> Follow </v-btn>
                   </v-col>
                 </v-row>
                 <v-col>
@@ -75,29 +83,32 @@ import axios from "axios";
 export default {
   data: () => ({
     userId: "",
-    searchUserId: [],
+    userData: [],
     userObj: [],
     searchText: "",
-    showProfile: [
-      {
-        image: "/images/kenji.jpg",
-        name: "Felix",
-      },
-      {
-        image: "/images/default-profile.jpg",
-        name: "Joh Doe",
-      },
-    ],
-
-    model: 1,
   }),
 
   mounted() {
-    this.getUserId;
+    this.getUserId();
+    this.getUserData();
   },
   methods: {
     getUserId() {
-      this.userId = this.$route.params.userId;
+      this.userId = this.$route.params.userID;
+    },
+
+    getUserData() {
+      axios
+        .get(`http://localhost:8081/getUserData/` + this.userId)
+        .then((response) => {
+          this.userData = response.data.data;
+        });
+    },
+
+    goToUserProfile(id) {
+      this.$router.push({
+        path: "/" + id + "/profile/" + this.userId,
+      });
     },
 
     showAlert: function (e) {
@@ -107,24 +118,28 @@ export default {
         axios
           .get(`http://localhost:8081/searchUser/` + this.searchText)
           .then((response) => {
-            this.searchUserId = response.data.data;
+            var searchUserId = response.data.data;
 
-            if (this.searchUserId != []) {
-              this.userObj = [];
-              for (let index = 0; index < this.searchUserId.length; index++) {
-                axios
-                  .get(
-                    `http://localhost:8081/getUserData/` +
-                      this.searchUserId[index].ID
-                  )
-                  .then((response) => {
-                    this.userObj.push(response.data.data);
-                  });
+            if (searchUserId != []) {
+              for (let index = 0; index < searchUserId.length; index++) {
+                if (this.userId != searchUserId[index].ID) {
+                  var userSearchObj = {
+                    fullname: searchUserId[index].FullName,
+                    id: searchUserId[index].ID,
+                    profile: searchUserId[index].Profile,
+                  };
+                  this.userObj.push(userSearchObj);
+                }
               }
             }
+          }).catch(function (){
+            window.alert("User not Found");
           });
       }
     },
+    goHome() {
+      this.$router.push({ path: "/home/" + this.userId});
+    }
   },
 };
 </script>

@@ -15,7 +15,7 @@
       </div>
       <v-spacer> </v-spacer>
       <v-avatar size="50">
-        <v-img :src="this.postAvatar"></v-img>
+        <v-img :src="postAvatar"></v-img>
       </v-avatar>
       <p class="mt-3 ml-3 mr-13">
         <a href=""
@@ -33,10 +33,10 @@
         rounded
         elevation="5">
         
-        <v-row class="ma-3" v-if="this.postPhoto != ''">
+        <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
             <v-img
-              :src="this.postPhoto"
+              :src="postPhoto"
               max-height="800"
               aspect-ratio="1"/>
           </v-col>
@@ -51,7 +51,7 @@
                 id="post-caption"
                 label="Caption"
                 placeholder="Post Caption"
-                v-model="this.postCaption"
+                v-model="postCaption"
                 clearable/>
             </v-row>
             <v-row>
@@ -60,17 +60,17 @@
                   class="mr-3"
                   width="120px"
                   color="primary"
-                  @click="savePost">Save</v-btn>
+                  @click="savePost()">Save</v-btn>
                 <v-btn
                   width="120px"
                   color="error"
-                  @click.prevent="goToPost">Cancel</v-btn>
+                  @click.prevent="goToPost()">Cancel</v-btn>
               </v-col>
             </v-row>
           </v-col>  
         </v-row>  
 
-        <v-row class="ma-3" v-if="this.postPhoto == ''">
+        <v-row class="ma-3" v-if="postPhoto == ''">
           <v-col class="mt-5 ml-3">
             <v-row>
               <h2>Update Post:</h2>
@@ -81,7 +81,7 @@
                 id="post-caption"
                 label="Caption"
                 placeholder="Post Caption"
-                v-model="this.postCaption"
+                v-model="postCaption"
                 clearable/>
             </v-row>
             <v-row>
@@ -90,11 +90,11 @@
                   class="mr-3"
                   width="120px"
                   color="primary"
-                  @click="savePost">Save</v-btn>
+                  @click="savePost()">Save</v-btn>
                 <v-btn
                   width="120px"
                   color="error"
-                  @click.prevent="goToPost">Cancel</v-btn>
+                  @click.prevent="goToPost()">Cancel</v-btn>
               </v-col>
             </v-row>
           </v-col>  
@@ -169,7 +169,7 @@ export default {
           var pid = this.postId;
           var uid = this.userId;
           var photo = this.postPhoto;
-          var caption = document.getElementById("post-caption").value;
+          var caption = this.postCaption;
 
           var postObj = {
             id: parseInt(pid),

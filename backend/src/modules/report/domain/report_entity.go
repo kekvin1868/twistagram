@@ -19,8 +19,8 @@ func init() {
 
 type Report struct {
 	ID        uint      `json:"id" gorm:"'primaryKey;not Null;autoIncrement'"`
-	UserID    uint      `json:"post_id"`
-	PostID    uint      `json:"user_id"`
+	UserID    uint      `json:"user_id"`
+	PostID    uint      `json:"post_id"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime:milli"`
 	UpdatedAt time.Time `json:"updated _at" gorm:"autoUpdateTime:milli"`
 	Post      post.Post `gorm:"foreignKey:PostID"`

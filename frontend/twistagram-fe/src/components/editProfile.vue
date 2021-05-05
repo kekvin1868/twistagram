@@ -321,6 +321,12 @@ export default {
             this.$router.push({path: "/home/"+this.userId})
           }
         },
+        goToFollow() {
+            var r = confirm("Are you sure want to leave this page?");
+            if (r) {
+                this.$router.push({ path: "/" + this.userId + "/showFollow/" + this.userId });
+            }
+        },
     }
 }
 </script>

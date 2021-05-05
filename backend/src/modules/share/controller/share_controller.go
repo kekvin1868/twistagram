@@ -71,3 +71,30 @@ func LoadShare(c *gin.Context) {
 
 	c.JSON(http.StatusOK, res)
 }
+
+func GetUserShare(c *gin.Context) {
+	ID, _ := parser.ParseID(c.Param("ID"))
+	share, err := service.GetUserShare(ID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if share == nil {
+		failed := utils.Response{
+			Status:  http.StatusNoContent,
+			Message: "No content found",
+			Data:    nil,
+		}
+		c.JSON(http.StatusNoContent, failed)
+		return
+	}
+
+	res := utils.Response{
+		Status: http.StatusOK,
+		Data:   *share,
+	}
+
+	c.JSON(http.StatusOK, res)
+}

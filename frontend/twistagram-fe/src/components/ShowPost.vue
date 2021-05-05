@@ -10,18 +10,22 @@
             src="../assets/twistagram-logo.png"
             transition="scale-transition"
             width="150"
-            @click.prevent="goHome"/>
+            @click.prevent="goHome"
+          />
         </a>
       </div>
-      <v-spacer> </v-spacer>
+      <v-spacer></v-spacer>
       <v-avatar size="50">
-        <v-img :src="this.visitorAvatar"></v-img>
+        <v-img :src="visitorAvatar"></v-img>
       </v-avatar>
       <p class="mt-3 ml-3 mr-13">
-        <a href=""
+        <a
+          href=""
           class="text-decoration-none"
-          style="color:white;"
-          @click.prevent="goToProfile()">{{this.visitorFullname}}</a>
+          style="color: white"
+          @click.prevent="goToProfile()"
+          >{{ visitorFullname }}</a
+        >
       </p>
     </v-app-bar>
 
@@ -31,14 +35,63 @@
         max-width="1000"
         outlined
         rounded
-        elevation="5">
-        
+        elevation="5"
+      >
         <v-row class="ma-3" v-if="postPhoto != ''">
           <v-col>
-            <v-img
-              :src="postPhoto"
-              aspect-ratio="1"
-              max-height="800"/>
+            <v-dialog max-width="1200">
+              
+              <template v-slot:activator="{ on, attrs }">
+                <v-hover v-slot="{ hover }">
+                  <v-img
+                    :src="postPhoto"
+                    max-height="800"
+                    icon
+                    aspect-ratio="1"
+                    v-bind="attrs"
+                    v-on="on">
+                  <v-expand-transition>
+                    <div
+                      v-if="hover"
+                      class="d-flex transition-fast-in-fast-out black darken-3 v-card--reveal display-1 white--text"
+                      style="height: 100%;"
+                    >
+                      Show Full Picture
+                    </div>
+                  </v-expand-transition>
+                  </v-img>
+                </v-hover>
+              </template>
+              
+
+              <v-card>
+                <v-card-title class="headline" background-color="#222831">
+                  <v-list-item>
+                      <v-list-item-avatar
+                        color="#222831"
+                        size="30"
+                        class="mb-3 ml-n3"
+                      >
+                        <v-img :src="userAvatar"/>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content>
+                        <v-list-item-title
+                          ><a
+                            class="mt-3 text-decoration-none"
+                            @click.prevent="goToAccount(userId)"
+                            ><b>{{ postFullname }}</b></a
+                          >
+                        </v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-img :src="postPhoto" contain max-height="600"/>
+                </v-card-text>
+              </v-card>
+            </v-dialog>
           </v-col>
 
           <v-col>
@@ -46,44 +99,129 @@
               <v-card elevation="0" height="450px">
                 <v-card-text class="ml-n5">
                   <v-list>
-                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(userId)"><b>{{this.postFullname}}</b></a> {{this.postCaption}}</p>
+                    <v-list-item>
+                      <v-list-item-avatar
+                        color="grey darken-3"
+                        size="30"
+                        class="mb-3 ml-n3"
+                      >
+                        <v-img :src="userAvatar"></v-img>
+                      </v-list-item-avatar>
+
+                      <v-list-item-content>
+                        <v-list-item-title
+                          ><a
+                            class="mt-3 text-decoration-none"
+                            @click.prevent="goToAccount(userId)"
+                            ><b>{{ postFullname }}</b></a
+                          >
+                          {{ this.postCaption }}</v-list-item-title
+                        >
+                      </v-list-item-content>
+                    </v-list-item>
+
+                    <v-divider color="black" />
+                    <p class="my-2"><b>Comments:</b></p>
                     <template>
                       <v-list>
-                        <v-list-tile-content
-                        v-for="(comment, i) in postComment"
-                        :key="i">
-                          <!-- <div v-for="(comment, i) in postComment" :key="i"> -->
-                            <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
-                          <!-- </div> -->
-                        </v-list-tile-content>
+                        <v-list-item-content
+                          v-for="(comment, i) in postComment"
+                          :key="i"
+                        >
+                          <v-row class="ml-1">
+                            <p>
+                              <a
+                                href=""
+                                class="mt-3 text-decoration-none"
+                                @click.prevent="goToAccount(comment.ID)"
+                                ><b>{{ comment.FullName }}</b></a
+                              >
+                              {{ comment.Content }}
+                            </p>
+                          </v-row>
+                        </v-list-item-content>
                       </v-list>
                     </template>
                   </v-list>
                 </v-card-text>
-                
-                <v-footer class="ml-n2">
+
+                <v-footer class="ml-n2" style="background-color: white">
                   <div>
                     <v-row class="mx-n6 mt-1">
-                      
-                      <v-col class="mr-n15">
-                        <v-btn icon class="ml-6">
-                          <v-icon disabled>
-                            mdi-cards-heart
-                          </v-icon>
-                          <p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p>
+                      <v-col class="mr-n15" sm="2">
+                        <v-btn
+                          icon
+                          class="mb-n7 mr-7"
+                          color="pink"
+                          v-if="isLiked"
+                          @click="likePost()"
+                        >
+                          <v-icon> mdi-cards-heart </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          class="mb-n7 mr-7"
+                          v-if="!isLiked"
+                          @click="likePost()"
+                        >
+                          <v-icon disabled> mdi-cards-heart </v-icon>
                         </v-btn>
                       </v-col>
-                      
-                      <v-col align="right" v-if="this.visitorId == this.userId">
-                        <v-btn tile color="success" @click="editPost">
-                          <v-icon left>
-                            mdi-pencil
+
+                      <v-col class="ml-3 mr-n5">
+                        <p class="mt-4 ml-2">{{ postLike.length }} Likes</p>
+                      </v-col>
+
+                      <v-col>
+                        <v-btn
+                          icon
+                          class="mb-n6 ml-n15"
+                          large
+                          v-if="isShared"
+                          @click="shareAlert"
+                        >
+                          <v-icon color="blue" @click="shareAlert()">
+                            mdi-share
                           </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          class="mb-n6 ml-n15"
+                          large
+                          v-if="!isShared"
+                          @click="postShare()"
+                        >
+                          <v-icon disabled> mdi-share-outline </v-icon>
+                        </v-btn>
+                      </v-col>
+
+                      <v-col align="right" v-if="visitorId == userId">
+                        <v-btn tile color="success" @click="editPost">
+                          <v-icon left> mdi-pencil </v-icon>
                           Edit
                         </v-btn>
                       </v-col>
+
+                      <v-col align="right" class="mt-1 mr-n5" v-else>
+                        <v-btn
+                          icon
+                          large
+                          v-if="!isBookmarked"
+                          @click="bookmarkPost"
+                        >
+                          <v-icon left> mdi-bookmark-outline </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          large
+                          v-if="isBookmarked"
+                          @click="bookmarkPost"
+                        >
+                          <v-icon left> mdi-bookmark </v-icon>
+                        </v-btn>
+                      </v-col>
                     </v-row>
-                    
+
                     <v-row class="mx-n8 mt-n3 mb-n15">
                       <v-col>
                         <v-text-field
@@ -91,13 +229,12 @@
                           v-model="newComment"
                           label="Post New Comment"
                           solo
-                          style="width:400px"/>
+                          style="width: 400px"
+                        />
                       </v-col>
                       <v-col class="mt-3">
-                        <v-btn icon @click="addComment">
-                          <v-icon>
-                            mdi-comment
-                          </v-icon>
+                        <v-btn icon @click="addComment()">
+                          <v-icon> mdi-comment </v-icon>
                         </v-btn>
                       </v-col>
                     </v-row>
@@ -113,81 +250,143 @@
             <v-card-title class="ml-n3">
               <v-list-item-avatar color="grey darken-3">
                 <img
-                    lazy-src="../assets/default-profile.jpg"
-                    :src="userAvatar"
-                    alt="profilePicture"/>
+                  lazy-src="../assets/default-profile.jpg"
+                  :src="userAvatar"
+                  alt="profilePicture"
+                />
               </v-list-item-avatar>
               <p class="pt-5">
-                <a href=""
+                <a
+                  href=""
                   class="text-decoration-none"
-                  style="color:#393E46"
-                  @click="goToAccount(this.userId)"><b>{{this.postFullname}}</b></a>
+                  style="color: #393e46"
+                  @click="goToAccount(userId)"
+                  ><b>{{ postFullname }}</b></a
+                >
               </p>
             </v-card-title>
-          
-            <v-card-text class="headline font-weight-normal" style="color:#393E46">
-                {{this.postCaption}}
+
+            <v-card-text
+              class="headline font-weight-normal"
+              style="color: #393e46"
+            >
+              {{ postCaption }}
             </v-card-text>
 
-            <v-divider class="my-5"/>
+            <v-divider class="my-5" color="black" />
 
             <template>
               <v-list>
-                <v-list-tile-content
-                  v-for="(comment,i) in postComment"
-                  :key ="i"
-                  >
-                  <!-- <div class="ml-5" v-for="(comment, i) in postComment" :key="i"> -->
-                    <p><a href="" class="mt-3 text-decoration-none" @click.prevent="goToAccount(comment.ID)"><b>{{comment.FullName}}</b></a> {{comment.Content}}</p>
-                  <!-- </div> -->
-                </v-list-tile-content>
+                <v-list-item-content
+                  v-for="(comment, i) in postComment"
+                  :key="i"
+                >
+                  <v-row class="ml-5">
+                    <p>
+                      <a
+                        href=""
+                        class="mt-3 text-decoration-none"
+                        @click.prevent="goToAccount(comment.ID)"
+                        ><b>{{ comment.FullName }}</b></a
+                      >
+                      {{ comment.Content }}
+                    </p>
+                  </v-row>
+                </v-list-item-content>
               </v-list>
             </template>
 
-            <v-footer class="ml-n5" style="background-color:white">
+            <v-footer class="ml-n5" style="background-color: white">
               <v-row class="mx-4 mt-1">
                 <v-col class="mr-n15" md="11">
-                  <v-btn icon class="ml-6">
-                    <v-icon disabled>
-                      mdi-cards-heart
-                    </v-icon>
-                    <p class="mt-4 ml-2">{{(this.postLike).length}} Likes</p>
+                  <v-btn
+                    icon
+                    class="ml-6"
+                    color="pink"
+                    v-if="isLiked"
+                    @click="likePost()"
+                  >
+                    <v-icon> mdi-cards-heart </v-icon>
+                    <p class="mt-4 ml-2">{{ postLike.length }} Likes</p>
+                  </v-btn>
+
+                  <v-btn icon class="ml-6" v-if="!isLiked" @click="likePost()">
+                    <v-icon disabled> mdi-cards-heart </v-icon>
+                    <p class="mt-4 ml-2">
+                      <b>{{ postLike.length }} Likes</b>
+                    </p>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    class="ml-15"
+                    large
+                    v-if="isShared"
+                    @click="shareAlert()"
+                  >
+                    <v-icon color="blue"> mdi-share </v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    class="ml-15"
+                    large
+                    v-if="!isShared"
+                    @click="postShare()"
+                  >
+                    <v-icon disabled> mdi-share-outline </v-icon>
                   </v-btn>
                 </v-col>
-                
-                <v-col class="mr-n8 mt-1" align="right" v-if="this.visitorId == this.userId">
+
+                <v-col
+                  class="mr-n8 mt-1"
+                  align="right"
+                  v-if="visitorId == userId"
+                >
                   <v-btn tile color="success" @click="editPost">
-                    <v-icon left>
-                      mdi-pencil
-                    </v-icon>
+                    <v-icon left> mdi-pencil </v-icon>
                     Edit
+                  </v-btn>
+                </v-col>
+                <v-col
+                  class="mr-n8 mt-3"
+                  align="right"
+                  v-if="visitorId != userId"
+                >
+                  <v-btn icon large v-if="!isBookmarked" @click="bookmarkPost">
+                    <v-icon left> mdi-bookmark-outline </v-icon>
+                  </v-btn>
+                  <v-btn icon large v-if="isBookmarked" @click="bookmarkPost">
+                    <v-icon left> mdi-bookmark </v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
 
-              <v-row class="mx-n8 mb-n10">
-                <v-col class="ml-8" md="10">
+              <v-row class="ml-n5 mb-n10">
+                <v-col class="ml-8" md="11">
                   <v-text-field
                     id="new-comment"
                     v-model="newComment"
                     label="Post New Comment"
                     solo
-                    style="width:820px"/>
+                    style="width: 840px"
+                  />
                 </v-col>
-                <v-spacer/>
-                <v-col class="mt-3 mr-5">
-                  <v-btn class="mr-n10" allign="right" icon @click="addComment">
-                    <v-icon>
-                      mdi-comment
-                    </v-icon>
+                <v-spacer />
+                <v-col class="mt-3">
+                  <v-btn
+                    class="ml-n5"
+                    allign="right"
+                    icon
+                    large
+                    @click="addComment()"
+                  >
+                    <v-icon> mdi-comment </v-icon>
                   </v-btn>
                 </v-col>
               </v-row>
             </v-footer>
-
           </v-col>
         </v-row>
-      </v-card>    
+      </v-card>
     </v-main>
   </v-app>
 </template>
@@ -236,7 +435,7 @@ html {
 </style>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   mounted() {
@@ -244,6 +443,8 @@ export default {
     this.getVisitorData();
     this.getPostId();
     this.getPostData();
+    this.getBookmarkStatus();
+    this.getShareStatus();
   },
   data() {
     return {
@@ -259,74 +460,218 @@ export default {
       postPhoto: "",
       newComment: "",
       userAvatar: "",
+      isLiked: false,
+      likeId: null,
+      idBookmark: "",
+      isBookmarked: false,
+      userBookmark: [],
+      idShare: "",
+      isShared: false,
     };
   },
 
   methods: {
-    getVisitorId(){
+    getVisitorId() {
       this.visitorId = this.$route.params.userId;
       // console.log(this.visitorId);
     },
-    getVisitorData(){
-      axios.get(`http://localhost:8081/getUserData/`+this.visitorId)
-            .then(response=>{
-                this.visitorFullname = response.data.data.fullname;
-                this.visitorAvatar = response.data.data.profile; 
-            });
+    getVisitorData() {
+      axios
+        .get(`http://localhost:8081/getUserData/` + this.visitorId)
+        .then((response) => {
+          this.visitorFullname = response.data.data.fullname;
+          this.visitorAvatar = response.data.data.profile;
+        });
     },
-    getPostId(){
+    getPostId() {
       this.postId = this.$route.params.postId;
     },
-    getPostData(){
-      axios.get(`http://localhost:8081/getPost/`+this.postId)
-        .then(response=>{
-            this.postLike = response.data.data.like;
-            this.postComment = response.data.data.comment;
-            this.postCaption = response.data.data.caption;
-            this.userId = response.data.data.user_id;
-            this.postFullname = response.data.data.fullname;
-            this.postPhoto = response.data.data.photo;
-
-            axios.get(`http://localhost:8081/getUserData/`+this.userId)
-              .then(response=>{
-                  this.userAvatar = response.data.data.profile; 
-              });
-        });
-    },
-    goToAccount(userID){
-      this.$router.push({path:"/"+userID+"/profile/"+this.visitorId})
-    },
-    goToProfile(){
-      this.$router.push({path:"/"+this.visitorId+"/profile/"+this.visitorId})
-    },
-    addComment(){
-      var comment = document.getElementById("new-comment").value
-
-      var commentObj = {
-        user_id: parseInt(this.visitorId),
-        post_id: parseInt(this.postId),
-        content: comment
-      }
-
-      axios.post("http://localhost:8081/postComment", commentObj)
+    getPostData() {
+      axios
+        .get(`http://localhost:8081/getPost/` + this.postId)
         .then((response) => {
-            console.log(response);
-            this.reloadPost();
-        })
-        .catch(function (error) {
-          window.alert("Unable to Comment");
-          console.log(error);
+          this.postLike = response.data.data.like;
+          this.postComment = response.data.data.comment;
+          this.postCaption = response.data.data.caption;
+          this.userId = response.data.data.user_id;
+          this.postFullname = response.data.data.fullname;
+          this.postPhoto = response.data.data.photo;
+          for (let index = 0; index < this.postLike.length; index++) {
+            if (this.postLike[index].user_id == this.visitorId) {
+              this.isLiked = true;
+              this.likeId = this.postLike[index].id;
+              break;
+            }
+          }
+
+          axios
+            .get(`http://localhost:8081/getUserData/` + this.userId)
+            .then((response) => {
+              this.userAvatar = response.data.data.profile;
+            });
         });
     },
-    reloadPost(){
+    goToAccount(userID) {
+      this.$router.push({ path: "/" + userID + "/profile/" + this.visitorId });
+    },
+    goToProfile() {
+      this.$router.push({
+        path: "/" + this.visitorId + "/profile/" + this.visitorId,
+      });
+    },
+
+    getBookmarkStatus() {
+      axios
+        .get(`http://localhost:8081/getBookmark/` + this.visitorId)
+        .then((response) => {
+          this.userBookmark = response.data.data;
+          var bookmark = null;
+
+          bookmark = this.userBookmark.find(
+            (book) => book.post_id == this.postId
+          );
+
+          if (bookmark != null) {
+            this.isBookmarked = true;
+            this.idBookmark = bookmark.ID;
+          } else {
+            this.isBookmarked = false;
+          }
+        });
+    },
+    getShareStatus() {
+      axios
+        .get(`http://localhost:8081/getUserShare/` + this.visitorId)
+        .then((response) => {
+          var userShare = response.data.data;
+          var sharedPost = null;
+
+          sharedPost = userShare.find((share) => share.PostID == this.postId);
+
+          if (sharedPost != null) {
+            this.isShared = true;
+            this.idShare = sharedPost.ID;
+          } else {
+            this.isShared = false;
+          }
+        });
+    },
+    addComment() {
+      var comment = this.newComment;
+
+      if (this.newComment != "") {
+        var commentObj = {
+          user_id: parseInt(this.visitorId),
+          post_id: parseInt(this.postId),
+          content: comment,
+        };
+
+        axios
+          .post("http://localhost:8081/postComment", commentObj)
+          .then(() => {
+            this.newComment = "";
+            this.getPostData();
+          })
+          .catch(function (error) {
+            window.alert("Unable to Comment");
+            console.log(error);
+          });
+      } else {
+        window.alert("Comment cannot be empty");
+      }
+    },
+    reloadPost() {
       window.location.reload();
     },
-    editPost(){
-      this.$router.push({path:"/updatePost/"+this.postId});
+    editPost() {
+      this.$router.push({ path: "/updatePost/" + this.postId });
     },
-    goHome(){
-      this.$router.push({path: "/home/"+this.visitorId});
+    goHome() {
+      this.$router.push({ path: "/home/" + this.visitorId });
+    },
+    async likePost() {
+      if (!this.isLiked) {
+        axios
+          .post("http://localhost:8081/postLike", {
+            user_id: parseInt(this.visitorId),
+            post_id: parseInt(this.postId),
+          })
+          .then((response) => {
+            this.getPostData();
+            this.likeId = response.data.data.id;
+          });
+      } else {
+        await axios
+          .delete("http://localhost:8081/deleteLike/" + this.likeId)
+          .then(() => {
+            this.getPostData();
+            this.isLiked = false;
+          });
+      }
+    },
+    async bookmarkPost() {
+      if (!this.isBookmarked) {
+        axios
+          .post(`http://localhost:8081/postBookmark`, {
+            post_id: parseInt(this.postId),
+            user_id: parseInt(this.visitorId),
+          })
+          .then((response) => {
+            this.idBookmark = response.data.data.id;
+            this.getBookmarkStatus();
+          })
+          .catch(function (error) {
+            window.alert("Bookmark Post Failed");
+            console.log(error);
+          });
+      } else {
+        await axios
+          .delete(`http://localhost:8081/deleteBookmark/` + this.idBookmark)
+          .then((response) => {
+            console.log(response);
+            this.isBookmarked = false;
+            this.getBookmarkStatus();
+          })
+          .catch(function (error) {
+            window.alert("Bookmark unPost Failed");
+            console.log(error);
+          });
+      }
+    },
+    postShare() {
+      var r = confirm("Are you sure want to Share this post?");
+      if (r) {
+        axios
+          .post(`http://localhost:8081/postShare`, {
+            post_id: parseInt(this.postId),
+            user_id: parseInt(this.visitorId),
+          })
+          .then((response) => {
+            this.idShare = response.data.data.id;
+            this.isShared = true;
+            window.alert("You Share this Post!");
+            this.getShareStatus();
+          })
+          .catch(function (error) {
+            window.alert("Share Post Failed");
+            console.log(error);
+          });
+      }
+    },
+    shareAlert() {
+      window.alert("You Already Share this Post");
     },
   },
 };
 </script>
+<style>
+  .v-card--reveal {
+    align-items: center;
+    bottom: 0;
+    justify-content: center;
+    opacity: .7;
+    position: absolute;
+    width: 100%;
+    cursor: pointer;
+  }
+</style>

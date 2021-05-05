@@ -9,4 +9,5 @@ import (
 func MapURLs(router *gin.Engine) {
 	router.POST("/postShare", controller.PostShare)
 	router.GET("/loadShare/:ID", controller.LoadShare)
+	router.GET("/getUserShare/:ID", controller.GetUserShare)
 }

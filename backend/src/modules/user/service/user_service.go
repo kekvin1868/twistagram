@@ -17,3 +17,7 @@ func EditUserData(user *domain.User) (*domain.User, error) {
 func SearchUser(keyword string) (*[]api.SearchAPI, error) {
 	return dao.SearchUser(keyword)
 }
+
+func GetSugestion(ID uint64) (*[]api.SearchAPI, error) {
+	return dao.GetSugestion(ID)
+}
