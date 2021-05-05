@@ -53,7 +53,7 @@
                   <v-expand-transition>
                     <div
                       v-if="hover"
-                      class="d-flex transition-fast-in-fast-out black darken-2 v-card--reveal display-1 white--text"
+                      class="d-flex transition-fast-in-fast-out black darken-3 v-card--reveal display-1 white--text"
                       style="height: 100%;"
                     >
                       Show Full Picture
@@ -672,5 +672,6 @@ export default {
     opacity: .7;
     position: absolute;
     width: 100%;
+    cursor: pointer;
   }
 </style>
